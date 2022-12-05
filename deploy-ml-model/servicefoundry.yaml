@@ -1,0 +1,29 @@
+name: ml-deploy
+components:
+  - env:
+      ENVIRONMENT: dev
+      UVICORN_WEB_CONCURRENCY: '1'
+    name: ml-deploy
+    type: service
+    image:
+      type: build
+      build_spec:
+        type: tfy-python-buildpack
+        command: uvicorn app:app --port 8000 --host 0.0.0.0
+        python_version: '3.9'
+        requirements_path: requirements.txt
+        build_context_path: ./
+      build_source:
+        type: local
+    ports:
+      - port: 8000
+        expose: true
+        protocol: TCP
+    replicas: 1
+    resources:
+      cpu_limit: 0.5
+      cpu_request: 0.2
+      memory_limit: 1500
+      memory_request: 1000
+      ephemeral_storage_limit: 2000
+      ephemeral_storage_request: 1000
