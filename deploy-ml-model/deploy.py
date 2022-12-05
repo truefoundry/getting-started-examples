@@ -20,4 +20,4 @@ service = Service(
         "ENVIRONMENT": "dev"
     }
 )
-service.deploy(workspace_fqn="tfy-ctl-euwe1-devtest:test123-ws")
+service.deploy(workspace_fqn="YOUR_WORKSPACE_FQN")
