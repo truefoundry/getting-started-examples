@@ -26,7 +26,7 @@ inputs = [sepal_length_input, sepal_width_input,
           petal_length_input, petal_width_input]
 
 output = gr.Number()
-print("Just kidding, maybe why not")
+print("Just kidding, maybe maybe")
 
 gr.Interface(
     fn=model_inference,
