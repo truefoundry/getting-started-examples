@@ -26,7 +26,7 @@ inputs = [sepal_length_input, sepal_width_input,
           petal_length_input, petal_width_input]
 
 output = gr.Number()
-print("Change no 8")
+print("Change no 9")
 
 gr.Interface(
     fn=model_inference,
