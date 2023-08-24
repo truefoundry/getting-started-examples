@@ -3,7 +3,6 @@ from sklearn.neighbors import KNeighborsClassifier as Classification
 import mlfoundry as mlf
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
 
 def experiment_track(model, params, metrics):
     # initialize the mlfoundry client.
@@ -27,8 +26,6 @@ def experiment_track(model, params, metrics):
         framework=mlf.ModelFramework.SKLEARN,
         description="churn-prediction-model",
     )
-    # log the plots
-    mlf_run.log_plots({"confusion_matrix": plt}, step=1)
     # return the model's fqn
     return model_version.fqn
 
