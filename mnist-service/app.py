@@ -21,5 +21,5 @@ def predict(img_arr):
 gr.Interface(fn=predict,  
              inputs="image",  
              outputs="label",  
-             examples=[["0.jpg"], ["1.jpg"]]  
+             examples=[["0.jpg"], ["1.jpg"]]
 ).launch(server_name="0.0.0.0", server_port=8080)
