@@ -7,7 +7,7 @@ model = joblib.load("iris_classifier.joblib")
 
 app = FastAPI()
 
-@app.get("/predict")
+@app.post("/predict")
 def predict(
     sepal_length: float, sepal_width: float, petal_length: float, petal_width: float
 ):
