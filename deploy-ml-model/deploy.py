@@ -1,11 +1,10 @@
 import argparse
 import logging
-from servicefoundry import Build, PythonBuild, Service, Resources, Port
+from servicefoundry import Build, PythonBuild, Service, Resources, Port, ArtifactsDownload, ArtifactsCacheVolume, TruefoundryArtifactSource, LocalSource
 
 logging.basicConfig(level=logging.INFO)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--name", required=True, type=str, help="Name of the application.")
 parser.add_argument(
     "--workspace_fqn",
     required=True,
@@ -24,11 +23,12 @@ image = Build(
     build_spec=PythonBuild(
         command="uvicorn app:app --port 8000 --host 0.0.0.0",
         requirements_path="requirements.txt",
-    )
+    ),
+    build_source=LocalSource(local_build=False)
 )
 
 service = Service(
-    name=args.name,
+    name="iris-model-deploy",
     image=image,
     ports=[Port(port=8000, host=args.host)],
     resources=Resources(
@@ -38,5 +38,18 @@ service = Service(
         memory_limit=500,
     ),
     env={"UVICORN_WEB_CONCURRENCY": "1", "ENVIRONMENT": "dev"},
+    artifacts_download = ArtifactsDownload(
+        artifacts = [
+            TruefoundryArtifactSource(
+                artifact_version_fqn="model:prodigaltech/test-ml-repo/logistic-regression:1",
+                download_path_env_variable="MODEL_ID"
+            )
+        ],
+        cache_volume=ArtifactsCacheVolume(
+            storage_class="efs-sc",
+            cache_size=1
+        )
+
+    ),
 )
 service.deploy(workspace_fqn=args.workspace_fqn)

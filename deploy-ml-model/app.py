@@ -3,7 +3,13 @@ import joblib
 import pandas as pd
 from fastapi import FastAPI
 
-model = joblib.load("iris_classifier.joblib")
+download_path = os.getenv("MODEL_ID", ".")
+model = None
+for _, _ , files in os.walk(download_path):
+    for file in files:
+        if file.endswith(".joblib"):
+            model = joblib.load(os.path.join(download_path, file))
+            break
 
 app = FastAPI(docs_url="/", root_path=os.getenv("TFY_SERVICE_ROOT_PATH", "/"))
 
