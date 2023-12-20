@@ -1,11 +1,10 @@
 import argparse
 import joblib
 import mlfoundry
-from sklearn.base import accuracy_score
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--ml_repo_name", type=str)
