@@ -1,6 +1,7 @@
-pandas==1.4.4
-numpy==1.22.4
-scikit-learn==1.1.2
+pandas
+numpy
+scikit-learn
+mlfoundry
 
 # for deploying our job deployments
-servicefoundry>=0.1.97,<0.2.0
+servicefoundry
