@@ -42,7 +42,6 @@ for i in range(10):
     plt.axis('off')
 run.log_plots({"images": plt})
 plt.tight_layout()
-plt.show()
 
 
 # Define the model architecture
