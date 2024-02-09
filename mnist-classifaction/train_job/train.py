@@ -16,7 +16,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-ML_REPO_NAME=args.ml_repo
 
 # Load the MNIST dataset
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
