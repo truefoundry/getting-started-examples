@@ -20,8 +20,18 @@ args = parser.parse_args()
 # Load the MNIST dataset
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
+# Normalize the pixel values between 0 and 1
+x_train = x_train / 255.0
+x_test = x_test / 255.0
+
 print(f"The number of train images: {len(x_train)}")
 print(f"The number of test images: {len(x_test)}")
+
+# Creating client for logging the metadata
+client = mlfoundry.get_client()
+
+client.create_ml_repo(args.ml_repo)
+run = client.create_run(ml_repo=args.ml_repo)
 
 # Plot some sample images
 plt.figure(figsize=(10, 5))
@@ -30,16 +40,9 @@ for i in range(10):
     plt.imshow(x_train[i], cmap='gray')
     plt.title(f"Label: {y_train[i]}")
     plt.axis('off')
+run.log_plots({"images": plt})
 plt.tight_layout()
 plt.show()
-
-
-# Load the MNIST dataset
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
-
-# Normalize the pixel values between 0 and 1
-x_train = x_train / 255.0
-x_test = x_test / 255.0
 
 
 # Define the model architecture
@@ -52,18 +55,8 @@ model = tf.keras.Sequential([
 # Compile the model
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-
-# Creating client for logging the metadata
-client = mlfoundry.get_client()
-
-client.create_ml_repo(args.ml_repo)
-run = client.create_run(ml_repo=args.ml_repo)
-
-
 #logging the parameters
 run.log_params({"optimizer": "adam", "loss": "sparse_categorical_crossentropy", "metric": ["accuracy"]})
-
-
 
 # Train the model
 epochs = args.num_epochs
