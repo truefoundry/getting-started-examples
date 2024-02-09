@@ -57,8 +57,8 @@ model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=
 # Creating client for logging the metadata
 client = mlfoundry.get_client()
 
-client.create_ml_repo(ML_REPO_NAME)
-run = client.create_run(ml_repo=ML_REPO_NAME)
+client.create_ml_repo(args.ml_repo)
+run = client.create_run(ml_repo=args.ml_repo)
 
 
 #logging the parameters
