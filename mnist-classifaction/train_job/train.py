@@ -31,7 +31,7 @@ print(f"The number of test images: {len(x_test)}")
 client = mlfoundry.get_client()
 
 client.create_ml_repo(args.ml_repo)
-run = client.create_run(ml_repo=args.ml_repo)
+run = client.create_run(ml_repo=args.ml_repo, run_name="train-model")
 
 # Plot some sample images
 plt.figure(figsize=(10, 5))
