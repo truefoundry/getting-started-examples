@@ -8,12 +8,8 @@ import argparse
 
 # parsing the arguments
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--num_epochs", type=int, default=4
-)
-parser.add_argument(
-    "--ml_repo", type=str, required=True
-)
+parser.add_argument("--num_epochs", type=int, default=4)
+parser.add_argument("--ml_repo", type=str, required=True)
 args = parser.parse_args()
 
 
@@ -36,26 +32,36 @@ run = client.create_run(ml_repo=args.ml_repo, run_name="train-model")
 # Plot some sample images
 plt.figure(figsize=(10, 5))
 for i in range(10):
-    plt.subplot(2, 5, i+1)
-    plt.imshow(x_train[i], cmap='gray')
+    plt.subplot(2, 5, i + 1)
+    plt.imshow(x_train[i], cmap="gray")
     plt.title(f"Label: {y_train[i]}")
-    plt.axis('off')
+    plt.axis("off")
 run.log_plots({"images": plt})
 plt.tight_layout()
 
 
 # Define the model architecture
-model = tf.keras.Sequential([
-    tf.keras.layers.Flatten(input_shape=(28, 28)),
-    tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dense(10, activation='softmax')
-])
+model = tf.keras.Sequential(
+    [
+        tf.keras.layers.Flatten(input_shape=(28, 28)),
+        tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dense(10, activation="softmax"),
+    ]
+)
 
 # Compile the model
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.compile(
+    optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"]
+)
 
-#logging the parameters
-run.log_params({"optimizer": "adam", "loss": "sparse_categorical_crossentropy", "metric": ["accuracy"]})
+# logging the parameters
+run.log_params(
+    {
+        "optimizer": "adam",
+        "loss": "sparse_categorical_crossentropy",
+        "metric": ["accuracy"],
+    }
+)
 
 # Train the model
 epochs = args.num_epochs
@@ -63,8 +69,8 @@ model.fit(x_train, y_train, epochs=epochs, validation_data=(x_test, y_test))
 
 # Evaluate the model
 loss, accuracy = model.evaluate(x_test, y_test)
-print(f'Test loss: {loss}')
-print(f'Test accuracy: {accuracy}')
+print(f"Test loss: {loss}")
+print(f"Test accuracy: {accuracy}")
 
 
 # Log Metrics and Model
@@ -73,16 +79,14 @@ print(f'Test accuracy: {accuracy}')
 run.log_metrics(metric_dict={"accuracy": accuracy, "loss": loss})
 
 # Save the trained model
-model.save('mnist_model.h5')
+model.save("mnist_model.h5")
 
 # Logging the model
 run.log_model(
     name="handwritten-digits-recognition",
-    model_file_or_folder='mnist_model.h5',
+    model_file_or_folder="mnist_model.h5",
     framework="tensorflow",
     description="sample model to recognize the handwritten digits",
     metadata={"accuracy": accuracy, "loss": loss},
     step=1,  # step number, useful when using iterative algorithms like SGD
 )
-
-
