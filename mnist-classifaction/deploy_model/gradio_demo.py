@@ -17,4 +17,8 @@ interface = gr.Interface(
     examples=[["sample_images/0.jpg"], ["sample_images/1.jpg"]],
 )
 
-interface.launch(server_name="0.0.0.0", server_port=8000, root_path=os.environ.get("TFY_SERVICE_ROOT_PATH", "/"))
+interface.launch(
+    server_name="0.0.0.0",
+    server_port=8000,
+    root_path=os.environ.get("TFY_SERVICE_ROOT_PATH", "/"),
+)
