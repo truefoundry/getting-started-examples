@@ -44,6 +44,6 @@ service = Service(
                 download_path_env_variable="MODEL_DOWNLOAD_PATH",
             )
         ]
-    ),
+    )
 )
 service.deploy(workspace_fqn=args.workspace_fqn)
