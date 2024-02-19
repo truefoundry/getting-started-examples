@@ -24,6 +24,7 @@ service = Service(
     image=Build(
         build_spec=PythonBuild(
             command="python gradio_demo.py",
+            # commad="uvicorn fastapi_service:app --port 8001 --host 0.0.0.0" for deploying fastapi
             requirements_path="requirements.txt",
         )
     ),
