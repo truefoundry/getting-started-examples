@@ -18,7 +18,6 @@ def load_image(img_url):
     img_path = tf.keras.utils.get_file("image.jpg", img_url)
     img = tf.keras.preprocessing.image.load_img(img_path, target_size=(28, 28))
     img_arr = tf.keras.preprocessing.image.img_to_array(img)
-    img_arr = tf.image.rgb_to_grayscale(img_arr) / 255.0
     return img_arr 
 
 
