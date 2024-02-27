@@ -1,7 +1,15 @@
 import argparse
 import logging
 
-from servicefoundry import Build, Port, PythonBuild, Resources, Service
+from servicefoundry import (
+    ArtifactsDownload,
+    Build,
+    Port,
+    PythonBuild,
+    Resources,
+    Service,
+    TruefoundryArtifactSource,
+)
 
 logging.basicConfig(level=logging.INFO)
 
@@ -20,6 +28,12 @@ parser.add_argument(
     help="Host where the application will be available for access. Ex:- my-app.my-org.com",
 )
 parser.add_argument("--path", type=str, required=False)
+parser.add_argument(
+    "--artifact_fqn",
+    type=str,
+    required=True,
+    help="FQN of the artifact where model is present.",
+)
 args = parser.parse_args()
 
 service = Service(
@@ -42,5 +56,13 @@ service = Service(
     env={
         "MODEL_NAME": "<Enter model to be used from Truefoundry>",
     },
+    artifacts_download=ArtifactsDownload(
+        artifacts=[
+            TruefoundryArtifactSource(
+                artifact_version_fqn="args.artifact_fqn",
+                download_path_env_variable="DTC_ARTIFACT",
+            )
+        ]
+    ),
 )
 service.deploy(workspace_fqn=args.workspace_fqn)
