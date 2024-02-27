@@ -40,8 +40,6 @@ service = Service(
         cpu_request=0.3,
     ),
     env={
-        "TFY_LLM_GATEWAY_HOST": "<Enter Truefoundry LLM Endpoint>",
-        "TFY_API_KEY": "<Enter Truefoundry API key>",
         "MODEL_NAME": "<Enter model to be used from Truefoundry>",
     },
 )

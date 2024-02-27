@@ -3,18 +3,27 @@ import os
 import requests
 
 SYSTEM_PROMPT = """
-Given a natural language description of a flower's sepal and petal measurements as input, return a dictionary with the measurements. If a measurement is not mentioned, set its value to 0. The input sentence will contain descriptions of the sepal length, sepal width, petal length, and petal width.
+Given a natural language description of a flower's sepal and petal measurements as input, return a JSON object with the measurements. If a measurement is not mentioned, set its value to 0. The input sentence will contain descriptions of the sepal length, sepal width, petal length, and petal width.
 
-For example, given the input 'The flower has a sepal length of 5.1 cm and a petal width of 0.3 cm.', the function should return: { 'sepal_length': 5.1, 'sepal_width': 0, 'petal_length': 0, 'petal_width': 0.3 }
+For example:
 
-Another example input could be 'This flower's sepal width is 3.5 cm and its petal length is 1.4 cm.', which should return: { 'sepal_length': 0, 'sepal_width': 3.5, 'petal_length': 1.4, 'petal_width': 0 }
+Example 1:
+Input: "The flower has a sepal length of 5.1cm, a sepal width of 3.5cm, a petal length of 1.4cm and a petal width of 0.2cm."
 
-INPUT:
+{"sepal_length": 5.1, "sepal_width": 3.5, "petal_length": 1.4, "petal_width": 0.2}
+
+
+Example 2:
+Input: "The sepal length measures 4.9cm and the sepal width is 3.0cm."
+
+{"sepal_length": 4.9, "sepal_width": 3.0, "petal_length": 0, "petal_width": 0}
+
+Input: 
 """
 
-TFY_LLM_GATEWAY_HOST = os.getenv("TFY_LLM_GATEWAY_HOST")
-TFY_API_KEY = os.getenv("TFY_API_KEY")
-MODEL_NAME = os.getenv("MODEL_NAME")
+TFY_LLM_GATEWAY_HOST = os.environ["TFY_HOST"] + "/api/llm/openai/completions"
+TFY_API_KEY = os.environ["TFY_API_KEY"]
+MODEL_NAME = os.environ["MODEL_NAME"]
 
 
 def llm(prompt):
