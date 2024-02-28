@@ -23,7 +23,7 @@ Input:
 
 TFY_LLM_GATEWAY_HOST = os.environ["TFY_HOST"] + "/api/llm/openai/completions"
 TFY_API_KEY = os.environ["TFY_API_KEY"]
-MODEL_NAME = os.environ["MODEL_NAME"]
+LLM_MODEL = os.environ["LLM_MODEL"]
 
 
 def llm(prompt):
@@ -34,7 +34,7 @@ def llm(prompt):
         },
         json={
             "prompt": SYSTEM_PROMPT + prompt,
-            "model": MODEL_NAME,
+            "model": LLM_MODEL,
             "max_tokens": 200,
         },
     )
