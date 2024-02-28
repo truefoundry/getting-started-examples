@@ -54,13 +54,13 @@ service = Service(
         cpu_request=0.3,
     ),
     env={
-        "MODEL_NAME": "<Enter model to be used from Truefoundry>",
+        "LLM_MODEL": "<Enter model to be used from Truefoundry>",
     },
     artifacts_download=ArtifactsDownload(
         artifacts=[
             TruefoundryArtifactSource(
-                artifact_version_fqn="args.artifact_fqn",
-                download_path_env_variable="DTC_ARTIFACT",
+                artifact_version_fqn=args.artifact_fqn,
+                download_path_env_variable="CLASSIFIER_MODEL_PATH",
             )
         ]
     ),
