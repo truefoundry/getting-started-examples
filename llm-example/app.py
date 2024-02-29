@@ -3,7 +3,7 @@ import os
 
 import joblib
 import pandas as pd
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from llm import llm
 
 artifact_downloaded_path = os.environ["CLASSIFIER_MODEL_PATH"]
@@ -17,7 +17,11 @@ IRIS_CLASSES = {0: "Setosa", 1: "Versicolour", 2: "Virginica"}
 
 
 @app.post("/prompt")
-def predict(prompt: str):
+def predict(
+    prompt: str = Query(
+        default="The flower has a sepal length of 5.1cm, a sepal width of 3.5cm, a petal length of 1.4cm and a petal width of 0.2cm."
+    ),
+):
     response = llm(prompt=prompt)
     data = json.loads(response)
     prediction = int(classifier.predict(pd.DataFrame([data]))[0])
