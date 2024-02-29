@@ -27,9 +27,21 @@ parser.add_argument(
     type=str,
     help="Host where the application will be available for access. Ex:- my-app.my-org.com",
 )
+parser.add_argument(
+    "--llm_gateway_host",
+    required=True,
+    type=str,
+    help="Host where the llm will be available for access.",
+)
 parser.add_argument("--path", type=str, required=False)
 parser.add_argument(
-    "--artifact_fqn",
+    "--model_version_fqn",
+    type=str,
+    required=True,
+    help="FQN of the model in mlrepo ",
+)
+parser.add_argument(
+    "--llm_model",
     type=str,
     required=True,
     help="FQN of the artifact where model is present.",
@@ -54,15 +66,16 @@ service = Service(
         cpu_request=0.3,
     ),
     env={
-        "LLM_MODEL": "<Enter model to be used from Truefoundry>",
+        "TFY_LLM_GATEWAY_HOST": args.llm_gateway_host,
+        "LLM_MODEL": args.llm_model,
     },
     artifacts_download=ArtifactsDownload(
         artifacts=[
             TruefoundryArtifactSource(
-                artifact_version_fqn=args.artifact_fqn,
+                artifact_version_fqn=args.model_version_fqn,
                 download_path_env_variable="CLASSIFIER_MODEL_PATH",
             )
         ]
     ),
 )
-service.deploy(workspace_fqn=args.workspace_fqn)
+service.deploy(workspace_fqn=args.workspace_fqn, wait=False)

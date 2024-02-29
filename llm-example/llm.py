@@ -21,7 +21,10 @@ Input: "The sepal length measures 4.9cm and the sepal width is 3.0cm."
 Input: 
 """
 
-TFY_LLM_GATEWAY_HOST = os.environ["TFY_HOST"] + "/api/llm/openai/completions"
+TFY_LLM_GATEWAY_HOST = os.environ[
+    "TFY_LLM_GATEWAY_HOST"
+]  # Ex: https://*.truefoundry.tech/v1/chat/completions
+
 TFY_API_KEY = os.environ["TFY_API_KEY"]
 LLM_MODEL = os.environ["LLM_MODEL"]
 
@@ -33,11 +36,15 @@ def llm(prompt):
             "Authorization": f"Bearer {TFY_API_KEY}",
         },
         json={
-            "prompt": SYSTEM_PROMPT + prompt,
+            "messages": [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ],
             "model": LLM_MODEL,
             "max_tokens": 200,
         },
     )
+    response.raise_for_status()
     data = response.json()
-    output = data["choices"][0]["text"]
+    output = data["choices"][0]["message"]["content"]
     return output
