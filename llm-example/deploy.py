@@ -35,7 +35,7 @@ parser.add_argument(
 )
 parser.add_argument("--path", type=str, required=False)
 parser.add_argument(
-    "--model_fqn",
+    "--model_version_fqn",
     type=str,
     required=True,
     help="FQN of the model in mlrepo ",
@@ -66,13 +66,13 @@ service = Service(
         cpu_request=0.3,
     ),
     env={
-        "LLM_GATEWAY_HOST": args.llm_gateway_host,
+        "TFY_LLM_GATEWAY_HOST": args.llm_gateway_host,
         "LLM_MODEL": args.llm_model,
     },
     artifacts_download=ArtifactsDownload(
         artifacts=[
             TruefoundryArtifactSource(
-                artifact_version_fqn=args.model_fqn,
+                artifact_version_fqn=args.model_version_fqn,
                 download_path_env_variable="CLASSIFIER_MODEL_PATH",
             )
         ]
