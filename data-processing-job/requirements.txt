@@ -1,0 +1,5 @@
+mlfoundry==0.10.5
+pandas==1.1.5
+matplotlib==3.2.2
+seaborn==0.12.1
+
