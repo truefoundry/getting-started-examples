@@ -1,10 +1,10 @@
-import mlfoundry
+import argparse
+import os
+
+import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.keras.datasets import mnist
-import matplotlib.pyplot as plt
-from tensorflow.keras.datasets import mnist
-import os
-import argparse
+from truefoundry.ml import get_client
 
 # parsing the arguments
 parser = argparse.ArgumentParser()
@@ -24,7 +24,7 @@ print(f"The number of train images: {len(x_train)}")
 print(f"The number of test images: {len(x_test)}")
 
 # Creating client for logging the metadata
-client = mlfoundry.get_client()
+client = get_client()
 
 client.create_ml_repo(args.ml_repo)
 run = client.create_run(ml_repo=args.ml_repo, run_name="train-model")

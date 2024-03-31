@@ -1,12 +1,13 @@
 import argparse
 import logging
-from servicefoundry import (
-    Build,
-    PythonBuild,
-    Service,
-    Resources,
-    Port,
+
+from truefoundry.deploy import (
     ArtifactsDownload,
+    Build,
+    Port,
+    PythonBuild,
+    Resources,
+    Service,
     TruefoundryArtifactSource,
 )
 

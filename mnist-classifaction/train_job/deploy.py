@@ -1,5 +1,16 @@
-import logging, os, argparse
-from servicefoundry import Build, Job, PythonBuild, Param, Port, LocalSource, Resources
+import argparse
+import logging
+import os
+
+from truefoundry.deploy import (
+    Build,
+    Job,
+    LocalSource,
+    Param,
+    Port,
+    PythonBuild,
+    Resources,
+)
 
 # parsing the arguments
 parser = argparse.ArgumentParser()
