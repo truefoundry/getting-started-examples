@@ -1,6 +1,7 @@
 import argparse
 import logging
-from servicefoundry import Build, Job, PythonBuild
+
+from truefoundry.deploy import Build, Job, PythonBuild
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,8 +17,5 @@ image = Build(
     )
 )
 
-job = Job(
-    name="iris-train-job",
-    image=image
-)
+job = Job(name="iris-train-job", image=image)
 job.deploy(workspace_fqn=args.workspace)
