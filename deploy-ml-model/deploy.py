@@ -1,6 +1,7 @@
 import argparse
 import logging
-from servicefoundry import Build, PythonBuild, Service, Resources, Port
+
+from truefoundry.deploy import Build, Port, PythonBuild, Resources, Service
 
 logging.basicConfig(level=logging.INFO)
 
