@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from servicefoundry import (
+from truefoundry.deploy import (
     ArtifactsDownload,
     Build,
     Port,
