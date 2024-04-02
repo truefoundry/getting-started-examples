@@ -1,5 +1,5 @@
 import pandas as pd
-import truefoundry.ml as mlf
+from truefoundry.ml import get_client
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier as Classification
