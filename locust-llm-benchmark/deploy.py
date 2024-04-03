@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from truefoundry.deploy import Build, Job, PythonBuild, Resources
+from truefoundry.deploy import Build, Port, PythonBuild, Resources, Service
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,11 +16,12 @@ image = Build(
     )
 )
 
-job = Job(
+service = Service(
     name="locust-llm-benchmark",
     image=image,
     resources=Resources(
         cpu_limit=1,
     ),
+    ports=[Port(port=8089, expose=False)],
 )
-job.deploy(workspace_fqn=args.workspace_fqn)
+service.deploy(workspace_fqn=args.workspace_fqn)

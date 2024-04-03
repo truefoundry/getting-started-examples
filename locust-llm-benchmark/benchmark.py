@@ -4,12 +4,36 @@ import time
 
 from locust import HttpUser, between, events, task
 
-PROMPT = "Explain MLOps in 300 tokens or less."
-OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://llm-gateway.truefoundry.com")
+DEFAULT_PROMPT = "Explain MLOps in 300 tokens or less."
+OPENAI_BASE_URL = os.getenv(
+    "OPENAI_BASE_URL", "https://llm-gateway.truefoundry.com/api/llm/openai"
+)
 # or export self hosted url Ex: https://*.truefoundry.tech/
+DEFAULT_MODEL = "truefoundry-public/Llama-2-Chat(7B)"
 
-OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
-LLM_MODEL = "truefoundry-public/Llama-2-Chat(7B)"
+
+@events.init_command_line_parser.add_listener
+def _(parser):
+    parser.add_argument(
+        "--openai-api-key",
+        type=str,
+        env_var="OPEN_API_KEY",
+        is_secret=True,
+        default="",
+        help="OPENAI API Key",
+    )
+    parser.add_argument(
+        "--llm-model",
+        type=str,
+        default=DEFAULT_MODEL,
+        help="LLM Model to be used in Benchmark",
+    )
+    parser.add_argument(
+        "--prompt",
+        type=str,
+        default=DEFAULT_PROMPT,
+        help="Prompt to be used in benchmark",
+    )
 
 
 class StreamingUserBenchmark(HttpUser):
@@ -20,8 +44,10 @@ class StreamingUserBenchmark(HttpUser):
     def llm_benchmark(self):
         data = json.dumps(
             {
-                "model": LLM_MODEL,
-                "messages": [{"role": "user", "content": PROMPT}],
+                "model": self.environment.parsed_options.llm_model,
+                "messages": [
+                    {"role": "user", "content": self.environment.parsed_options.prompt}
+                ],
                 "temperature": 1,
                 "top_p": 1,
                 "n": 1,
@@ -37,7 +63,7 @@ class StreamingUserBenchmark(HttpUser):
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "Authorization": f"Bearer {OPENAI_API_KEY}",
+            "Authorization": f"Bearer {self.environment.parsed_options.openai_api_key}",
             # Set the tfy_log_request to "`true`" in X-TFY-METADATA header to log prompt and response for the request
             "X-TFY-METADATA": json.dumps(
                 {"tfy_log_request": "true", "Custom-Metadata": "Custom-Value"}
@@ -47,7 +73,7 @@ class StreamingUserBenchmark(HttpUser):
         start_time_streaming = time.time()
         first_token_done = False
         with self.client.post(
-            "/api/llm/openai/chat/completions", headers=headers, data=data, stream=True
+            "/chat/completions", headers=headers, data=data, stream=True
         ) as response:
             for line in response.iter_lines():
                 if len(line) == 0:
