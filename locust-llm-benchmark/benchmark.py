@@ -5,16 +5,16 @@ import time
 from locust import HttpUser, between, events, task
 
 PROMPT = "Explain MLOps in 300 tokens or less."
-TFY_HOST = os.getenv("TFY_HOST", "https://llm-gateway.truefoundry.com")
+OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://llm-gateway.truefoundry.com")
 # or export self hosted url Ex: https://*.truefoundry.tech/
 
-TFY_API_KEY = os.environ["TFY_API_KEY"]
+OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 LLM_MODEL = "truefoundry-public/Llama-2-Chat(7B)"
 
 
 class StreamingUserBenchmark(HttpUser):
     wait_time = between(1, 3)
-    host = TFY_HOST
+    host = OPENAI_BASE_URL
 
     @task
     def llm_benchmark(self):
@@ -37,7 +37,7 @@ class StreamingUserBenchmark(HttpUser):
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "Authorization": f"Bearer {TFY_API_KEY}",
+            "Authorization": f"Bearer {OPENAI_API_KEY}",
             # Set the tfy_log_request to "`true`" in X-TFY-METADATA header to log prompt and response for the request
             "X-TFY-METADATA": json.dumps(
                 {"tfy_log_request": "true", "Custom-Metadata": "Custom-Value"}

@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from truefoundry.deploy import Build, Job, PythonBuild
+from truefoundry.deploy import Build, Job, PythonBuild, Resources
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,5 +16,11 @@ image = Build(
     )
 )
 
-job = Job(name="locust-llm-benchmark", image=image)
+job = Job(
+    name="locust-llm-benchmark",
+    image=image,
+    resources=Resources(
+        cpu_limit=1,
+    ),
+)
 job.deploy(workspace_fqn=args.workspace_fqn)
