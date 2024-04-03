@@ -3,6 +3,7 @@ import os
 import time
 
 from locust import HttpUser, between, events, task
+from locust.exception import LocustError
 
 DEFAULT_PROMPT = "Explain MLOps in 300 tokens or less."
 OPENAI_BASE_URL = os.getenv(
@@ -50,7 +51,7 @@ def _(parser):
     parser.add_argument(
         "--ignore-eos",
         choices=["True", "False"],
-        default="True",
+        default="False",
         help="Ignore EOS token while prediction.",
     )
 
@@ -81,7 +82,6 @@ class StreamingUserBenchmark(HttpUser):
                 ],
                 "temperature": 1,
                 "top_p": 1,
-                "n": 1,
                 "stream": True,
                 "max_tokens": 100,
                 "presence_penalty": 0,
@@ -117,6 +117,10 @@ class StreamingUserBenchmark(HttpUser):
                 line_obj = json.loads(string_object)
 
                 if self.environment.parsed_options.is_chat == "True":
+                    if "error" in line_obj:
+                        raise LocustError(line_obj["error"]["message"])
+                    if "choices" not in line_obj:
+                        continue
                     if "content" not in line_obj["choices"][0]["delta"]:
                         continue
                     if (
