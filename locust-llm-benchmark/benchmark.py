@@ -6,7 +6,8 @@ from locust import HttpUser, between, events, task
 
 DEFAULT_PROMPT = "Explain MLOps in 300 tokens or less."
 OPENAI_BASE_URL = os.getenv(
-    "OPENAI_BASE_URL", "https://llm-gateway.truefoundry.com/api/llm/openai"
+    "OPENAI_BASE_URL",
+    "https://llm-gateway.truefoundry.com/api/llm/openai/chat/completions",
 )
 # or export self hosted url Ex: https://*.truefoundry.tech/
 DEFAULT_MODEL = "truefoundry-public/Llama-2-Chat(7B)"
@@ -34,6 +35,24 @@ def _(parser):
         default=DEFAULT_PROMPT,
         help="Prompt to be used in benchmark",
     )
+    parser.add_argument(
+        "--max-tokens",
+        type=int,
+        default=100,
+        help="Maximum tokens that the model must complete.",
+    )
+    parser.add_argument(
+        "--is-chat",
+        choices=["True", "False"],
+        default="True",
+        help="If the model is a chat model.",
+    )
+    parser.add_argument(
+        "--ignore-eos",
+        choices=["True", "False"],
+        default="True",
+        help="Ignore EOS token while prediction.",
+    )
 
 
 class StreamingUserBenchmark(HttpUser):
@@ -42,8 +61,20 @@ class StreamingUserBenchmark(HttpUser):
 
     @task
     def llm_benchmark(self):
-        data = json.dumps(
-            {
+        data = {
+            "prompt": self.environment.parsed_options.prompt,
+            "model": self.environment.parsed_options.llm_model,
+            "stream": True,
+            "temperature": 0.7,
+            "max_tokens": 256,
+            "top_p": 0.8,
+            "top_k": 50,
+            "repetition_penalty": 1.0,
+            "frequency_penalty": 0.0,
+            "presence_penalty": 0.0,
+        }
+        if self.environment.parsed_options.is_chat == "True":
+            data = {
                 "model": self.environment.parsed_options.llm_model,
                 "messages": [
                     {"role": "user", "content": self.environment.parsed_options.prompt}
@@ -55,26 +86,24 @@ class StreamingUserBenchmark(HttpUser):
                 "max_tokens": 100,
                 "presence_penalty": 0,
                 "frequency_penalty": 0,
-                # Remove ignore_eos for OpenAI models.
-                "ignore_eos": True,
             }
-        )
+
+        if self.environment.parsed_options.ignore_eos == "True":
+            data["ignore_eos"] = True
+
+        data = json.dumps(data)
 
         headers = {
+            "Authorization": f"Bearer {self.environment.parsed_options.openai_api_key}",
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "Authorization": f"Bearer {self.environment.parsed_options.openai_api_key}",
-            # Set the tfy_log_request to "`true`" in X-TFY-METADATA header to log prompt and response for the request
-            "X-TFY-METADATA": json.dumps(
-                {"tfy_log_request": "true", "Custom-Metadata": "Custom-Value"}
-            ),
         }
 
         start_time_streaming = time.time()
         first_token_done = False
-        with self.client.post(
-            "/chat/completions", headers=headers, data=data, stream=True
-        ) as response:
+        first_token_latency = 0
+        total_token_latency = 0
+        with self.client.post("", headers=headers, data=data, stream=True) as response:
             for line in response.iter_lines():
                 if len(line) == 0:
                     continue
@@ -86,15 +115,31 @@ class StreamingUserBenchmark(HttpUser):
                     continue
 
                 line_obj = json.loads(string_object)
-                if "content" not in line_obj["choices"][0]["delta"]:
-                    continue
-                if (
-                    not first_token_done
-                    and len(line_obj["choices"][0]["delta"]) > 0
-                    and line_obj["choices"][0]["delta"]["content"] != ""
-                ):
-                    first_token_latency = (time.time() - start_time_streaming) * 1000
-                    first_token_done = True
+
+                if self.environment.parsed_options.is_chat == "True":
+                    if "content" not in line_obj["choices"][0]["delta"]:
+                        continue
+                    if (
+                        not first_token_done
+                        and len(line_obj["choices"][0]["delta"]) > 0
+                        and line_obj["choices"][0]["delta"]["content"] != ""
+                    ):
+                        first_token_latency = (
+                            time.time() - start_time_streaming
+                        ) * 1000
+                        first_token_done = True
+                else:
+                    if "choices" not in line_obj:
+                        continue
+                    if (
+                        not first_token_done
+                        and len(line_obj["choices"][0]["text"]) > 0
+                        and line_obj["choices"][0]["text"] != ""
+                    ):
+                        first_token_latency = (
+                            time.time() - start_time_streaming
+                        ) * 1000
+                        first_token_done = True
 
         events.request.fire(
             request_type="METRIC",
