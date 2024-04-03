@@ -29,6 +29,8 @@ class StreamingUserBenchmark(HttpUser):
                 "max_tokens": 100,
                 "presence_penalty": 0,
                 "frequency_penalty": 0,
+                # Remove ignore_eos for OpenAI models.
+                "ignore_eos": True,
             }
         )
 
