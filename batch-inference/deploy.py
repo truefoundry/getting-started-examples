@@ -1,3 +1,4 @@
+import argparse
 import logging
 
 from truefoundry.deploy import (
@@ -74,5 +75,8 @@ job = Job(
 )
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--workspace_fqn", type=str, required=True)
+    args = parser.parse_args()
     # Get your workspace fqn from https://docs.truefoundry.com/docs/workspace#copy-workspace-fqn-fully-qualified-name
-    job.deploy(workspace_fqn="<Enter Workspace FQN>")
+    job.deploy(workspace_fqn=args.workspace_fqn)
