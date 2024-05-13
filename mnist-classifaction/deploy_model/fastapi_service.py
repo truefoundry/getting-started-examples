@@ -1,9 +1,10 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from predict import predict_fn, load_model
-import tensorflow as tf
-import numpy as np
 import os
+
+import numpy as np
+import tensorflow as tf
+from fastapi import FastAPI
+from predict import load_model, predict_fn
+from pydantic import BaseModel
 
 model_path = os.path.join(os.environ.get("MODEL_DOWNLOAD_PATH", "."), "mnist_model.h5")
 model = load_model(model_path)

@@ -1,8 +1,8 @@
 import pandas as pd
-from truefoundry.ml import get_client
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier as Classification
+from truefoundry.ml import get_client
 
 
 def experiment_track(model, params, metrics):
@@ -30,16 +30,11 @@ def experiment_track(model, params, metrics):
 
 
 def train_model(hyperparams):
-
-    df = pd.read_csv(
-        "https://raw.githubusercontent.com/nikp1172/datasets-sample/main/Churn_Modelling.csv"
-    )
+    df = pd.read_csv("https://raw.githubusercontent.com/nikp1172/datasets-sample/main/Churn_Modelling.csv")
     X = df.iloc[:, 3:-1].drop(["Geography", "Gender"], axis=1)
     y = df.iloc[:, -1]
     # Create train test split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Initialize the KNN Classifier
     classifier = Classification(

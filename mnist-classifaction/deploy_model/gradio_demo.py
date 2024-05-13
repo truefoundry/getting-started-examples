@@ -1,6 +1,7 @@
-from predict import predict_fn, load_model
 import os
+
 import gradio as gr
+from predict import load_model, predict_fn
 
 model_path = os.path.join(os.environ.get("MODEL_DOWNLOAD_PATH", "."), "mnist_model.h5")
 model = load_model(model_path)
