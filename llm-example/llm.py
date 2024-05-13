@@ -18,12 +18,10 @@ Input: "The sepal length measures 4.9cm and the sepal width is 3.0cm."
 
 {"sepal_length": 4.9, "sepal_width": 3.0, "petal_length": 0, "petal_width": 0}
 
-Input: 
+Input:
 """
 
-TFY_LLM_GATEWAY_HOST = os.environ[
-    "TFY_LLM_GATEWAY_HOST"
-]  # Ex: https://*.truefoundry.tech/v1/chat/completions
+TFY_LLM_GATEWAY_HOST = os.environ["TFY_LLM_GATEWAY_HOST"]  # Ex: https://*.truefoundry.tech/v1/chat/completions
 
 TFY_API_KEY = os.environ["TFY_API_KEY"]
 LLM_MODEL = os.environ["LLM_MODEL"]

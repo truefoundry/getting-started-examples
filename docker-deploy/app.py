@@ -5,9 +5,7 @@ import pandas as pd
 model = joblib.load("iris_classifier.joblib")
 
 
-def model_inference(
-    sepal_length: float, sepal_width: float, petal_length: float, petal_width: float
-) -> int:
+def model_inference(sepal_length: float, sepal_width: float, petal_length: float, petal_width: float) -> int:
     data = dict(
         sepal_length=sepal_length,
         sepal_width=sepal_width,
