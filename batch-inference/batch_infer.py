@@ -58,7 +58,7 @@ def download_input_files(workdir: str, input_bucket_name: str, input_path: str):
     logger.info(f"Downloading input files from S3, Bucket: {input_bucket_name}, Path: {input_path}")
     input_filepath = os.path.join(workdir, "input.csv")
     s3_client = boto3.client("s3")
-    s3_client.download_file(Bucket=input_bucket_name, Key=input_path, FileName=input_filepath)
+    s3_client.download_file(Bucket=input_bucket_name, Key=input_path, Filename=input_filepath)
     return input_filepath
 
 
@@ -73,7 +73,7 @@ def upload_output_files(output_filepath: str, output_bucket_name: str, output_pa
     """
     logger.info(f"Uploading output files to S3, Bucket: {output_bucket_name}, Path: {output_path}")
     s3_client = boto3.client("s3")
-    s3_client.upload_file(Bucket=output_bucket_name, Key=output_path, FileName=output_filepath)
+    s3_client.upload_file(Bucket=output_bucket_name, Key=output_path, Filename=output_filepath)
 
 
 def infer(batch):
