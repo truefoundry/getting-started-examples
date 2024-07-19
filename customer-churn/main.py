@@ -1,4 +1,4 @@
-from mlfoundry import ModelFramework
+from truefoundry.ml import ModelFramework
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
