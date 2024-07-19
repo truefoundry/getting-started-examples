@@ -13,6 +13,7 @@ args = parser.parse_args()
 image = Build(
     build_source=LocalSource(local_build=False),
     build_spec=PythonBuild(
+        python_version="3.11",
         command="python train.py",
         requirements_path="requirements.txt",
     ),
