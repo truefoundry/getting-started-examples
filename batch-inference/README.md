@@ -37,7 +37,7 @@ python -m pip install -U "truefoundry[ml]>=0.2.0,<1.0.0"
 2. Login
 
 ```shell
-tfy login --host <TrueFoundry Platform URL>
+tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry.cloud>"
 ```
 
 3. Edit `env` section in `deploy.py` to link your S3 credential secrets
