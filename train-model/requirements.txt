@@ -1,6 +1,4 @@
+numpy==1.23.2
 pandas==1.5.3
-numpy==1.22.4
-scikit-learn==1.2.2
-
-# for deploying our job deployments
+scikit-learn==1.5.0
 truefoundry[ml]>=0.2.0,<1.0.0
