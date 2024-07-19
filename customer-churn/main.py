@@ -3,11 +3,12 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier as Classification
 from truefoundry.ml import get_client
+from truefoundry.ml import ModelFramework
 
 
 def experiment_track(model, params, metrics):
     # initialize the mlfoundry client.
-    mlf_api = mlf.get_client()
+    mlf_api = get_client()
 
     # create a ml repo
     mlf_api.create_ml_repo("churn-pred")
@@ -22,7 +23,7 @@ def experiment_track(model, params, metrics):
         name="churn-model",
         model=model,
         # specify the framework used (in this case sklearn)
-        framework=mlf.ModelFramework.SKLEARN,
+        framework=ModelFramework.SKLEARN,
         description="churn-prediction-model",
     )
     # return the model's fqn
