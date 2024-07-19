@@ -8,7 +8,7 @@ from truefoundry.deploy import (
     PythonBuild,
     Resources,
     Service,
-    TruefoundryArtifactSource,
+    TrueFoundryArtifactSource,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -41,7 +41,7 @@ service = Service(
     ),
     artifacts_download=ArtifactsDownload(
         artifacts=[
-            TruefoundryArtifactSource(
+            TrueFoundryArtifactSource(
                 artifact_version_fqn=args.model_version_fqn,
                 download_path_env_variable="MODEL_DOWNLOAD_PATH",
             )

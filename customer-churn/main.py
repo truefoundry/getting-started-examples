@@ -1,42 +1,42 @@
-from mlfoundry import ModelFramework
+from typing import Dict, Union
+
+import joblib
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier as Classification
-from truefoundry.ml import get_client
-from joblib import dump
+from truefoundry.ml import ModelFramework, get_client
 
 
-def experiment_track(model, params, metrics):
-    # initialize the mlfoundry client.
-    mlf_api = get_client()
+def track_experiment(ml_repo: str, model, params: Dict[str, str], metrics: Dict[str, Union[int, float]]):
+    # initialize the TrueFoundry ML client.
+    client = get_client()
 
-    # create a ml repo
-    mlf_api.create_ml_repo("churn-pred")
     # create a run
-    mlf_run = mlf_api.create_run(ml_repo="churn-pred", run_name="churn-train-job")
+    run = client.create_run(ml_repo=ml_repo, run_name="churn-train-job")
     # log the hyperparameters
-    mlf_run.log_params(params)
+    run.log_params(params)
     # log the metrics
-    mlf_run.log_metrics(metrics)
+    run.log_metrics(metrics)
 
     # dump the model and then save it.
-    path = dump(model, "classifier.joblib")
+    joblib.dump(model, "classifier.joblib")
 
     # log the model
-    model_version = mlf_run.log_model(
+    model_version = run.log_model(
         name="churn-model",
         # Path to the folder where the model is saved locally
-        model_file_or_folder=path[0],
+        model_file_or_folder="classifier.joblib",
         # specify the framework used (in this case sklearn)
         framework=ModelFramework.SKLEARN,
         description="churn-prediction-model",
     )
+    print(f"Model has been logged as {model_version.fqn}")
     # return the model's fqn
     return model_version.fqn
 
 
-def train_model(hyperparams):
+def train_model(n_neighbors: int, weights: str, ml_repo: str):
     df = pd.read_csv("https://raw.githubusercontent.com/nikp1172/datasets-sample/main/Churn_Modelling.csv")
     X = df.iloc[:, 3:-1].drop(["Geography", "Gender"], axis=1)
     y = df.iloc[:, -1]
@@ -45,8 +45,8 @@ def train_model(hyperparams):
 
     # Initialize the KNN Classifier
     classifier = Classification(
-        n_neighbors=hyperparams["n_neighbors"],
-        weights=hyperparams["weights"],
+        n_neighbors="n_neighbors",
+        weights="weights",
     )
 
     # Fit the classifier with the training data
@@ -62,7 +62,7 @@ def train_model(hyperparams):
     }
 
     # Log the experiment
-    experiment_track(classifier, classifier.get_params(), metrics)
+    track_experiment(ml_repo=ml_repo, model=classifier, params=classifier.get_params(), metrics=metrics)
 
 
 if __name__ == "__main__":
@@ -71,6 +71,12 @@ if __name__ == "__main__":
     # Setup the argument parser by instantiating `ArgumentParser` class
     parser = argparse.ArgumentParser()
     # Add the hyperparameters as arguments
+    parser.add_argument(
+        "--ml_repo",
+        type=str,
+        required=True,
+        help="The name of the ML Repo to track metrics and models. You can create one from the ML Repos Tab on the UI",
+    )
     parser.add_argument(
         "--n_neighbors",
         type=int,
@@ -82,7 +88,6 @@ if __name__ == "__main__":
         required=True,
     )
     args = parser.parse_args()
-    hyperparams = vars(args)
 
     # Train the model
-    train_model(hyperparams)
+    train_model(**vars(args))
