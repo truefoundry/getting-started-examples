@@ -1,5 +1,4 @@
 import argparse
-import os
 
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -9,7 +8,16 @@ from truefoundry.ml import get_client
 # parsing the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("--num_epochs", type=int, default=4)
-parser.add_argument("--ml_repo", type=str, required=True)
+parser.add_argument(
+    "--ml_repo",
+    type=str,
+    required=True,
+    help="""\
+        The name of the ML Repo to track metrics and models.
+        You can create one from the ML Repos Tab on the UI.
+        Docs: https://docs.truefoundry.com/docs/key-concepts#creating-an-ml-repo",
+    """,
+)
 args = parser.parse_args()
 
 

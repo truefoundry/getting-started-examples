@@ -72,12 +72,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # Add the hyperparameters as arguments
     parser.add_argument(
-        "--ml_repo",
-        type=str,
-        required=True,
-        help="The name of the ML Repo to track metrics and models. You can create one from the ML Repos Tab on the UI",
-    )
-    parser.add_argument(
         "--n_neighbors",
         type=int,
         required=True,
@@ -86,6 +80,16 @@ if __name__ == "__main__":
         "--weights",
         type=str,
         required=True,
+    )
+    parser.add_argument(
+        "--ml_repo",
+        type=str,
+        required=True,
+        help="""\
+            The name of the ML Repo to track metrics and models.
+            You can create one from the ML Repos Tab on the UI.
+            Docs: https://docs.truefoundry.com/docs/key-concepts#creating-an-ml-repo",
+        """,
     )
     args = parser.parse_args()
 
