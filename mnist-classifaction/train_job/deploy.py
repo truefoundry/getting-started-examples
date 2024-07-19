@@ -14,11 +14,11 @@ args = parser.parse_args()
 job = Job(
     name="mnist-train-job",
     image=Build(
+        build_source=LocalSource(local_build=False),
         build_spec=PythonBuild(
             command="python train.py --num_epochs {{num_epochs}} --ml_repo {{ml_repo}}",
             requirements_path="requirements.txt",
         ),
-        build_source=LocalSource(local_build=False),
     ),
     params=[
         Param(name="num_epochs", default="4"),
