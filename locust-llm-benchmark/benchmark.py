@@ -77,9 +77,7 @@ class StreamingUserBenchmark(HttpUser):
         if self.environment.parsed_options.is_chat == "True":
             data = {
                 "model": self.environment.parsed_options.llm_model,
-                "messages": [
-                    {"role": "user", "content": self.environment.parsed_options.prompt}
-                ],
+                "messages": [{"role": "user", "content": self.environment.parsed_options.prompt}],
                 "temperature": 1,
                 "top_p": 1,
                 "stream": True,
@@ -128,9 +126,7 @@ class StreamingUserBenchmark(HttpUser):
                         and len(line_obj["choices"][0]["delta"]) > 0
                         and line_obj["choices"][0]["delta"]["content"] != ""
                     ):
-                        first_token_latency = (
-                            time.time() - start_time_streaming
-                        ) * 1000
+                        first_token_latency = (time.time() - start_time_streaming) * 1000
                         first_token_done = True
                 else:
                     if "choices" not in line_obj:
@@ -140,9 +136,7 @@ class StreamingUserBenchmark(HttpUser):
                         and len(line_obj["choices"][0]["text"]) > 0
                         and line_obj["choices"][0]["text"] != ""
                     ):
-                        first_token_latency = (
-                            time.time() - start_time_streaming
-                        ) * 1000
+                        first_token_latency = (time.time() - start_time_streaming) * 1000
                         first_token_done = True
 
         events.request.fire(
