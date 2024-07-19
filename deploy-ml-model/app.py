@@ -1,16 +1,16 @@
 import os
+
 import joblib
 import pandas as pd
 from fastapi import FastAPI
 
 model = joblib.load("iris_classifier.joblib")
 
-app = FastAPI()
+app = FastAPI(docs_url="/", root_path=os.getenv("TFY_SERVICE_ROOT_PATH", "/"))
 
-@app.get("/predict")
-def predict(
-    sepal_length: float, sepal_width: float, petal_length: float, petal_width: float
-):
+
+@app.post("/predict")
+def predict(sepal_length: float, sepal_width: float, petal_length: float, petal_width: float):
     data = dict(
         sepal_length=sepal_length,
         sepal_width=sepal_width,
