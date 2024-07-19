@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from truefoundry.deploy import Build, Port, PythonBuild, Resources, Service
+from truefoundry.deploy import Build, LocalSource, Port, PythonBuild, Resources, Service
 
 logging.basicConfig(level=logging.INFO)
 
@@ -22,10 +22,11 @@ parser.add_argument(
 args = parser.parse_args()
 
 image = Build(
+    build_source=LocalSource(local_build=False),
     build_spec=PythonBuild(
         command="uvicorn app:app --port 8000 --host 0.0.0.0",
         requirements_path="requirements.txt",
-    )
+    ),
 )
 
 service = Service(

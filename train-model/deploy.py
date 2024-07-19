@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from truefoundry.deploy import Build, Job, PythonBuild
+from truefoundry.deploy import Build, Job, LocalSource, PythonBuild
 
 logging.basicConfig(level=logging.INFO)
 
@@ -11,10 +11,11 @@ args = parser.parse_args()
 
 # First we define how to build our code into a Docker image
 image = Build(
+    build_source=LocalSource(local_build=False),
     build_spec=PythonBuild(
         command="python train.py",
         requirements_path="requirements.txt",
-    )
+    ),
 )
 
 job = Job(name="iris-train-job", image=image)

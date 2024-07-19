@@ -29,8 +29,8 @@ parser.add_argument(
 args = parser.parse_args()
 
 image = Build(
-    build_spec=DockerFileBuild(),
     build_source=LocalSource(local_build=False),
+    build_spec=DockerFileBuild(),
 )
 
 

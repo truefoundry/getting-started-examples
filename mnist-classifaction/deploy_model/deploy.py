@@ -4,6 +4,7 @@ import logging
 from truefoundry.deploy import (
     ArtifactsDownload,
     Build,
+    LocalSource,
     Port,
     PythonBuild,
     Resources,
@@ -23,12 +24,13 @@ args = parser.parse_args()
 service = Service(
     name="mnist-classification-svc",
     image=Build(
+        build_source=LocalSource(local_build=False),
         build_spec=PythonBuild(
             command="python gradio_demo.py",
             # for deploying fastapi
             # command="uvicorn fastapi_service:app --port 8000 --host 0.0.0.0",
             requirements_path="requirements.txt",
-        )
+        ),
     ),
     ports=[Port(port=8000, host=args.host, path=args.path)],
     resources=Resources(
