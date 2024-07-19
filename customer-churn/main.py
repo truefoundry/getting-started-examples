@@ -45,8 +45,8 @@ def train_model(n_neighbors: int, weights: str, ml_repo: str):
 
     # Initialize the KNN Classifier
     classifier = Classification(
-        n_neighbors="n_neighbors",
-        weights="weights",
+        n_neighbors=n_neighbors,
+        weights=weights,
     )
 
     # Fit the classifier with the training data
