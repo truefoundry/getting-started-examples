@@ -21,7 +21,7 @@ def experiment_track(model, params, metrics):
     mlf_run.log_metrics(metrics)
 
     # dump the model and then save it.
-    path = dump(model, "classifier.joblib")
+    path = dump(model, "predictor.joblib")
 
     # log the model
     model_version = mlf_run.log_model(
