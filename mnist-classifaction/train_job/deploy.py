@@ -1,16 +1,9 @@
 import argparse
 import logging
-import os
 
-from truefoundry.deploy import (
-    Build,
-    Job,
-    LocalSource,
-    Param,
-    Port,
-    PythonBuild,
-    Resources,
-)
+from truefoundry.deploy import Build, Job, LocalSource, Param, PythonBuild, Resources
+
+logging.basicConfig(level=logging.INFO)
 
 # parsing the arguments
 parser = argparse.ArgumentParser()

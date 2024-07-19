@@ -51,7 +51,7 @@ EMBEDDER_BATCH_SIZE = 16
 PARALLEL_WORKERS = 4
 
 
-class TruefoundryEmbeddings(Embeddings):
+class TrueFoundryEmbeddings(Embeddings):
     def __init__(
         self,
         endpoint_url: str,
@@ -61,10 +61,10 @@ class TruefoundryEmbeddings(Embeddings):
         **kwargs: Any,
     ):
         """
-        Initializes the TruefoundryEmbeddings.
+        Initializes the TrueFoundryEmbeddings.
 
         Args:
-            endpoint_url (str): The URL of the deployed embedding model on Truefoundry.
+            endpoint_url (str): The URL of the deployed embedding model on TrueFoundry.
             batch_size (int, optional): The batch size for processing embeddings in parallel.
             parallel_workers (int, optional): The number of parallel worker threads for embedding.
         Returns:

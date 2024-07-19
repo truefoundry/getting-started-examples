@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO)
 job = Job(
     name="text-class-batch-infer",
     # --- Build configuration i.e. How to package and build source code ---
-    # This will instruct Truefoundry to automatically generate the Dockerfile and build it
+    # This will instruct TrueFoundry to automatically generate the Dockerfile and build it
     image=Build(
         build_source=LocalSource(local_build=False),
         build_spec=PythonBuild(
