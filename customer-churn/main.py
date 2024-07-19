@@ -11,7 +11,6 @@ from truefoundry.ml import ModelFramework, get_client
 def track_experiment(ml_repo: str, model, params: Dict[str, str], metrics: Dict[str, Union[int, float]]):
     # initialize the TrueFoundry ML client.
     client = get_client()
-
     # create a run
     run = client.create_run(ml_repo=ml_repo, run_name="churn-train-job")
     # log the hyperparameters
