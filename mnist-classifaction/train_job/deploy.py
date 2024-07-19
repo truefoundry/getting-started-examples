@@ -26,4 +26,4 @@ job = Job(
     ],
     resources=Resources(cpu_request=0.5, cpu_limit=0.5, memory_request=1500, memory_limit=2000),
 )
-deployment = job.deploy(workspace_fqn=args.workspace_fqn)
+deployment = job.deploy(workspace_fqn=args.workspace_fqn, wait=False)

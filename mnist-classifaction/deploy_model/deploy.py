@@ -48,4 +48,4 @@ service = Service(
         ]
     ),
 )
-service.deploy(workspace_fqn=args.workspace_fqn)
+service.deploy(workspace_fqn=args.workspace_fqn, wait=False)

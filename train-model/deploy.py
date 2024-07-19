@@ -18,4 +18,4 @@ image = Build(
 )
 
 job = Job(name="iris-train-job", image=image)
-job.deploy(workspace_fqn=args.workspace)
+job.deploy(workspace_fqn=args.workspace, wait=False)

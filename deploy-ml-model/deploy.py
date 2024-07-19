@@ -40,4 +40,4 @@ service = Service(
     ),
     env={"UVICORN_WEB_CONCURRENCY": "1", "ENVIRONMENT": "dev"},
 )
-service.deploy(workspace_fqn=args.workspace_fqn)
+service.deploy(workspace_fqn=args.workspace_fqn, wait=False)
