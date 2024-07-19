@@ -1,13 +1,15 @@
+from mlfoundry import ModelFramework
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier as Classification
 from truefoundry.ml import get_client
+from joblib import dump
 
 
 def experiment_track(model, params, metrics):
     # initialize the mlfoundry client.
-    mlf_api = mlf.get_client()
+    mlf_api = get_client()
 
     # create a ml repo
     mlf_api.create_ml_repo("churn-pred")
@@ -17,12 +19,17 @@ def experiment_track(model, params, metrics):
     mlf_run.log_params(params)
     # log the metrics
     mlf_run.log_metrics(metrics)
+
+    # dump the model and then save it.
+    path = dump(model, "classifier.joblib")
+
     # log the model
     model_version = mlf_run.log_model(
         name="churn-model",
-        model=model,
+        # Path to the folder where the model is saved locally
+        model_file_or_folder=path[0],
         # specify the framework used (in this case sklearn)
-        framework=mlf.ModelFramework.SKLEARN,
+        framework=ModelFramework.SKLEARN,
         description="churn-prediction-model",
     )
     # return the model's fqn
