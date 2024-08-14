@@ -1,0 +1,8 @@
+type: workflow
+name: simple-example
+source:
+  type: local
+  local_build: false
+  project_root_path: "./"
+workflow_file_path: sum_of_squares.py
+flyte_entities: []
