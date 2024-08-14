@@ -20,10 +20,10 @@ from truefoundry.workflow import (
 cpu_task_config = PythonTaskConfig(
     image=TaskPythonBuild(
         python_version="3.9",
-        pip_packages=["truefoundry[workflow]==0.3.0rc7"],
+        pip_packages=["truefoundry[workflow]==0.3.0rc10"],
     ),
     resources=Resources(cpu_request=0.45),
-    service_account="<service-account>",
+    service_account="<service-account>", # replace with your service account
 )
 
 
@@ -49,7 +49,7 @@ def train_tokenizer() -> str:
     task_config=PythonTaskConfig(
         image=TaskPythonBuild(
             python_version="3.9",
-            pip_packages=["truefoundry[workflow]==0.3.0rc7", "pynvml==11.5.0"],
+            pip_packages=["truefoundry[workflow]==0.3.0rc10", "pynvml==11.5.0"],
             cuda_version="11.5-cudnn8",
         ),
         env={
@@ -57,7 +57,7 @@ def train_tokenizer() -> str:
             "NVIDIA_VISIBLE_DEVICES": "all",
         },
         resources=Resources(cpu_request=0.45, devices=[NvidiaGPU(name="T4", count=1)]),
-        service_account="<service-account>",
+        service_account="<service-account>", # replace with your service account
     ),
 )
 def train_model(tokenizer: str) -> Tuple[FlyteDirectory, str]:
@@ -105,7 +105,7 @@ echo = ContainerTask(
             image_uri="bash:4.1",
             command=["echo", "hello"],
         ),
-        service_account="<service-account>",
+        service_account="<service-account>", # replace with your service account
     ),
 )
 

@@ -5,10 +5,10 @@ from truefoundry.deploy import Resources
 cpu_task_config = PythonTaskConfig(
     image=TaskPythonBuild(
         python_version="3.9",
-        pip_packages=["truefoundry[workflow]==0.3.0rc8"],
+        pip_packages=["truefoundry[workflow]==0.3.0rc10"],
     ),
     resources=Resources(cpu_request=0.45),
-    service_account="<service-account>",
+    service_account="<service-account>", # replace with your service account
 )
 
 # Task 1: Generate a list of numbers

@@ -5,9 +5,9 @@ from truefoundry.workflow import PythonTaskConfig, TaskPythonBuild, task, workfl
     task_config=PythonTaskConfig(
         image=TaskPythonBuild(
             python_version="3.9",
-            pip_packages=["truefoundry[workflow]==0.3.0rc7"],
+            pip_packages=["truefoundry[workflow]==0.3.0rc10"],
         ),
-        service_account="tfy-flyte-dataplane-devtest-s3",
+        service_account="<service-account>", # replace with your service account
     )
 )
 def say_hello() -> str:
