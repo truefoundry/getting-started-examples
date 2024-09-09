@@ -15,6 +15,7 @@ logging.basicConfig(level=logging.INFO)
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", required=True, type=str, help="Name of the application.")
 parser.add_argument(
+    "--workspace-fqn",
     "--workspace_fqn",
     required=True,
     type=str,
@@ -24,7 +25,14 @@ parser.add_argument(
     "--host",
     required=True,
     type=str,
-    help="Host where the application will be available for access. Ex:- my-app.my-org.com",
+    help="Host where the application will be available for access. Eg: my-app.my-org.com",
+)
+parser.add_argument(
+    "--path",
+    required=False,
+    default=None,
+    type=str,
+    help="Path in addition to the host where the application will be available for access. Eg: my-org.com/my-path",
 )
 args = parser.parse_args()
 
@@ -37,7 +45,7 @@ image = Build(
 service = Service(
     name=args.name,
     image=image,
-    ports=[Port(port=8080, host=args.host)],
+    ports=[Port(port=8080, host=args.host, path=args.path)],
     resources=Resources(
         cpu_request=0.1,
         cpu_limit=0.1,
