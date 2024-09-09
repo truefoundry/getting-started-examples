@@ -3,6 +3,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 
+# load the dataset
 X, y = load_iris(as_frame=True, return_X_y=True)
 X = X.rename(
     columns={
@@ -16,6 +17,7 @@ X = X.rename(
 # NOTE:- You can pass these configurations via command line
 # arguments, config file, environment variables.
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+
 # Initialize the model
 clf = LogisticRegression(solver="liblinear")
 # Fit the model
