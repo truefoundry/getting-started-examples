@@ -74,12 +74,12 @@ service = Service(
     ),
     ports=[Port(port=8000, host=args.host, path=args.path)],
     resources=Resources(
-        memory_limit=500,
-        memory_request=500,
-        ephemeral_storage_limit=600,
-        ephemeral_storage_request=600,
-        cpu_limit=0.3,
         cpu_request=0.3,
+        cpu_limit=0.3,
+        memory_request=500,
+        memory_limit=500,
+        ephemeral_storage_request=600,
+        ephemeral_storage_limit=600,
     ),
     env={
         "TFY_LLM_GATEWAY_HOST": args.llm_gateway_host,
