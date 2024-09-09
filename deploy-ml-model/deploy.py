@@ -3,7 +3,12 @@ import logging
 
 from truefoundry.deploy import Build, LocalSource, Port, PythonBuild, Resources, Service
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s")
+
+
+def str_or_none(value):
+    return None if not value or value == "None" else value
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", required=False, default="iris-classifier-svc", type=str, help="Name of the application.")
@@ -24,7 +29,7 @@ parser.add_argument(
     "--path",
     required=False,
     default=None,
-    type=str,
+    type=str_or_none,
     help="Path in addition to the host where the application will be available for access. Eg: my-org.com/my-path",
 )
 args = parser.parse_args()
@@ -61,5 +66,6 @@ service = Service(
     ),
     # Define environment variables that your Service will have access to
     env={"UVICORN_WEB_CONCURRENCY": "1", "ENVIRONMENT": "dev"},
+    labels={"tfy_openapi_path": "openapi.json"},
 )
 service.deploy(workspace_fqn=args.workspace_fqn, wait=False)
