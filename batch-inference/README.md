@@ -54,6 +54,9 @@ env={
 
 4. Deploy!
 
+> Please refer to following docs
+> - [Getting workspace FQN](https://docs.truefoundry.com/docs/key-concepts#getting-workspace-fqn)
+
 ```shell
 python deploy.py --workspace_fqn <Workspace FQN>
 ```
