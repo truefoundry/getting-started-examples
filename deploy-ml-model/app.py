@@ -5,8 +5,7 @@ import pandas as pd
 from fastapi import FastAPI
 
 model = joblib.load("iris_classifier.joblib")
-
-app = FastAPI(docs_url="/", root_path=os.getenv("TFY_SERVICE_ROOT_PATH", "/"))
+app = FastAPI(docs_url="/", root_path=os.getenv("TFY_SERVICE_ROOT_PATH"))
 
 
 @app.post("/predict")

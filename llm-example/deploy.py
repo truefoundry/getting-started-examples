@@ -29,6 +29,13 @@ parser.add_argument(
     help="Host where the application will be available for access. Ex:- my-app.my-org.com",
 )
 parser.add_argument(
+    "--path",
+    required=False,
+    default=None,
+    type=str,
+    help="Path in addition to the host where the application will be available for access. Eg: my-org.com/my-path",
+)
+parser.add_argument(
     "--llm_gateway_host",
     required=True,
     type=str,
