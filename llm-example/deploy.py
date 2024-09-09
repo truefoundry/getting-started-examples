@@ -93,5 +93,6 @@ service = Service(
             )
         ]
     ),
+    labels={"tfy_openapi_path": "openapi.json"},
 )
 service.deploy(workspace_fqn=args.workspace_fqn, wait=False)

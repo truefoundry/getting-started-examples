@@ -9,8 +9,6 @@ from pydantic import BaseModel
 model_path = os.path.join(os.environ.get("MODEL_DOWNLOAD_PATH", "."), "mnist_model.h5")
 model = load_model(model_path)
 
-app = FastAPI(docs_url="/", root_path=os.getenv("TFY_SERVICE_ROOT_PATH"))
-
 
 class ImageUrl(BaseModel):
     url: str = "https://conx.readthedocs.io/en/latest/_images/MNIST_6_0.png"

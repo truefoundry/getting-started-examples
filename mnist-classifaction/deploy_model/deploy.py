@@ -12,13 +12,40 @@ from truefoundry.deploy import (
     TruefoundryArtifactSource,
 )
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s")
+
+
+def str_or_none(value):
+    return None if not value or value == "None" else value
+
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--workspace_fqn", type=str, required=True)
-parser.add_argument("--model_version_fqn", type=str, required=True)
-parser.add_argument("--host", type=str, required=True)
-parser.add_argument("--path", type=str, required=False)
+parser.add_argument("--name", required=False, default="mnist-classifier", type=str, help="Name of the application.")
+parser.add_argument(
+    "--workspace_fqn",
+    "--workspace-fqn",
+    required=True,
+    type=str,
+    help="FQN of the workspace where application will be deployed",
+)
+parser.add_argument(
+    "--host",
+    required=True,
+    type=str,
+    help="Host where the application will be available for access. Ex:- my-app.my-org.com",
+)
+parser.add_argument(
+    "--path",
+    required=False,
+    default=None,
+    type=str_or_none,
+    help="Path in addition to the host where the application will be available for access. Eg: my-org.com/my-path",
+)
+parser.add_argument(
+    "--model_version_fqn",
+    required=True,
+    type=str,
+)
 args = parser.parse_args()
 
 service = Service(
@@ -50,5 +77,6 @@ service = Service(
             )
         ]
     ),
+    labels={"tfy_openapi_path": "openapi.json"},
 )
 service.deploy(workspace_fqn=args.workspace_fqn, wait=False)

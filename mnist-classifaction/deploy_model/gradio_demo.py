@@ -21,5 +21,5 @@ interface = gr.Interface(
 interface.launch(
     server_name="0.0.0.0",
     server_port=8000,
-    root_path=os.environ.get("TFY_SERVICE_ROOT_PATH", "/").rstrip("/"),
+    root_path=os.environ.get("TFY_SERVICE_ROOT_PATH"),
 )
