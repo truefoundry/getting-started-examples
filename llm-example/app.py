@@ -9,7 +9,7 @@ from llm import llm
 artifact_downloaded_path = os.environ["CLASSIFIER_MODEL_PATH"]
 classifier = joblib.load(os.path.join(artifact_downloaded_path, "iris_classifier.joblib"))
 
-app = FastAPI(docs_url="/", root_path=os.getenv("TFY_SERVICE_ROOT_PATH", "/"))
+app = FastAPI(docs_url="/", root_path=os.getenv("TFY_SERVICE_ROOT_PATH"))
 
 IRIS_CLASSES = {0: "Setosa", 1: "Versicolour", 2: "Virginica"}
 

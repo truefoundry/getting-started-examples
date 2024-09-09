@@ -35,8 +35,8 @@ tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry
 4. Deploy!
 
 > Please refer to following docs
-> - [How to get workspace FQN](https://docs.truefoundry.com/docs/key-concepts#creating-a-workspace)
-> - [How to get Ingress Host for the cluster](https://docs.truefoundry.com/docs/deploying-to-a-cluster#deploy-to-a-cluster)
+> - [Getting workspace FQN](https://docs.truefoundry.com/docs/key-concepts#getting-workspace-fqn)
+> - [Get host and path for deploying applications](https://docs.truefoundry.com/docs/define-ports-and-domains#identifying-available-domains)
 
 ```shell
 python deploy.py --name iris-gradio --workspace-fqn <Workspace FQN> --host <Ingress Host for the cluster> --path <optional path>
