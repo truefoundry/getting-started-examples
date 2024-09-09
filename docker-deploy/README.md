@@ -12,7 +12,7 @@ Mainly this example shows how to deploy to TrueFoundry using a Dockerfile and Tr
 python -m pip install -r requirements.txt
 ```
 
-1. Run locally without S3 interaction
+2. Start the gradio app
 
 ```shell
 python app.py
