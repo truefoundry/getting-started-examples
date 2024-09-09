@@ -3,7 +3,7 @@ import logging
 
 from truefoundry.deploy import Build, Job, LocalSource, Param, PythonBuild, Resources
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s")
 
 job = Job(
     name="text-class-batch-infer",

@@ -1,3 +1,5 @@
+import os
+
 import gradio as gr
 import joblib
 import pandas as pd
@@ -29,4 +31,8 @@ gr.Interface(
     fn=model_inference,
     inputs=inputs,
     outputs=output,
-).launch(server_name="0.0.0.0", server_port=8080)
+).launch(
+    server_name="0.0.0.0",
+    server_port=8080,
+    root_path=os.getenv("TFY_SERVICE_ROOT_PATH"),
+)
