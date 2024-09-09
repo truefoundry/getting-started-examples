@@ -12,12 +12,18 @@ from truefoundry.deploy import (
     TruefoundryArtifactSource,
 )
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s")
+
+
+def str_or_none(value):
+    return None if not value or value == "None" else value
+
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--name", required=True, type=str, help="Name of the application.")
+parser.add_argument("--name", required=False, default="llm-prompt-iris-clf", type=str, help="Name of the application.")
 parser.add_argument(
     "--workspace_fqn",
+    "--workspace-fqn",
     required=True,
     type=str,
     help="FQN of the workspace where application will be deployed.",
@@ -32,7 +38,7 @@ parser.add_argument(
     "--path",
     required=False,
     default=None,
-    type=str,
+    type=str_or_none,
     help="Path in addition to the host where the application will be available for access. Eg: my-org.com/my-path",
 )
 parser.add_argument(
