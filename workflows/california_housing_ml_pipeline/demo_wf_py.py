@@ -85,17 +85,6 @@ def train_simple_model(X_train: np.ndarray, y_train: np.ndarray) -> FlyteDirecto
     print("Simple model training completed and model saved.")
     return FlyteDirectory(path=".")
 
-@task(task_config=task_config)
-def log_model_to_truefoundry(model_directory: FlyteDirectory) -> str:
-    print("Logging model to TrueFoundry...")
-    from truefoundry.ml import get_client
-    client = get_client()
-    ml_repo = "california-housing"
-    run = client.create_run(ml_repo=ml_repo, run_name="california-house-price-prediction")
-    model = run.log_model(name="housing-price-predictior", model_file_or_folder=model_directory.path, framework=None)
-    print("Model logged successfully.")
-    return f"Model has been logged at {model.fqn}"
-
 @workflow
 def adaptive_california_housing_ml_pipeline(train_simple_lasso_model: bool = False) -> str:
     """Workflow for adaptive California Housing price prediction."""
@@ -113,10 +102,8 @@ def adaptive_california_housing_ml_pipeline(train_simple_lasso_model: bool = Fal
         .then(train_simple_model(X_train=X_train_selected, y_train=y_train))
     )
     X_train_selected >> model_path
-    
-    result = log_model_to_truefoundry(model_directory=model_path)
     print("Adaptive California Housing ML pipeline completed.")
-    return result
+    return model_path
 
 if __name__ == "__main__":
     adaptive_california_housing_ml_pipeline(train_simple_lasso_model=False)
