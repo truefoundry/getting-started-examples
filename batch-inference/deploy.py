@@ -57,11 +57,11 @@ job = Job(
     # --- Resources ---
     resources=Resources(
         cpu_request=0.5,
-        cpu_limit=0.5,
+        cpu_limit=1,
         memory_request=1000,
         memory_limit=4000,
-        ephemeral_storage_request=10000,
-        ephemeral_storage_limit=50000,
+        ephemeral_storage_request=2000,
+        ephemeral_storage_limit=4000,
     ),
 )
 
