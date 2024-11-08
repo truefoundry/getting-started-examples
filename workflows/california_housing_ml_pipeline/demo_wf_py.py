@@ -100,7 +100,7 @@ def adaptive_california_housing_ml_pipeline(train_simple_lasso_model: bool = Fal
         .then(train_simple_model(X_train=X_train_selected, y_train=y_train))
     )
     print("Adaptive California Housing ML pipeline completed.")
-    return ""
+    return model_path
 
 if __name__ == "__main__":
     adaptive_california_housing_ml_pipeline(train_simple_lasso_model=False)
