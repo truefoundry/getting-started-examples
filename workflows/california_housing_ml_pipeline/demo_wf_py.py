@@ -1,6 +1,5 @@
-from typing import Tuple, List, Dict, Union
+from typing import Tuple
 import numpy as np
-import pandas as pd
 from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -22,10 +21,9 @@ import joblib
 task_config = PythonTaskConfig(
     image=TaskPythonBuild(
         python_version="3.9",
-        pip_packages=["truefoundry[workflow,ml]==0.3.3", "scikit-learn==1.3.2", "pandas", "joblib"],
+        requirements_path="./requirements.txt",
     ),
     resources=Resources(cpu_request=0.45),
-    service_account="tfy-workflows-sa",
 )
 
 
@@ -86,7 +84,7 @@ def train_simple_model(X_train: np.ndarray, y_train: np.ndarray) -> FlyteDirecto
     return FlyteDirectory(path=".")
 
 @workflow
-def adaptive_california_housing_ml_pipeline(train_simple_lasso_model: bool = False) -> str:
+def adaptive_california_housing_ml_pipeline(train_simple_lasso_model: bool = False) -> FlyteDirectory:
     """Workflow for adaptive California Housing price prediction."""
     print("Starting adaptive California Housing ML pipeline...")
     X_train, X_test, y_train, y_test = load_and_split_data()
@@ -101,7 +99,6 @@ def adaptive_california_housing_ml_pipeline(train_simple_lasso_model: bool = Fal
         .else_()
         .then(train_simple_model(X_train=X_train_selected, y_train=y_train))
     )
-    X_train_selected >> model_path
     print("Adaptive California Housing ML pipeline completed.")
     return model_path
 
