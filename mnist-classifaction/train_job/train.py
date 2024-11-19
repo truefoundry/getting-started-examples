@@ -8,6 +8,7 @@ from truefoundry.ml import get_client
 # parsing the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("--num_epochs", type=int, default=4)
+parser.add_argument("--learning_rate", type=float, default=0.01)
 parser.add_argument(
     "--ml_repo",
     type=str,
@@ -56,8 +57,9 @@ model = tf.keras.Sequential(
     ]
 )
 
+optimizer = tf.keras.optimizers.Adam(learning_rate=args.learning_rate)
 # Compile the model
-model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
+model.compile(optimizer=optimizer, loss="sparse_categorical_crossentropy", metrics=["accuracy"])
 
 # logging the parameters
 run.log_params(
@@ -70,18 +72,23 @@ run.log_params(
 
 # Train the model
 epochs = args.num_epochs
-model.fit(x_train, y_train, epochs=epochs, validation_data=(x_test, y_test))
+history = model.fit(x_train, y_train, epochs=epochs, validation_data=(x_test, y_test))
 
 # Evaluate the model
 loss, accuracy = model.evaluate(x_test, y_test)
 print(f"Test loss: {loss}")
 print(f"Test accuracy: {accuracy}")
 
+history_dict = history.history
+train_accuracy = history_dict['accuracy']  # Training accuracy per epoch
+val_accuracy = history_dict['val_accuracy'] 
+loss = history_dict['loss']  # Training loss per epoch  
 
 # Log Metrics and Model
 
 # Logging the metrics of the model
-run.log_metrics(metric_dict={"accuracy": accuracy, "loss": loss})
+for epoch in range(epochs):
+    run.log_metrics({"train_accuracy": train_accuracy[epoch], "val_accuracy": val_accuracy[epoch], "loss": loss[epoch]}, step=epoch+5)
 
 # Save the trained model
 model.save("mnist_model.h5")
