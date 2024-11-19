@@ -25,6 +25,6 @@ job = Job(
         Param(name="num_epochs", default="4"),
         Param(name="ml_repo", param_type="ml_repo"),
     ],
-    resources=Resources(cpu_request=0.5, cpu_limit=0.5, memory_request=1500, memory_limit=2000),
+    resources=Resources(cpu_request=0.5, cpu_limit=0.5, memory_request=3000, memory_limit=4000),
 )
 deployment = job.deploy(workspace_fqn=args.workspace_fqn, wait=False)

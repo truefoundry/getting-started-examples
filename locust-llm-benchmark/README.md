@@ -10,7 +10,7 @@ Mainly this example shows how to deploy to TrueFoundry using a Pythonfile and Tr
 python -m pip install -r requirements.txt
 ```
 
-2. Start the gradio app
+2. Start the benchmark
 
 ```shell
 python benchmark.py
