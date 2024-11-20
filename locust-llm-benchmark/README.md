@@ -13,7 +13,7 @@ python -m pip install -r requirements.txt
 2. Start the benchmark
 
 ```shell
-python benchmark.py
+python locust -f benchmark.py
 ```
 
 ## Deploy with TrueFoundry
@@ -37,5 +37,5 @@ tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry
 > - [Get host and path for deploying applications](https://docs.truefoundry.com/docs/define-ports-and-domains#identifying-available-domains)
 
 ```shell
-python locust -f benchmark.py
+python deploy.py --workspace_fqn $WORKSPACE_FQN --host $HOST --path $SERVICE_PATH
 ```
