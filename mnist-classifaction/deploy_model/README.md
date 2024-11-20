@@ -3,7 +3,7 @@ Examples to get started with using TrueFoundry
 
 Deployment
 ---
-This example runs a simple iris app for inferring using a iris classifier.
+This example runs a simple mnist-classifaction Service.
 Mainly this example shows how to deploy to TrueFoundry using a Pythonfile and TrueFoundry Python SDK.
 
 ## Run Locally
@@ -14,10 +14,16 @@ Mainly this example shows how to deploy to TrueFoundry using a Pythonfile and Tr
 python -m pip install -r requirements.txt
 ```
 
-2. Start the iris app
+2. Start the deployment
 
+1. For gradio_demo
 ```shell
-python app.py
+python gradio_demo.py
+```
+
+2. For fastapi_serivce
+```shell
+uvicorn fastapi_service:app --port 8000 --host 0.0.0.0
 ```
 
 ## Deploy with TrueFoundry
@@ -25,7 +31,7 @@ python app.py
 1. Install `truefoundry`
 
 ```shell
-python -m pip install -U "truefoundry>=0.4.1,<0.5.0"
+python -m pip install -U -q "truefoundry>=0.4.1,<0.5.0" "tensorflow==2.15.0" "matplotlib==3.8.2"
 ```
 
 2. Login
@@ -41,6 +47,5 @@ tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry
 > - [Get host and path for deploying applications](https://docs.truefoundry.com/docs/define-ports-and-domains#identifying-available-domains)
 
 ```shell
-python deploy.py --name iris --workspace-fqn <Workspace FQN> --host <Ingress Host for the cluster> --path <optional path>
+python deploy.py --name mnist-classifier --workspace-fqn <Workspace FQN> --host <Ingress Host for the cluster> --path <optional path> --model_version_fqn <Job Run details Models Tab>
 ```
-
