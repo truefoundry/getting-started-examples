@@ -39,6 +39,3 @@ tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry
 ```shell
 python locust -f benchmark.py
 ```
-
-5. Trigger the deployed Job using the UI or Python SDK
-https://docs.truefoundry.com/docs/triggering-a-job#trigger-a-job
