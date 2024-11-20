@@ -1,7 +1,6 @@
 Dockerfiled based Deployment
 ---
 This example runs a simple Gradio app for inferring using a iris classifier.
-
 Mainly this example shows how to deploy to TrueFoundry using a Dockerfile and TrueFoundry Python SDK.
 
 ## Run Locally

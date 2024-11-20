@@ -1,5 +1,9 @@
-Deployment of locust-llm-benchmark
+# getting-started-examples
+Examples to get started with using TrueFoundry
+
+Deployment of Job
 ---
+This example runs a Customer-churn for inferring using a classifier.
 Mainly this example shows how to deploy to TrueFoundry using a Pythonfile and TrueFoundry Python SDK.
 
 ## Run Locally
@@ -10,10 +14,14 @@ Mainly this example shows how to deploy to TrueFoundry using a Pythonfile and Tr
 python -m pip install -r requirements.txt
 ```
 
-2. Start the benchmark
+2. Start the Customer-churn
+
+> Please refer to following docs
+> - [Create a ML Repo ](https://docs.truefoundry.com/docs/key-concepts#creating-an-ml-repo)
+> - [Grant Editor access to ML Repo](https://docs.truefoundry.com/docs/key-concepts#grant-access-of-ml-repo-to-workspace)
 
 ```shell
-python locust -f benchmark.py
+python main.py --n_neighbors {{n_neighbors}} --weights {{weights}} --ml_repo {{ml_repo}}
 ```
 
 ## Deploy with TrueFoundry
@@ -34,8 +42,8 @@ tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry
 
 > Please refer to following docs
 > - [Getting workspace FQN](https://docs.truefoundry.com/docs/key-concepts#getting-workspace-fqn)
-> - [Get host and path for deploying applications](https://docs.truefoundry.com/docs/define-ports-and-domains#identifying-available-domains)
 
 ```shell
-python deploy.py --workspace_fqn $WORKSPACE_FQN --host $HOST --path $SERVICE_PATH
+python deploy.py  --workspace-fqn <Workspace FQN>
 ```
+
