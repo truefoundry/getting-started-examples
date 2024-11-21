@@ -6,6 +6,12 @@ Deployment of Job
 This example runs a Customer-churn for inferring using a classifier.
 Mainly this example shows how to deploy to TrueFoundry using a Pythonfile and TrueFoundry Python SDK.
 
+## Setup
+
+> For setup, please refer to the following documentation:
+> - [Create a ML Repo ](https://docs.truefoundry.com/docs/key-concepts#creating-an-ml-repo)
+> - [Grant Editor access to ML Repo](https://docs.truefoundry.com/docs/key-concepts#grant-access-of-ml-repo-to-workspace)
+
 ## Run Locally
 
 1. Install requirements
@@ -15,10 +21,6 @@ python -m pip install -r requirements.txt
 ```
 
 2. Start the Customer-churn
-
-> Please refer to following docs
-> - [Create a ML Repo ](https://docs.truefoundry.com/docs/key-concepts#creating-an-ml-repo)
-> - [Grant Editor access to ML Repo](https://docs.truefoundry.com/docs/key-concepts#grant-access-of-ml-repo-to-workspace)
 
 ```shell
 python main.py --n_neighbors {{n_neighbors}} --weights {{weights}} --ml_repo {{ml_repo}}
@@ -44,6 +46,6 @@ tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry
 > - [Getting workspace FQN](https://docs.truefoundry.com/docs/key-concepts#getting-workspace-fqn)
 
 ```shell
-python deploy.py  --workspace-fqn <Workspace FQN>
+python deploy.py --workspace-fqn <Workspace FQN>
 ```
 
