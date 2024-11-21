@@ -31,7 +31,7 @@ python -m pip install -U "truefoundry>=0.4.1,<0.5.0"
 tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry.cloud>"
 ```
 
-4. Deploy!
+3. Deploy!
 
 > Please refer to following docs
 > - [Getting workspace FQN](https://docs.truefoundry.com/docs/key-concepts#getting-workspace-fqn)
@@ -41,5 +41,5 @@ tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry
 python deploy.py --name iris-gradio --workspace-fqn <Workspace FQN> --host <Ingress Host for the cluster> --path <optional path>
 ```
 
-5. Trigger the deployed Job using the UI or Python SDK
+4. Trigger the deployed Job using the UI or Python SDK
 https://docs.truefoundry.com/docs/triggering-a-job#trigger-a-job

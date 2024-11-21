@@ -40,7 +40,7 @@ python -m pip install -U "truefoundry>=0.4.1,<0.5.0"
 tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry.cloud>"
 ```
 
-4. Deploy!
+3. Deploy!
 
 > Please refer to following docs
 > - [Getting workspace FQN](https://docs.truefoundry.com/docs/key-concepts#getting-workspace-fqn)
