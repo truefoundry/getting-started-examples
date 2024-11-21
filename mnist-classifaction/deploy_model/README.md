@@ -8,20 +8,20 @@ Mainly this example shows how to deploy to TrueFoundry using a Pythonfile and Tr
 
 ## Run Locally
 
-1. Install requirements
+1. Install requirements -:
 
 ```shell
 python -m pip install -r requirements.txt
 ```
 
-2. Start the deployment
+2. Start the Deployment -:
 
-1. For gradio_demo
+(a). for gradio_demo
 ```shell
 python gradio_demo.py
 ```
 
-2. For fastapi_serivce
+(b). for fastapi_serivce
 ```shell
 uvicorn fastapi_service:app --port 8000 --host 0.0.0.0
 ```
@@ -40,7 +40,7 @@ python -m pip install -U "truefoundry>=0.4.1,<0.5.0"
 tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry.cloud>"
 ```
 
-4. Deploy!
+3. Deploy!
 
 > Please refer to following docs
 > - [Getting workspace FQN](https://docs.truefoundry.com/docs/key-concepts#getting-workspace-fqn)
