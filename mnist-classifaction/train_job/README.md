@@ -6,6 +6,13 @@ Deployment
 This example runs a simple mnist-classifaction job.
 Mainly this example shows how to deploy to TrueFoundry using a Pythonfile and TrueFoundry Python SDK.
 
+## Setup
+
+> For setup, please refer to the following documentation:
+> - [Create a ML Repo ](https://docs.truefoundry.com/docs/key-concepts#creating-an-ml-repo)
+> - [Grant Editor access to ML Repo](https://docs.truefoundry.com/docs/key-concepts#grant-access-of-ml-repo-to-workspace)
+
+
 ## Run Locally
 
 1. Install requirements
@@ -16,10 +23,6 @@ python -m pip install -r requirements.txt
 
 2. Start the app
 
-> Please refer to following docs
-> - [Create a ML Repo ](https://docs.truefoundry.com/docs/key-concepts#creating-an-ml-repo)
-> - [Grant Editor access to ML Repo](https://docs.truefoundry.com/docs/key-concepts#grant-access-of-ml-repo-to-workspace)
-
 ```shell
 python train.py --num_epochs {{num_epochs}} --ml_repo {{ml_repo}}
 ```
@@ -29,7 +32,7 @@ python train.py --num_epochs {{num_epochs}} --ml_repo {{ml_repo}}
 1. Install `truefoundry`
 
 ```shell
-python -m pip install -U -q "truefoundry>=0.4.1,<0.5.0" "tensorflow==2.15.0" "matplotlib==3.8.2"
+python -m pip install -U "truefoundry>=0.4.1,<0.5.0" 
 ```
 
 2. Login
