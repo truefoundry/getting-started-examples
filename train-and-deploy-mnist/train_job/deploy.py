@@ -1,5 +1,5 @@
-import argparse
 import logging
+import argparse
 
 from truefoundry.deploy import Build, Job, LocalSource, Param, PythonBuild, Resources
 
