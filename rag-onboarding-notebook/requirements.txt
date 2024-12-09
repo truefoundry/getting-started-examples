@@ -16,4 +16,4 @@ tokenizers==0.19.0
 torch>=2.0.0,<3.0.0
 transformers==4.40.2
 truefoundry>=0.4.1,<0.5.0
-unstructured==0.5.12
+unstructured==0.14.3
