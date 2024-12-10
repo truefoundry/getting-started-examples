@@ -1,10 +1,16 @@
 # getting-started-examples
 Examples to get started with using TrueFoundry
 
-Deployment
+Deployment of Job
 ---
-This example runs a simple iris app for inferring using a iris classifier.
+This example runs a Customer-churn for inferring using a classifier.
 Mainly this example shows how to deploy to TrueFoundry using a Pythonfile and TrueFoundry Python SDK.
+
+## Setup
+
+> For setup, please refer to the following documentation:
+> - [Create a ML Repo ](https://docs.truefoundry.com/docs/key-concepts#creating-an-ml-repo)
+> - [Grant Editor access to ML Repo](https://docs.truefoundry.com/docs/key-concepts#grant-access-of-ml-repo-to-workspace)
 
 ## Run Locally
 
@@ -14,10 +20,10 @@ Mainly this example shows how to deploy to TrueFoundry using a Pythonfile and Tr
 python -m pip install -r requirements.txt
 ```
 
-2. Start the iris app
+2. Start the Customer-churn
 
 ```shell
-python app.py
+python main.py --n_neighbors {{n_neighbors}} --weights {{weights}} --ml_repo {{ml_repo}}
 ```
 
 ## Deploy with TrueFoundry
@@ -38,9 +44,8 @@ tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry
 
 > Please refer to following docs
 > - [Getting workspace FQN](https://docs.truefoundry.com/docs/key-concepts#getting-workspace-fqn)
-> - [Get host and path for deploying applications](https://docs.truefoundry.com/docs/define-ports-and-domains#identifying-available-domains)
 
 ```shell
-python deploy.py --name iris --workspace-fqn <Workspace FQN> --host <Ingress Host for the cluster> --path <optional path>
+python deploy.py --workspace-fqn <Workspace FQN>
 ```
 
