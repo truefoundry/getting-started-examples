@@ -3,3 +3,6 @@ matplotlib==3.8.2
 pandas==1.5.0
 pydantic>=1.10.0,<2.0.0
 truefoundry>=0.4.1,<0.5.0
+scikit-learn>=1.0.0
+joblib>=1.2.0
+
