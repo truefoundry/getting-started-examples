@@ -1,0 +1,7 @@
+type: workflow
+name: live-demo-example
+source:
+  type: local
+  local_build: false
+  project_root_path: "./"
+workflow_file_path: train_model.py

@@ -1,0 +1,2 @@
+tensorflow==2.15.0
+gradio==4.43.0
