@@ -107,7 +107,7 @@ def get_run_fqn_of_best_model(fqns: List[str], threshold: float) -> Tuple[str, b
 @task(task_config=task_config)
 def deploy_model(run_fqn: str, workspace_fqn: str) -> str:
     from truefoundry.ml import get_client
-    from deploy import deploy_service
+    from deploy_model.deploy import deploy_service
 
     client = get_client()
     run = client.get_run_by_fqn(run_fqn)
@@ -129,5 +129,4 @@ def model_training_workflow(ml_repo: str, epochs: List[int] = [2, 3, 5], learnin
     best_fqn, is_best_model_found = get_run_fqn_of_best_model(fqns=fqns, threshold=accuracy_threshold)
     message = conditional("Deploy best model").if_(is_best_model_found == True).then(deploy_model(run_fqn=best_fqn, workspace_fqn=workspace_fqn)).else_().then(model_not_found(threshold=accuracy_threshold))
 
-    data >> fqns >> best_fqn >> message
     return message
