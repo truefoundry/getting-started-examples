@@ -1,7 +1,7 @@
 import os
 
 import gradio as gr
-from workflows.train_mnist_wf.deploy_model.predict import load_model, predict_fn
+from predict import load_model, predict_fn
 
 model_path = os.path.join(os.environ.get("MODEL_DOWNLOAD_PATH", "."), "mnist_model.h5")
 model = load_model(model_path)
@@ -15,7 +15,7 @@ interface = gr.Interface(
     fn=get_inference,
     inputs="image",
     outputs="label",
-    examples=[["sample_images/3.jpg"], ["sample_images/5.png"], ["sample_images/7.png"]],
+    examples=[["deploy_model/sample_images/3.jpg"], ["deploy_model/sample_images/5.png"], ["deploy_model/sample_images/7.png"]],
 )
 
 interface.launch(
