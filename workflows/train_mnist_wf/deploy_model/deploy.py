@@ -12,8 +12,6 @@ from truefoundry.deploy import (
     TruefoundryArtifactSource,
 )
 from truefoundry.deploy.v2.lib.deploy import ServiceFoundryServiceClient
-import random
-import string
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s")
 
@@ -22,7 +20,7 @@ def str_or_none(value):
     return None if not value or value == "None" else value
 
 def deploy_service(model_version_fqn: str, workspace_fqn: str):
-    service_name = f"mnist-classification-{''.join(random.choices(string.ascii_lowercase + string.digits, k=3))}" 
+    service_name = "mnist-classification" 
     service = Service(
         name=service_name,
         image=Build(
@@ -32,7 +30,7 @@ def deploy_service(model_version_fqn: str, workspace_fqn: str):
                 command="python gradio_demo.py",
                 # for deploying fastapi
                 # command="uvicorn fastapi_service:app --port 8000 --host 0.0.0.0",
-                requirements_path="requirements_service.txt",
+                requirements_path="requirements.txt",
             ),
         ),
         ports=[Port(port=8000, host=f"{service_name}-<your-host>")],

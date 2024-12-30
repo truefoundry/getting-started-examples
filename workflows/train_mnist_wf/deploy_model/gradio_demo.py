@@ -1,7 +1,7 @@
 import os
 
 import gradio as gr
-from predict import load_model, predict_fn
+from workflows.train_mnist_wf.deploy_model.predict import load_model, predict_fn
 
 model_path = os.path.join(os.environ.get("MODEL_DOWNLOAD_PATH", "."), "mnist_model.h5")
 model = load_model(model_path)
