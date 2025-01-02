@@ -10,6 +10,11 @@
 - you can use virtual account token as `TFY_API_KEY`, click [here](https://docs.truefoundry.com/docs/generating-truefoundry-api-keys#virtual-accounts) to learn about how to create a virtual account.
 - `host` value in `Port` field in `deploy.py` file
 
+## Running the workflow locally
+To run the workflow locally, run the following command
+```bash
+python train-deploy-workflow.py
+```
 ## Deploying the workflow
 
 You can deploy the workflow using the following command, make sure your truefoudry cli version is more thatn `4.0.0`.

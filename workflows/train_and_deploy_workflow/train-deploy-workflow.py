@@ -95,16 +95,19 @@ def get_run_fqn_of_best_model(fqns: List[str], threshold: float) -> Tuple[str, b
     client = get_client()
     curr_accuracy = 0
     best_fqn = None
-    for fqn in fqns:
-        run = client.get_run_by_fqn(fqn)
+    print(f"Finding the best models from {len(fqns)} models")
+    for fqn_no in range(len(fqns)):
+        print(f"Comparing accuracy for model {fqn_no+1}")
+        run = client.get_run_by_fqn(fqns[fqn_no])
         accuracy_metric = run.get_metrics().get("val_accuracy", 0)
         accuracy = accuracy_metric[-1].value
         if accuracy > curr_accuracy and accuracy > threshold:
             curr_accuracy = accuracy
-            best_fqn = fqn
+            best_fqn = fqns[fqn_no]
     if best_fqn:
         print("The fqn of the best model is: ", best_fqn)
         return best_fqn, True
+    print("No model found with accuracy greater than threshold")
     return '', False
 
 @task(task_config=task_config)
