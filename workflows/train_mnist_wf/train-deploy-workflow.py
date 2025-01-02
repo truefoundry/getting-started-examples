@@ -98,12 +98,12 @@ def get_run_fqn_of_best_model(fqns: List[str], threshold: float) -> Tuple[str, b
     for fqn in fqns:
         run = client.get_run_by_fqn(fqn)
         accuracy_metric = run.get_metrics().get("val_accuracy", 0)
-        print(accuracy_metric)
         accuracy = accuracy_metric[-1].value
         if accuracy > curr_accuracy and accuracy > threshold:
             curr_accuracy = accuracy
             best_fqn = fqn
     if best_fqn:
+        print("The fqn of the best model is: ", best_fqn)
         return best_fqn, True
     return '', False
 
@@ -116,6 +116,7 @@ def deploy_model(run_fqn: str, workspace_fqn: str) -> str:
     run = client.get_run_by_fqn(run_fqn)
     models = run.list_model_versions()
     model = models.__next__()
+    print(f"Deploying model {model.fqn}")
     url = deploy_service(model_version_fqn=model.fqn, workspace_fqn=workspace_fqn)
     return f"Model deployed at {url}"
 
