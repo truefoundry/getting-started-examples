@@ -15,6 +15,8 @@ task_config = PythonTaskConfig(
     resources=Resources(cpu_request=1.2, cpu_limit=1.2, memory_limit=3000, memory_request=3000, ephemeral_storage_limit=2000, ephemeral_storage_request=2000),
     service_account="default",
     env={
+        "TF_CPP_MIN_LOG_LEVEL": "3", # suppress tensorflow warnings
+        "FLYTE_SDK_LOGGING_LEVEL": "40",
         "TFY_API_KEY": "<your-api-key>",
         "TFY_HOST": "<tfy-host-value>", 
         }
@@ -56,6 +58,7 @@ def train_model(epochs: int, learning_rate: float, data: Dict[str, np.array], ml
     model.compile(optimizer=optimizer, loss="sparse_categorical_crossentropy", metrics=["accuracy"])
 
     epochs = epochs
+    print(f"Started training the model for {epochs} epochs")
     history = model.fit(x_train, y_train, epochs=epochs, validation_data=(x_test, y_test))
 
     # Evaluate the model
@@ -122,11 +125,11 @@ def model_not_found(threshold: float) -> str:
 
 
 @workflow
-def model_training_workflow(ml_repo: str, epochs: List[int] = [2, 3, 5], learning_rate: List[float] = [0.1, 0.001, 0.001], accuracy_threshold: float = 0.15, workspace_fqn: str = "<your-ws-fqn>") -> Union[str, None]:
+def model_training_workflow(ml_repo: str, workspace_fqn: str, epochs: List[int] = [2, 3, 5], learning_rate: List[float] = [0.1, 0.001, 0.001], accuracy_threshold: float = 0.15) -> Union[str, None]:
     data = fetch_data()
     train_model_function = partial(train_model, data=data, ml_repo=ml_repo)
     fqns = map_task(train_model_function, concurrency=2)(epochs=epochs, learning_rate=learning_rate)
-    best_fqn, is_best_model_found = get_run_fqn_of_best_model(fqns=fqns, threshold=accuracy_threshold)
-    message = conditional("Deploy best model").if_(is_best_model_found == True).then(deploy_model(run_fqn=best_fqn, workspace_fqn=workspace_fqn)).else_().then(model_not_found(threshold=accuracy_threshold))
+    model_version_fqn, does_model_pass_threshold_accuracy = get_run_fqn_of_best_model(fqns=fqns, threshold=accuracy_threshold)
+    message = conditional("Deploy model").if_(does_model_pass_threshold_accuracy == True).then(deploy_model(run_fqn=model_version_fqn, workspace_fqn=workspace_fqn)).else_().then(model_not_found(threshold=accuracy_threshold))
 
     return message
