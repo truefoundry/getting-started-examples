@@ -124,7 +124,7 @@ def train_model(
 
 
 @task(task_config=task_config)
-def get_run_fqn_of_best_model(fqns: List[str], threshold: float) -> Tuple[str, bool]:
+def get_best_model(fqns: List[str], threshold: float) -> Tuple[str, bool]:
     from truefoundry.ml import get_client
 
     client = get_client()
@@ -161,7 +161,7 @@ def deploy_model(run_fqn: str, workspace_fqn: str) -> str:
 
 
 @task(task_config=task_config)
-def model_not_found(threshold: float) -> str:
+def do_not_deploy_model(threshold: float) -> str:
     return f"Model with threshold greater than {threshold} not found"
 
 
@@ -178,7 +178,7 @@ def model_training_workflow(
     fqns = map_task(train_model_function, concurrency=2)(
         epochs=epochs, learning_rate=learning_rate
     )
-    model_version_fqn, does_model_pass_threshold_accuracy = get_run_fqn_of_best_model(
+    model_version_fqn, does_model_pass_threshold_accuracy = get_best_model(
         fqns=fqns, threshold=accuracy_threshold
     )
     message = (
@@ -186,7 +186,7 @@ def model_training_workflow(
         .if_(does_model_pass_threshold_accuracy == True)
         .then(deploy_model(run_fqn=model_version_fqn, workspace_fqn=workspace_fqn))
         .else_()
-        .then(model_not_found(threshold=accuracy_threshold))
+        .then(do_not_deploy_model(threshold=accuracy_threshold))
     )
 
     return message
