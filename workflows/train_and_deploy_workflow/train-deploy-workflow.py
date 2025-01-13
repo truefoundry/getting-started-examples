@@ -161,7 +161,7 @@ def deploy_model(run_fqn: str, workspace_fqn: str) -> str:
 
 
 @task(task_config=task_config)
-def do_not_deploy_model(threshold: float) -> str:
+def do_nothing(threshold: float) -> str:
     return f"Model with threshold greater than {threshold} not found"
 
 
@@ -186,7 +186,7 @@ def model_training_workflow(
         .if_(does_model_pass_threshold_accuracy == True)
         .then(deploy_model(run_fqn=model_version_fqn, workspace_fqn=workspace_fqn))
         .else_()
-        .then(do_not_deploy_model(threshold=accuracy_threshold))
+        .then(do_nothing(threshold=accuracy_threshold))
     )
 
     return message
