@@ -82,13 +82,13 @@ print(f"Test accuracy: {accuracy}")
 history_dict = history.history
 train_accuracy = history_dict['accuracy']  # Training accuracy per epoch
 val_accuracy = history_dict['val_accuracy'] 
-loss = history_dict['loss']  # Training loss per epoch  
+loss_per_epoch = history_dict['loss']  # Training loss per epoch  
 
 # Log Metrics and Model
 
 # Logging the metrics of the model
 for epoch in range(epochs):
-    run.log_metrics({"train_accuracy": train_accuracy[epoch], "val_accuracy": val_accuracy[epoch], "loss": loss[epoch]}, step=epoch+5)
+    run.log_metrics({"train_accuracy": train_accuracy[epoch], "val_accuracy": val_accuracy[epoch], "loss": loss_per_epoch[epoch]}, step=epoch+5)
 
 # Save the trained model
 model.save("mnist_model.h5")
