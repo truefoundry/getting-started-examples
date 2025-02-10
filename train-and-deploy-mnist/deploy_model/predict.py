@@ -11,9 +11,11 @@ def load_model(model_path: str) -> tf.keras.Model:
 def predict_fn(model, img_arr: np.ndarray) -> str:
     # Preprocess the image before passing it to the model
     img_arr = tf.expand_dims(img_arr, 0)
-    img_arr = img_arr[:, :, :, 0]  # Keep only the first channel (grayscale)
 
-    # Make predictions
+    # Resize to (1, 28, 28, 1)
+    resized_image = tf.image.resize(img_arr, [28, 28])
+    img_arr = resized_image[:, :, :, 0]  # Keep only the first channel (grayscale)
+
     predictions = model.predict(img_arr)
     predicted_label = tf.argmax(predictions[0]).numpy()
 
