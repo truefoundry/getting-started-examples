@@ -190,3 +190,12 @@ def model_training_workflow(
     )
 
     return message
+
+if __name__ == "__main__":
+    model_training_workflow(
+        ml_repo="<your-ml-repo>",
+        workspace_fqn="<your-workspace-fqn>",
+        epochs=[2, 3, 5],
+        learning_rate=[0.1, 0.001, 0.001],
+        accuracy_threshold=0.15,
+    )
