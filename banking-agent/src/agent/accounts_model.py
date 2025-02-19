@@ -28,7 +28,7 @@ class UserAccounts(BaseModel):
                 return account
         error_message = (
             f"There is no account named {account_name}. "
-            f"Options are {', '.join(self.get_account_names())}"
+            f"Options are {', '.join(await self.get_account_names())}"
         )
         raise ValueError(error_message)
 
@@ -40,8 +40,8 @@ class UserAccounts(BaseModel):
         Raises:
             ValueError: If the source account does not have enough funds.
         """
-        source_account = self.get_account(source_acc_name)
-        destination_account = self.get_account(dest_acc_name)
+        source_account = await self.get_account(source_acc_name)
+        destination_account = await self.get_account(dest_acc_name)
 
         if source_account.balance < amount:
             error_message = (
