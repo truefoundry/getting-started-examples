@@ -33,7 +33,9 @@ async def get_ai_response(events):
                     else:
                         return str(content)
                 except Exception as e:
-                    return str(e)
+                    # Log the exception
+                    print(f"Error: {e}")
+                    return "An error occurred while processing the response."
 
     return None
 
@@ -57,4 +59,6 @@ async def run_agent(thread_id: str, user_input: str):
         events.append(event)
 
     response = await get_ai_response(events)
+    if response is None:
+        response = "An internal error has occurred."
     return {"response": response}
