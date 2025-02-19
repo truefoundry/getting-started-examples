@@ -1,0 +1,18 @@
+[project]
+name = "banking-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115.8",
+    "langchain-openai>=0.3.6",
+    "langgraph>=0.2.73",
+    "pre-commit>=4.1.0",
+    "python-dotenv>=1.0.1",
+    "streamlit-chat>=0.1.1",
+    "streamlit>=1.42.1",
+    "uvicorn>=0.34.0",
+    "watchdog>=6.0.0",
+    "truefoundry>=0.5.6",
+]
