@@ -68,5 +68,5 @@ def deploy_service(model_version_fqn: str, workspace_fqn: str):
     deployment = service.deploy(workspace_fqn=workspace_fqn, wait=False)
     client = ServiceFoundryServiceClient()
 
-    url = f"{client.tfy_host.strip('/')}/applications/{deployment.applicationId}?tab=deployments"
+    url = f"{os.environ["TFY_HOST"]}/applications/{deployment.applicationId}?tab=deployments"
     return url

@@ -14,6 +14,14 @@ from truefoundry.deploy import Resources
 import numpy as np
 
 from train_models import train_respective_model
+from truefoundry.ml import get_client
+from deploy_model.deploy import deploy_service
+import random
+import pandas as pd
+from sklearn.model_selection import train_test_split
+import whylogs as why
+from whylogs.api.writer.whylabs import WhyLabsWriter
+
 
 task_config = PythonTaskConfig(
     image=TaskPythonBuild(
@@ -38,10 +46,9 @@ task_config = PythonTaskConfig(
     },
 )
 
-
+# This is a dummy function to simulate drift detection, In actual implementation one would fetch anomaly from whylabs or this workflow will be triggered when whylabs sends a webhook event(https://docs.whylabs.ai/docs/)
 @task(task_config=task_config)
 def check_drift() -> bool:
-    import random
 
     drift_value = random.randint(1, 10)
     if drift_value > 5:
@@ -58,9 +65,8 @@ def load_and_preprocess_data(
     if not is_drift_present:
         print("No drift detected in the data, skipping data preprocessing")
         return (np.array([]), np.array([]), np.array([]), np.array([]))
-    import pandas as pd
-    from sklearn.model_selection import train_test_split
 
+    # In case of drift, the latest data will be fetched from external source, we are just using data.csv for demo purpose.
     df = pd.read_csv("data.csv")
 
     df = df.drop(["RowNumber", "CustomerId", "Surname"], axis=1)
@@ -73,20 +79,12 @@ def load_and_preprocess_data(
     new_df = df.rename(
         columns={"Exited": "Output"},
     )
-    import whylogs as why
-
-    os.environ["WHYLABS_DEFAULT_ORG_ID"] = "org-7uM9qM"
-    os.environ["WHYLABS_DEFAULT_DATASET_ID"] = "model-1"
-    os.environ[
-        "WHYLABS_API_KEY"
-    ] = "8XKSaL0IlT.VBt9eBhZ0NLMLuos41nXPQmrJ85NaqXkrTzuYC4FboaiEYcoVl204:org-7uM9qM"
     current_time = datetime.datetime.now().astimezone()
     profile = why.log(
         new_df,
         dataset_timestamp=current_time,
         name=f"train_data-{current_time.isoformat()}",
     )
-    from whylogs.api.writer.whylabs import WhyLabsWriter
 
     writer = WhyLabsWriter()
     writer.option(reference_profile_name=f"train_data-{current_time.isoformat()}")
@@ -122,7 +120,6 @@ def evaluate_model(run_fqns: List[str], is_drift_present: bool) -> str:
     if not is_drift_present:
         print("No drift detected in the data, skipping model evaluation")
         return "No drift detected in the data"
-    from truefoundry.ml import get_client
 
     client = get_client()
     best_model_run_fqn = None
@@ -142,8 +139,6 @@ def deploy_model(run_fqn: str, workspace_fqn: str, is_drift_present: bool) -> st
     if not is_drift_present:
         print("No drift detected in the data, skipping model deployment")
         return "No drift detected in the data"
-    from truefoundry.ml import get_client
-    from deploy_model.deploy import deploy_service
 
     client = get_client()
     run = client.get_run_by_fqn(run_fqn)
@@ -167,7 +162,9 @@ def check_drift_and_train_model(ml_repo: str, workspace_fqn: str) -> str:
         ml_repo=ml_repo,
         is_drift_present=is_drift_present,
     )
-    run_fqns = map_task(partial_function)(model_algorithm=["random_forest", "svm", "knn"])
+    run_fqns = map_task(partial_function)(
+        model_algorithm=["random_forest", "svm", "knn"]
+    )
     best_model_run_fqn = evaluate_model(run_fqns, is_drift_present)
     url = deploy_model(
         run_fqn=best_model_run_fqn,
