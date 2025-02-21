@@ -56,7 +56,7 @@ def encode_input(data: CustomerData):
         ]
     )
 
-
+# This funcition starts the whylogger logger and logs the prediction to whylabs every 5 minutes
 @app.on_event("startup")
 def start_logger():
     global logger
