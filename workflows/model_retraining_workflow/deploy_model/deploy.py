@@ -11,7 +11,6 @@ from truefoundry.deploy import (
     Service,
     TruefoundryArtifactSource,
 )
-from truefoundry.deploy.v2.lib.deploy import ServiceFoundryServiceClient
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s"
@@ -66,7 +65,6 @@ def deploy_service(model_version_fqn: str, workspace_fqn: str):
         },
     )
     deployment = service.deploy(workspace_fqn=workspace_fqn, wait=False)
-    client = ServiceFoundryServiceClient()
 
     url = f"{os.environ["TFY_HOST"]}/applications/{deployment.applicationId}?tab=deployments"
     return url

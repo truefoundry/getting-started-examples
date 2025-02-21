@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from typing import List
 import numpy as np
 import joblib
-from whylogs import log_classification_metrics
 import whylogs as why
 import logging
 
