@@ -149,7 +149,7 @@ def deploy_model(run_fqn: str, workspace_fqn: str, is_drift_present: bool) -> st
     return f"Model deployed at {url}"
 
 
-@workflow(execution_configs=ExecutionConfig(schedule="0 * * * *"))
+@workflow(execution_configs=[ExecutionConfig(schedule="0 * * * *")])
 def check_drift_and_train_model(ml_repo: str, workspace_fqn: str) -> str:
     is_drift_present = check_drift()
     X_train, X_test, y_train, y_test = load_and_preprocess_data(is_drift_present)
