@@ -30,17 +30,26 @@ if uploaded_file is not None:
     # Save the file
     with open(file_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
+        # Save file to data directory
 
-    # Call /init with the filename
-    payload = {"filename": unique_filename}
-    response = requests.post(f"{settings.API_BASE_URL}/init", json=payload)
-
-    if response.status_code == 200:
-        st.success("Document initialized successfully!")
-    else:
-        # Clean up the file if initialization failed
-        os.remove(file_path)
-        st.error(f"Error: {response.json()['detail']}")
+    # Send the file to the API using multipart/form-data
+    with open(file_path, "rb") as f:
+        files = {"file": (unique_filename, f, "application/octet-stream")}
+        try:
+            response = requests.post(f"{settings.API_URL}/init", files=files)
+            if response.status_code == 200:
+                st.success("Document initialized successfully!")
+            else:
+                # Clean up the file if initialization failed
+                os.remove(file_path)
+                try:
+                    error_detail = response.json().get("detail", "Unknown error occurred")
+                except requests.exceptions.JSONDecodeError:
+                    error_detail = response.text or f"HTTP {response.status_code}"
+                st.error(f"Error: {error_detail}")
+        except requests.exceptions.RequestException as e:
+            os.remove(file_path)
+            st.error(f"Connection error: {str(e)}")
 
 # Chat interface
 st.header("Chat with Your Document")
@@ -48,15 +57,25 @@ user_query = st.text_input("Enter your question:")
 
 if st.button("Send"):
     if user_query:
-        infer_url = f"{settings.API_BASE_URL}/infer"
+        infer_url = f"{settings.API_URL}/infer"
         payload = {"query": user_query}
         with st.spinner("Getting response..."):
-            response = requests.post(infer_url, json=payload)
-        if response.status_code == 200:
-            answer = response.json().get("answer", "")
-            st.markdown("### Response")
-            st.write(answer)
-        else:
-            st.error(f"Inference failed: {response.text}")
+            try:
+                response = requests.post(infer_url, json=payload)
+                if response.status_code == 200:
+                    try:
+                        answer = response.json().get("answer", "")
+                        st.markdown("### Response")
+                        st.write(answer)
+                    except requests.exceptions.JSONDecodeError:
+                        st.error("Received invalid response format from server")
+                else:
+                    try:
+                        error_message = response.json().get("detail", response.text)
+                    except requests.exceptions.JSONDecodeError:
+                        error_message = response.text or f"HTTP {response.status_code}"
+                    st.error(f"Inference failed: {error_message}")
+            except requests.exceptions.RequestException as e:
+                st.error(f"Connection error: {str(e)}")
     else:
         st.warning("Please enter a question.")

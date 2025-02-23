@@ -1,8 +1,9 @@
+import sys
 from dataclasses import dataclass
 from pathlib import Path
-import sys
 from typing import List, TypedDict
 
+from config.settings import settings
 from dotenv import load_dotenv
 from langchain import hub
 from langchain_community.document_loaders import DirectoryLoader
@@ -10,9 +11,7 @@ from langchain_core.documents import Document
 from langchain_experimental.text_splitter import SemanticChunker
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.graph import START, StateGraph
-
 from utils import embeddings, llm, qdrant_vector_store
-from config.settings import settings
 
 root_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(root_dir))
@@ -21,10 +20,11 @@ load_dotenv()
 
 DEFAULT_COLLECTION_NAME = "document_collection"
 
+
 @dataclass
 class RAGConfig:
     """Configuration settings for the RAG (Retrieval-Augmented Generation) pipeline.
-    
+
     This class defines the parameters that control the behavior of document processing,
     embedding generation, and query processing in the RAG system.
 
@@ -49,9 +49,9 @@ class RAGConfig:
 
 class DocumentProcessor:
     """Handles document loading and text splitting operations.
-    
+
     This class is responsible for loading documents from local storage and splitting them
-    into appropriate chunks for processing. It supports both semantic-based and 
+    into appropriate chunks for processing. It supports both semantic-based and
     character-based text splitting strategies.
 
     Args:
@@ -86,7 +86,7 @@ class DocumentProcessor:
 
 class RAGPipeline:
     """Main implementation of the Retrieval-Augmented Generation (RAG) pipeline.
-    
+
     This class orchestrates the entire RAG process, including document storage,
     retrieval, and answer generation. It uses a graph-based approach to process
     queries and generate contextually relevant responses.
@@ -109,7 +109,7 @@ class RAGPipeline:
 
     def _initialize_components(self):
         """Initialize core components of the RAG pipeline.
-        
+
         Sets up:
         - Language Model (LLM)
         - Embedding model
@@ -123,7 +123,7 @@ class RAGPipeline:
 
     def _setup_graph(self):
         """Configure the processing graph for RAG operations.
-        
+
         Creates a directed graph that defines the flow of data through the pipeline:
         1. Retrieval node: Fetches relevant documents
         2. Generation node: Produces the final answer
@@ -142,9 +142,7 @@ class RAGPipeline:
 
         def generate(state: State):
             docs_content = "\n\n".join(doc.page_content for doc in state["context"])
-            messages = self.rag_prompt.invoke(
-                {"question": state["question"], "context": docs_content}
-            )
+            messages = self.rag_prompt.invoke({"question": state["question"], "context": docs_content})
             response = self.llm.invoke(messages)
             return {"answer": response.content}
 
@@ -175,6 +173,7 @@ class RAGPipeline:
         """
         response = self.graph.invoke({"question": question})
         return response["answer"]
+
 
 # Initialize the RAG pipeline with default configuration
 # Re use this pipeline for all the queries

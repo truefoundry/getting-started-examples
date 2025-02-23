@@ -61,6 +61,15 @@ with st.sidebar:
             asyncio.run(process_input(question))
             st.rerun()
 
+    # Add file upload widget in sidebar
+    st.header("Upload File")
+    uploaded_file = st.file_uploader("Upload a text file", type=["txt"])
+    if uploaded_file is not None:
+        file_contents = uploaded_file.getvalue().decode("utf-8")
+        if st.button("Process File"):
+            asyncio.run(process_input(file_contents))
+            st.rerun()
+
 # Display existing chat messages
 for message in st.session_state["messages"]:
     with st.chat_message(message["role"]):
