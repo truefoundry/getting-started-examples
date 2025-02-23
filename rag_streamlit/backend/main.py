@@ -1,14 +1,18 @@
 import os
 from pathlib import Path
+import sys
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from qdrant_client.http.models import Distance, VectorParams
 
 from rag_pipeline import rag_pipeline
-from utils import DEFAULT_COLLECTION_NAME, qdrant_client
-
+from utils import qdrant_client
+from config.settings import settings
 app = FastAPI()
+
+root_dir = Path(__file__).resolve().parent.parent
+sys.path.append(str(root_dir))
 
 UPLOAD_DIR = Path("uploaded_files")
 # Ensure upload directory exists
@@ -31,11 +35,11 @@ async def init_document(request: InitRequest):
 
         try:
             qdrant_client.create_collection(
-                collection_name=DEFAULT_COLLECTION_NAME,
+                collection_name=settings.DEFAULT_COLLECTION_NAME,
                 vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
             )
         except Exception as e:
-            print(f"Collection {DEFAULT_COLLECTION_NAME} already exists")
+            print(f"Collection {settings.DEFAULT_COLLECTION_NAME} already exists")
 
         # Load and process the document using the RAG pipeline's processor
         documents = rag_pipeline.processor.load_local_content(str(UPLOAD_DIR))

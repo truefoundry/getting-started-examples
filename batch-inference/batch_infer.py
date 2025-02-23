@@ -4,10 +4,9 @@ import logging
 import os
 import sys
 import tempfile
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Optional
 
 import boto3
-import pandas as pd
 import torch
 from datasets import load_dataset
 from transformers import pipeline

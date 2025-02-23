@@ -1,0 +1,15 @@
+# Core dependencies
+streamlit>=1.28
+requests>=2.31.0
+
+# Optional dependencies for document handling
+PyPDF2>=3.0.0
+
+# Dev dependencies
+black==23.3.0
+mypy==1.4.1
+pre-commit==3.3.3
+watchdog
+pytest
+isort
+autoflake

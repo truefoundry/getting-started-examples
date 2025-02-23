@@ -1,18 +1,18 @@
-from typing import Any, Dict, List, Tuple, Union
-from truefoundry.workflow import (
-    task,
-    workflow,
-    PythonTaskConfig,
-    TaskPythonBuild,
-    map_task,
-    conditional,
-)
-from truefoundry.deploy import Resources
 from functools import partial
+from typing import Dict, List, Tuple, Union
+
+import numpy as np
 import tensorflow as tf
 from tensorflow.keras.datasets import mnist
-import numpy as np
-
+from truefoundry.deploy import Resources
+from truefoundry.workflow import (
+    PythonTaskConfig,
+    TaskPythonBuild,
+    conditional,
+    map_task,
+    task,
+    workflow,
+)
 
 task_config = PythonTaskConfig(
     image=TaskPythonBuild(
@@ -48,9 +48,7 @@ def fetch_data() -> Dict[str, np.array]:
 
 
 @task(task_config=task_config)
-def train_model(
-    epochs: int, learning_rate: float, data: Dict[str, np.array], ml_repo: str
-) -> str:
+def train_model(epochs: int, learning_rate: float, data: Dict[str, np.array], ml_repo: str) -> str:
     from truefoundry.ml import get_client
 
     x_train, y_train, x_test, y_test = (
@@ -83,9 +81,7 @@ def train_model(
 
     epochs = epochs
     print(f"Started training the model for {epochs} epochs")
-    history = model.fit(
-        x_train, y_train, epochs=epochs, validation_data=(x_test, y_test)
-    )
+    history = model.fit(x_train, y_train, epochs=epochs, validation_data=(x_test, y_test))
 
     # Evaluate the model
     loss, accuracy = model.evaluate(x_test, y_test)
@@ -148,8 +144,8 @@ def get_best_model(fqns: List[str], threshold: float) -> Tuple[str, bool]:
 
 @task(task_config=task_config)
 def deploy_model(run_fqn: str, workspace_fqn: str) -> str:
-    from truefoundry.ml import get_client
     from deploy_model.deploy import deploy_service
+    from truefoundry.ml import get_client
 
     client = get_client()
     run = client.get_run_by_fqn(run_fqn)
@@ -175,12 +171,8 @@ def model_training_workflow(
 ) -> Union[str, None]:
     data = fetch_data()
     train_model_function = partial(train_model, data=data, ml_repo=ml_repo)
-    fqns = map_task(train_model_function, concurrency=2)(
-        epochs=epochs, learning_rate=learning_rate
-    )
-    model_version_fqn, does_model_pass_threshold_accuracy = get_best_model(
-        fqns=fqns, threshold=accuracy_threshold
-    )
+    fqns = map_task(train_model_function, concurrency=2)(epochs=epochs, learning_rate=learning_rate)
+    model_version_fqn, does_model_pass_threshold_accuracy = get_best_model(fqns=fqns, threshold=accuracy_threshold)
     message = (
         conditional("Deploy model")
         .if_(does_model_pass_threshold_accuracy == True)
@@ -190,6 +182,7 @@ def model_training_workflow(
     )
 
     return message
+
 
 if __name__ == "__main__":
     model_training_workflow(

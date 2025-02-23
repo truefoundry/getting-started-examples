@@ -1,8 +1,8 @@
-import streamlit as st
 import asyncio
 import uuid
-from src.agent.graph import run_agent
 
+import streamlit as st
+from src.agent.graph import run_agent
 
 # please note that the location of this function has changed multiple times in the last versions of streamlit
 from streamlit.runtime.scriptrunner import get_script_run_ctx
@@ -44,9 +44,7 @@ async def process_input(user_input):
             response = await run_agent(st.session_state.thread_id, user_input)
             if response and response.get("response"):
                 st.write(response["response"])
-                st.session_state.messages.append(
-                    {"role": "assistant", "content": response["response"]}
-                )
+                st.session_state.messages.append({"role": "assistant", "content": response["response"]})
 
 
 # Initialize session state

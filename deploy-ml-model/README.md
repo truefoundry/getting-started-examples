@@ -43,4 +43,3 @@ tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry
 ```shell
 python deploy.py --name iris --workspace-fqn <Workspace FQN> --host <Ingress Host for the cluster> --path <optional path>
 ```
-

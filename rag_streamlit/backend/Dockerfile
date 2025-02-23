@@ -29,4 +29,4 @@ COPY . .
 EXPOSE ${PORT}
 
 # Command to run the application with proper port configuration
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4", "--log-level", "info"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4", "--log-level", "info"]
