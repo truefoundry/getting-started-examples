@@ -15,7 +15,11 @@ interface = gr.Interface(
     fn=get_inference,
     inputs="image",
     outputs="label",
-    examples=[["deploy_model/sample_images/3.jpg"], ["deploy_model/sample_images/5.png"], ["deploy_model/sample_images/7.png"]],
+    examples=[
+        ["deploy_model/sample_images/3.jpg"],
+        ["deploy_model/sample_images/5.png"],
+        ["deploy_model/sample_images/7.png"],
+    ],
 )
 
 interface.launch(

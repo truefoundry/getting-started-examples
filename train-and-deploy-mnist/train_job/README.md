@@ -32,7 +32,7 @@ python train.py --num_epochs {{num_epochs}} --ml_repo {{ml_repo}}
 1. Install `truefoundry`
 
 ```shell
-python -m pip install -U "truefoundry>=0.4.1,<0.5.0" 
+python -m pip install -U "truefoundry>=0.4.1,<0.5.0"
 ```
 
 2. Login
@@ -49,4 +49,3 @@ tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry
 ```shell
 python deploy.py --workspace-fqn <Workspace FQN>
 ```
-

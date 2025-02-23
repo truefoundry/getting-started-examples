@@ -18,8 +18,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelna
 def str_or_none(value):
     return None if not value or value == "None" else value
 
+
 def deploy_service(model_version_fqn: str, workspace_fqn: str):
-    service_name = "mnist-classification" 
+    service_name = "mnist-classification"
     service = Service(
         name=service_name,
         image=Build(

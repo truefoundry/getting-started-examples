@@ -61,7 +61,12 @@ def train_model(n_neighbors: int, weights: str, ml_repo: str):
     }
 
     # Log the experiment
-    track_experiment(ml_repo=ml_repo, model=classifier, params=classifier.get_params(), metrics=metrics)
+    track_experiment(
+        ml_repo=ml_repo,
+        model=classifier,
+        params=classifier.get_params(),
+        metrics=metrics,
+    )
 
 
 if __name__ == "__main__":

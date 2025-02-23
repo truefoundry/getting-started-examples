@@ -27,14 +27,11 @@ class UserAccounts(BaseModel):
             if account_name == account.name:
                 return account
         error_message = (
-            f"There is no account named {account_name}. "
-            f"Options are {', '.join(await self.get_account_names())}"
+            f"There is no account named {account_name}. " f"Options are {', '.join(await self.get_account_names())}"
         )
         raise ValueError(error_message)
 
-    async def transfer_money(
-        self, amount: float, source_acc_name: str, dest_acc_name: str
-    ) -> None:
+    async def transfer_money(self, amount: float, source_acc_name: str, dest_acc_name: str) -> None:
         """Transfers money from one account to another.
 
         Raises:
