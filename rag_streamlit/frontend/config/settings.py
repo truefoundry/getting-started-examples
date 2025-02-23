@@ -13,15 +13,15 @@ class Settings(BaseSettings):
 
     # File Upload Configuration
     UPLOAD_DIR: Path = Path("uploaded_files")
-    
+
     @property
     def is_production(self):
         return self.ENVIRONMENT == "production"
-    
+
     @property
     def API_URL(self):
         return self.PROD_API_URL if self.is_production else self.DEV_API_URL
-    
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

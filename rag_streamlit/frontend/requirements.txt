@@ -1,6 +1,8 @@
 # Core dependencies
 streamlit>=1.28
 requests>=2.31.0
+pydantic
+pydantic-settings
 
 # Optional dependencies for document handling
 PyPDF2>=3.0.0

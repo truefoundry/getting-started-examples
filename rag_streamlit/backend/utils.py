@@ -8,24 +8,21 @@ This module sets up the following components:
 - Vector store interface combining Qdrant with the embeddings model
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 root_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(root_dir))
 
+# from langchain_chroma import Chroma
+from chromadb import HttpClient
 from config.settings import settings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
-# from langchain_chroma import Chroma
-from chromadb import HttpClient
 
 # Initialize Qdrant client for vector database operations
-qdrant_client = QdrantClient(
-    url=settings.QDRANT_API_URL,
-    api_key=settings.QDRANT_API_KEY
-)
+qdrant_client = QdrantClient(url=settings.QDRANT_API_URL, api_key=settings.QDRANT_API_KEY)
 
 # Initialize Chroma client for vector database operations
 # chroma_client = HttpClient(
@@ -47,9 +44,7 @@ llm = ChatOpenAI(
 )
 
 # Create vector store interface combining Qdrant with embeddings
-qdrant_vector_store = QdrantVectorStore(
-    qdrant_client, settings.DEFAULT_COLLECTION_NAME, embeddings
-)
+qdrant_vector_store = QdrantVectorStore(qdrant_client, settings.DEFAULT_COLLECTION_NAME, embeddings)
 
 # Create vector store interface combining Chroma with embeddings
 # chroma_vector_store = Chroma(
