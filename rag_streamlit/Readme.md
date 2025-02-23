@@ -22,7 +22,6 @@ cp .env.example .env
 1. Set up environment variables:
 ```
 QDRANT_API_URL=your_qdrant_url  # Can use any vector store
-QDRANT_API_KEY=your_qdrant_key
 TFY_API_KEY=your_truefoundry_key
 TFY_LLM_GATEWAY_BASE_URL=your_gateway_url
 ```

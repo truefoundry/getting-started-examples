@@ -48,4 +48,3 @@ tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry
 ```shell
 python deploy.py --workspace-fqn <Workspace FQN>
 ```
-

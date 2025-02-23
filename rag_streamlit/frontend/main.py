@@ -1,12 +1,15 @@
 import os
+import sys
 import uuid
 from pathlib import Path
 
+# Add root directory to Python path
+root_dir = Path(__file__).resolve().parent.parent
+sys.path.append(str(root_dir))
+
 import requests
 import streamlit as st
-
-# Configuration for the FastAPI endpoint (adjust if necessary)
-API_BASE_URL = st.sidebar.text_input("API Base URL", "http://localhost:8000")
+from config.settings import settings
 
 # Create uploaded_files directory if it doesn't exist
 UPLOAD_DIR = Path("uploaded_files")
@@ -30,7 +33,7 @@ if uploaded_file is not None:
 
     # Call /init with the filename
     payload = {"filename": unique_filename}
-    response = requests.post(f"{API_BASE_URL}/init", json=payload)
+    response = requests.post(f"{settings.API_BASE_URL}/init", json=payload)
 
     if response.status_code == 200:
         st.success("Document initialized successfully!")
@@ -45,7 +48,7 @@ user_query = st.text_input("Enter your question:")
 
 if st.button("Send"):
     if user_query:
-        infer_url = f"{API_BASE_URL}/infer"
+        infer_url = f"{settings.API_BASE_URL}/infer"
         payload = {"query": user_query}
         with st.spinner("Getting response..."):
             response = requests.post(infer_url, json=payload)
