@@ -1,14 +1,6 @@
-import argparse
 import logging
 
-from truefoundry.deploy import (
-    Build,
-    DockerFileBuild,
-    Port,
-    PythonBuild,
-    Resources,
-    Service,
-)
+from truefoundry.deploy import Build, DockerFileBuild, Port, Resources, Service
 
 logging.basicConfig(level=logging.INFO)
 

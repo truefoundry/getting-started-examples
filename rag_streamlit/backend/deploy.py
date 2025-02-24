@@ -1,14 +1,6 @@
-import argparse
 import logging
 
-from truefoundry.deploy import (
-    Build,
-    DockerFileBuild,
-    Port,
-    PythonBuild,
-    Resources,
-    Service,
-)
+from truefoundry.deploy import Build, DockerFileBuild, Port, Resources, Service
 
 logging.basicConfig(level=logging.INFO)
 
@@ -41,18 +33,20 @@ service = Service(
         "TFY_API_KEY": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImpJTkY3bXJ2RjA3cWJNUzllelhYeU5GYTBWVSJ9.eyJhdWQiOiI2OTZlNzQ2NS03MjZlLTYxNmMtM2EzOS02MTM4Mzg2NTYxNjEiLCJleHAiOjM2OTkzNDQ1MjgsImlhdCI6MTczOTc5MjUyOCwiaXNzIjoidHJ1ZWZvdW5kcnkuY29tIiwic3ViIjoiY203OHpqdWFyYnY1MzAxbDkxeG55OGVxaiIsImp0aSI6IjVjYjQyOTg2LTM4MjktNDYyYi04ZWEyLTM4YjlkMTBjNTg0MSIsInN1YmplY3RTbHVnIjoidGVzc3J0IiwidXNlcm5hbWUiOiJ0ZXNzcnQiLCJ1c2VyVHlwZSI6InNlcnZpY2VhY2NvdW50Iiwic3ViamVjdFR5cGUiOiJzZXJ2aWNlYWNjb3VudCIsInRlbmFudE5hbWUiOiJpbnRlcm5hbCIsInJvbGVzIjpbInRlbmFudC1tZW1iZXIiXSwiYXBwbGljYXRpb25JZCI6IjY5NmU3NDY1LTcyNmUtNjE2Yy0zYTM5LTYxMzgzODY1NjE2MSJ9.S8S3D4sDKxZJwJOSUBMEUd4x2AcQDbBlYI1IytGMBE6LJYO9Fk1raZ_j_SyicHKiMwcdCfmuLdjG3C7CGGmnfpP3tpLzv73KKYeV5vzpOqgmNG4b3WZjLdoeG6gVvcGF5PbVUYh51YC6nAw5NyGwGkwOD8R9EgtRgRhHmQr1teDCGEeZTkiFvZjbncdT9acoVr3ifAOq-CDUsV4pAsFUmsU50JhrFlsnjU-K8H24iWSQA9bdS1vConH7-c19ht0DWLXiizMj3Io_-K9EH4HYH4pkcx4QcOfGMxwNPpX5dMbSz7eMzhT21AOeWYNG5L0Xid-raMsyFdmeOaaNWMbHSg",
         "TFY_LLM_GATEWAY_BASE_URL": "https://llm-gateway.truefoundry.com/api/inference/openai",
         # QDRANT_API_URL=https://demo-rag-sai-qdrant.tfy-usea1-ctl.devtest.truefoundry.tech/
-        "QDRANT_API_URL": "https://9d7ca1e5-9ef5-48bb-af88-16775d8af200.us-east4-0.gcp.cloud.qdrant.io",
+        "QDRANT_API_URL": "https://ml.tfy-eo.truefoundry.cloud",
         "QDRANT_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.OQqlajrayLt61kESpuVa997IoYbt42cpW35Xl70dIK8",
+        "QDRANT_API_PORT": 443,
+        "QDRANT_API_PREFIX": "demo-rag-vector-db-sai-ws",
         "CHROMADB_API_URL": "https://demo-rag-sai-chroma-sai-k-ws.tfy-usea1-ctl.devtest.truefoundry.tech",
     },
     # --- Resources ---
     resources=Resources(
-        cpu_request=0.5,
-        cpu_limit=0.5,
-        memory_request=1000,
-        memory_limit=1000,
-        ephemeral_storage_request=500,
-        ephemeral_storage_limit=500,
+        cpu_request=1,
+        cpu_limit=2,
+        memory_request=2000,
+        memory_limit=4000,
+        ephemeral_storage_request=1000,
+        ephemeral_storage_limit=2000,
     ),
     labels={
         "tfy_openapi_path": "openapi.json",

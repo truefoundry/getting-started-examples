@@ -19,7 +19,7 @@ st.title("Document Chat with FastAPI Inference")
 
 # File uploader for the document
 st.header("Upload a Document")
-uploaded_file = st.file_uploader("Choose a document", type=["txt", "pdf", "doc"])
+uploaded_file = st.file_uploader("Choose a document", type=["txt", "pdf"])
 
 if uploaded_file is not None:
     # Generate unique filename with original extension
