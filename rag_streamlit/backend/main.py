@@ -4,11 +4,9 @@ import sys
 import uuid
 from pathlib import Path
 
-from config.settings import settings
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from pydantic import BaseModel
-from rag_pipeline import rag_pipeline
-from utils import create_vector_store
+from rag_pipeline import RAGConfig, RAGPipeline
 
 app = FastAPI(
     title="RAG Pipeline",
@@ -28,6 +26,10 @@ class InitRequest(BaseModel):
     filename: str
 
 
+global rag_pipeline
+rag_pipeline = None
+
+
 @app.post("/init")
 async def init_document(file: UploadFile = File(...)):
     """
@@ -35,36 +37,37 @@ async def init_document(file: UploadFile = File(...)):
     Expects:
       - file: Uploaded file to process (.txt or .pdf files)
     """
+    global rag_pipeline
+
     # Validate file extension
     if not file.filename.lower().endswith((".txt", ".pdf")):
         raise HTTPException(status_code=400, detail="Only .txt and .pdf files are currently supported")
 
     try:
-        # Generate unique filename with original extension
+        # Extract the file extension
         file_extension = os.path.splitext(file.filename)[1]
-        unique_filename = f"{uuid.uuid4()}{file_extension}"
-        file_path = UPLOAD_DIR / unique_filename
-
-        # Save uploaded file
+        # Generate a unique collection name
+        collection_name = f"{uuid.uuid4()}-{file_extension}"
+        # Save the uploaded file
+        file_path = UPLOAD_DIR / collection_name
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
         # Initialize the RAG pipeline with unique collection name
-        collection_name = settings.DEFAULT_COLLECTION_NAME + uuid.uuid4().hex
-        rag_pipeline.qdrant_vector_store = create_vector_store(collection_name)
+        rag_pipeline = RAGPipeline(
+            config=RAGConfig(),
+            collection_name=collection_name,
+        )
+        # Add the documents to the vector store
+        rag_pipeline.add_documents(str(UPLOAD_DIR))
 
-        # Process the uploaded file
-        documents = rag_pipeline.processor.load_local_content(str(UPLOAD_DIR))
-
-        # Add to RAG pipeline
-        rag_pipeline.add_documents(documents)
-
-        return {"status": "initialized", "filename": unique_filename}
+        # Return the status and the filename
+        return {"status": "initialized", "collection_name": collection_name}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing document: {str(e)}")
     finally:
-        # Clean up the file
+        # Remove the uploaded file from the upload directory
         if file_path.exists():
             os.remove(file_path)
 
@@ -80,10 +83,12 @@ async def infer(request: InferenceRequest):
     The conversation history is maintained automatically (thread-level persistence).
     Ensure you have called /init before calling /infer.
     """
-    if rag_pipeline.qdrant_vector_store is None:
+    # Check if the RAG pipeline is initialized
+    if rag_pipeline is None:
         raise HTTPException(
             status_code=400,
-            detail="Vector store not initialized. Please upload a file first",
+            detail="RAG pipeline not initialized. Please upload a file first",
         )
 
+    # Return the answer
     return {"answer": rag_pipeline.query(request.query)}
