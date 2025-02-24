@@ -1,0 +1,6 @@
+[server]
+showDeployButton = false
+hideTopBar = true
+
+[browser]
+gatherUsageStats = false

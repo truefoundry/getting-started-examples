@@ -18,7 +18,7 @@ interface = gr.Interface(
     examples=[
         ["sample_images/3.jpg"],
         ["sample_images/8.jpg"],
-        ["sample_images/7.png"]
+        ["sample_images/7.png"],
     ],
 )
 interface.launch(

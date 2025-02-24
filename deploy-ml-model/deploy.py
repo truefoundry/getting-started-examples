@@ -11,7 +11,13 @@ def str_or_none(value):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--name", required=False, default="iris-classifier-svc", type=str, help="Name of the application.")
+parser.add_argument(
+    "--name",
+    required=False,
+    default="iris-classifier-svc",
+    type=str,
+    help="Name of the application.",
+)
 parser.add_argument(
     "--workspace_fqn",
     "--workspace-fqn",
