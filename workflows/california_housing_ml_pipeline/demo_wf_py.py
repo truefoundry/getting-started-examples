@@ -1,22 +1,22 @@
 from typing import Tuple
+
+import joblib
 import numpy as np
 from sklearn.datasets import fetch_california_housing
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.linear_model import Lasso
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.feature_selection import SelectKBest, f_regression
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import Lasso
+from truefoundry.deploy import Resources
 from truefoundry.workflow import (
+    FlyteDirectory,
     PythonTaskConfig,
     TaskPythonBuild,
+    conditional,
     task,
     workflow,
-    conditional,
-    FlyteDirectory
 )
-from sklearn.base import BaseEstimator
-from truefoundry.deploy import Resources
-import joblib
 
 task_config = PythonTaskConfig(
     image=TaskPythonBuild(
@@ -37,6 +37,7 @@ def load_and_split_data() -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarra
     print(f"Data loaded and split. Train shape: {X_train.shape}, Test shape: {X_test.shape}")
     return X_train, X_test, y_train, y_test
 
+
 @task(task_config=task_config)
 def preprocess_data(X_train: np.ndarray, X_test: np.ndarray) -> Tuple[np.ndarray, np.ndarray, StandardScaler]:
     """Standardize the features."""
@@ -47,6 +48,7 @@ def preprocess_data(X_train: np.ndarray, X_test: np.ndarray) -> Tuple[np.ndarray
     print("Data preprocessing completed.")
     return X_train_scaled, X_test_scaled, scaler
 
+
 @task(task_config=task_config)
 def select_features(X_train: np.ndarray, X_test: np.ndarray, y_train: np.ndarray, k: int = 6) -> np.ndarray:
     """Select the top k features using f_regression."""
@@ -56,21 +58,23 @@ def select_features(X_train: np.ndarray, X_test: np.ndarray, y_train: np.ndarray
     print(f"Feature selection completed. Selected features shape: {X_train_selected.shape}")
     return X_train_selected
 
+
 @task(task_config=task_config)
 def train_complex_model(X_train: np.ndarray, y_train: np.ndarray) -> FlyteDirectory:
     """Train a Random Forest model with hyperparameter tuning."""
     print("Training complex model (Random Forest)...")
     param_dist = {
-        'n_estimators': [100, 200, 300],
-        'max_depth': [None, 10, 20, 30],
-        'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1, 2, 4]
+        "n_estimators": [100, 200, 300],
+        "max_depth": [None, 10, 20, 30],
+        "min_samples_split": [2, 5, 10],
+        "min_samples_leaf": [1, 2, 4],
     }
     rf = RandomForestRegressor(random_state=42)
     model_path = "./classifier.joblib"
     joblib.dump(rf, model_path)
     print("Complex model training completed and model saved.")
     return FlyteDirectory(path=".")
+
 
 @task(task_config=task_config)
 def train_simple_model(X_train: np.ndarray, y_train: np.ndarray) -> FlyteDirectory:
@@ -83,12 +87,15 @@ def train_simple_model(X_train: np.ndarray, y_train: np.ndarray) -> FlyteDirecto
     print("Simple model training completed and model saved.")
     return FlyteDirectory(path=".")
 
+
 @workflow
-def adaptive_california_housing_ml_pipeline(train_simple_lasso_model: bool = False) -> FlyteDirectory:
+def adaptive_california_housing_ml_pipeline(
+    train_simple_lasso_model: bool = False,
+) -> FlyteDirectory:
     """Workflow for adaptive California Housing price prediction."""
     print("Starting adaptive California Housing ML pipeline...")
     X_train, X_test, y_train, y_test = load_and_split_data()
-    
+
     X_train_scaled, X_test_scaled, _ = preprocess_data(X_train=X_train, X_test=X_test)
     X_train_selected = select_features(X_train=X_train_scaled, X_test=X_test_scaled, y_train=y_train, k=6)
     # Conditional branching based on dataset size
@@ -101,6 +108,7 @@ def adaptive_california_housing_ml_pipeline(train_simple_lasso_model: bool = Fal
     )
     print("Adaptive California Housing ML pipeline completed.")
     return model_path
+
 
 if __name__ == "__main__":
     adaptive_california_housing_ml_pipeline(train_simple_lasso_model=False)

@@ -1,16 +1,13 @@
-from src.agent.llm import llm
-from src.agent.banking_tools import tools
-from src.agent.prompt import prompt_template
-
-from langgraph.prebuilt import create_react_agent
-from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import AIMessage
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.prebuilt import create_react_agent
+from src.agent.banking_tools import tools
+from src.agent.llm import llm
+from src.agent.prompt import prompt_template
 
 memory = MemorySaver()
 
-AGENT = create_react_agent(
-    model=llm, tools=tools, state_modifier=prompt_template, checkpointer=memory
-)
+AGENT = create_react_agent(model=llm, tools=tools, state_modifier=prompt_template, checkpointer=memory)
 
 
 async def get_ai_response(events):
@@ -23,13 +20,9 @@ async def get_ai_response(events):
                     if isinstance(content, str):
                         return content
                     elif isinstance(content, list):
-                        return " ".join(
-                            [str(item) for sublist in content for item in sublist]
-                        )
+                        return " ".join([str(item) for sublist in content for item in sublist])
                     elif isinstance(content, dict):
-                        return " ".join(
-                            [str(v) for k, v in content.items() if isinstance(v, str)]
-                        )
+                        return " ".join([str(v) for k, v in content.items() if isinstance(v, str)])
                     else:
                         return str(content)
                 except Exception as e:
@@ -49,7 +42,6 @@ def print_event(event):
 
 
 async def run_agent(thread_id: str, user_input: str):
-
     config = {"configurable": {"thread_id": thread_id}}
     inputs = {"messages": [("user", user_input)]}
 

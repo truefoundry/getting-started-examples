@@ -1,6 +1,5 @@
 from langchain_core.tools import tool
-from src.agent.accounts_model import UserAccounts, Account
-
+from src.agent.accounts_model import Account, UserAccounts
 
 USER_ACCOUNTS = UserAccounts(
     accounts=[
@@ -27,9 +26,7 @@ async def get_account_balance(account_name: str) -> str:
 
 
 @tool
-async def transfer_money(
-    amount: float, source_account: str, destination_account: str
-) -> str:
+async def transfer_money(amount: float, source_account: str, destination_account: str) -> str:
     """Transfer money between two accounts."""
     try:
         await USER_ACCOUNTS.transfer_money(amount, source_account, destination_account)
