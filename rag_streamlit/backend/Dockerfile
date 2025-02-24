@@ -14,6 +14,10 @@ ENV PYTHONUNBUFFERED=1 \
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    poppler-utils \
+    tesseract-ocr \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first to leverage Docker cache
@@ -25,8 +29,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
+# Create upload directory
+RUN mkdir -p uploaded_files && \
+    chmod 777 uploaded_files
+
 # Expose port using the environment variable
 EXPOSE ${PORT}
 
 # Command to run the application with proper port configuration
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4", "--log-level", "info"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "info"]

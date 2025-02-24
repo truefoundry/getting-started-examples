@@ -1,4 +1,5 @@
 import sys
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, TypedDict
@@ -10,8 +11,9 @@ from langchain_community.document_loaders import DirectoryLoader
 from langchain_core.documents import Document
 from langchain_experimental.text_splitter import SemanticChunker
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
-from utils import embeddings, llm
+from utils import create_vector_store, embeddings, llm
 
 root_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(root_dir))
@@ -101,8 +103,9 @@ class RAGPipeline:
         config (RAGConfig): Configuration object for the pipeline
     """
 
-    def __init__(self, config: RAGConfig):
+    def __init__(self, config: RAGConfig, collection_name: str):
         self.config = config
+        self.collection_name = collection_name
         self._initialize_components()
         self._setup_graph()
         self.rag_prompt = hub.pull(self.config.prompt_template)
@@ -118,7 +121,7 @@ class RAGPipeline:
         """
         self.llm = llm
         self.embeddings = embeddings
-        self.qdrant_vector_store = None
+        self.qdrant_vector_store = create_vector_store(self.collection_name)
         self.processor = DocumentProcessor(self.config)
 
     def _setup_graph(self):
@@ -152,12 +155,15 @@ class RAGPipeline:
         graph_builder.add_edge(START, "retrieve")
         self.graph = graph_builder.compile()
 
-    def add_documents(self, documents: List[Document]):
+    def add_documents(self, directory: str):
         """Add new documents to the vector store for future retrieval.
 
         Args:
             documents (List[Document]): List of LangChain Document objects to add
         """
+        # Load the documents from the directory
+        documents = self.processor.load_local_content(directory)
+        # Add the documents to the vector store
         self.qdrant_vector_store.add_documents(documents=documents)
 
     def query(self, question: str) -> str:
@@ -175,16 +181,3 @@ class RAGPipeline:
         """
         response = self.graph.invoke({"question": question})
         return response["answer"]
-
-
-# Initialize the RAG pipeline with default configuration
-# Re use this pipeline for all the queries
-rag_pipeline = RAGPipeline(
-    RAGConfig(
-        chunk_size=1000,
-        chunk_overlap=200,
-        similarity_top_k=10,
-        embedding_model=settings.EMBEDDING_MODEL,
-        llm_model=settings.LLM_MODEL,
-    )
-)
