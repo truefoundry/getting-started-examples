@@ -8,13 +8,13 @@ langchain-openai
 langchain_experimental
 langchain-text-splitters
 langchain-core
-qdrant-client
+qdrant-client==1.11.0
 chromadb
 uvicorn
 fastapi
 langgraph
 python-multipart
-unstructured
+unstructured[pdf]
 langchain-qdrant
 langchain-chroma
 

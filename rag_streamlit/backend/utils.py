@@ -15,14 +15,16 @@ root_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(root_dir))
 
 # from langchain_chroma import Chroma
-from chromadb import HttpClient
 from config.settings import settings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
+from qdrant_client.http.models import Distance, VectorParams
 
 # Initialize Qdrant client for vector database operations
-qdrant_client = QdrantClient(url=settings.QDRANT_API_URL, api_key=settings.QDRANT_API_KEY)
+qdrant_client = QdrantClient(
+    url=settings.QDRANT_API_URL, port=settings.QDRANT_API_PORT, prefix=settings.QDRANT_API_PREFIX
+)
 
 # Initialize Chroma client for vector database operations
 # chroma_client = HttpClient(
@@ -43,10 +45,17 @@ llm = ChatOpenAI(
     base_url=settings.TFY_LLM_GATEWAY_BASE_URL,
 )
 
-# Create vector store interface combining Qdrant with embeddings
-qdrant_vector_store = QdrantVectorStore(qdrant_client, settings.DEFAULT_COLLECTION_NAME, embeddings)
 
-# Create vector store interface combining Chroma with embeddings
-# chroma_vector_store = Chroma(
-#     chroma_client, settings.DEFAULT_COLLECTION_NAME, embeddings
-# )
+# Create a collection if it doesn't exist
+def create_vector_store(collection_name):
+    try:
+        qdrant_client.create_collection(
+            collection_name=collection_name,
+            vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
+        )
+    except Exception:
+        print(f"Collection {settings.DEFAULT_COLLECTION_NAME} already exists, Re using it")
+
+    # Create vector store interface combining Qdrant with embeddings
+    qdrant_vector_store = QdrantVectorStore(qdrant_client, collection_name, embeddings)
+    return qdrant_vector_store

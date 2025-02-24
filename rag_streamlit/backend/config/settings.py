@@ -14,6 +14,8 @@ class Settings(BaseSettings):
 
     # Qdrant Vector Store Configuration
     QDRANT_API_URL: str
+    QDRANT_API_PORT: int
+    QDRANT_API_PREFIX: str
     QDRANT_API_KEY: str
 
     # Chroma Vector Store Configuration

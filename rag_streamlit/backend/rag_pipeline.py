@@ -11,7 +11,7 @@ from langchain_core.documents import Document
 from langchain_experimental.text_splitter import SemanticChunker
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.graph import START, StateGraph
-from utils import embeddings, llm, qdrant_vector_store
+from utils import embeddings, llm
 
 root_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(root_dir))
@@ -118,7 +118,7 @@ class RAGPipeline:
         """
         self.llm = llm
         self.embeddings = embeddings
-        self.qdrant_vector_store = qdrant_vector_store
+        self.qdrant_vector_store = None
         self.processor = DocumentProcessor(self.config)
 
     def _setup_graph(self):
@@ -135,6 +135,8 @@ class RAGPipeline:
             answer: str
 
         def retrieve(state: State):
+            if self.qdrant_vector_store is None:
+                raise ValueError("Vector store not initialized")
             retrieved_docs = self.qdrant_vector_store.similarity_search(
                 state["question"], k=self.config.similarity_top_k
             )
