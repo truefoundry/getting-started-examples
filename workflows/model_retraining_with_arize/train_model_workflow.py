@@ -92,8 +92,8 @@ def evaluate_model(run_fqns: List[str]) -> str:
     best_accuracy = 0
     for run_fqn in run_fqns:
         run = client.get_run_by_fqn(run_fqn)
-        metrics = run.get_params()
-        f1_score = float(metrics.get("f1", 0))
+        metrics = run.get_metrics()
+        f1_score = metrics.get("f1", 0)[0].value
         if f1_score > best_accuracy:
             best_accuracy = f1_score
             best_model_run_fqn = run_fqn
