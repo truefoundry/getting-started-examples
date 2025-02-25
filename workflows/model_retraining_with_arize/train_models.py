@@ -76,7 +76,7 @@ def train_svm(
     f1 = f1_score(y_test, scores)
     run.log_metrics(
         {
-            "training_algorithm": "random_forest",
+            "model_type": "svm",
             "accuracy": model.score(X_train, y_train),
             "f1": f1,
             "kernel": "linear",
@@ -108,7 +108,7 @@ def train_knn(
     f1 = f1_score(y_test, scores)
     run.log_metrics(
         {
-            "training_algorithm": "random_forest",
+            "model_type": "knn",
             "accuracy": model.score(X_train, y_train),
             "f1": f1,
             "n_neighbors": 5,
