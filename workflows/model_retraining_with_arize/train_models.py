@@ -44,9 +44,10 @@ def train_random_forest(
     f1 = f1_score(y_test, scores)
     run.log_metrics(
         {
-            "algoritm": "random_forest",
+            "training_algorithm": "random_forest",
             "accuracy": model.score(X_train, y_train),
             "f1": f1,
+            "n_estimators": 100,
         }
     )
     joblib.dump(model, "model.pkl")
@@ -75,9 +76,10 @@ def train_svm(
     f1 = f1_score(y_test, scores)
     run.log_metrics(
         {
-            "algoritm": "random_forest",
+            "training_algorithm": "random_forest",
             "accuracy": model.score(X_train, y_train),
             "f1": f1,
+            "kernel": "linear",
         }
     )
     joblib.dump(model, "model.pkl")
@@ -106,9 +108,10 @@ def train_knn(
     f1 = f1_score(y_test, scores)
     run.log_metrics(
         {
-            "algoritm": "random_forest",
+            "training_algorithm": "random_forest",
             "accuracy": model.score(X_train, y_train),
             "f1": f1,
+            "n_neighbors": 5,
         }
     )
     joblib.dump(model, "model.pkl")
