@@ -115,7 +115,7 @@ def deploy_model(run_fqn: str, workspace_fqn: str) -> str:
 @workflow
 def check_drift_and_train_model(ml_repo: str = "<ml-repo>", workspace_fqn: str="<workspace-fqn>") -> str:
     X_train, X_test, y_train, y_test = load_and_preprocess_data()
-    partial_function = partial(
+    trainer = partial(
         train_models,
         X_train=X_train,
         y_train=y_train,
@@ -123,7 +123,7 @@ def check_drift_and_train_model(ml_repo: str = "<ml-repo>", workspace_fqn: str="
         y_test=y_test,
         ml_repo=ml_repo,
     )
-    run_fqns = map_task(partial_function)(
+    run_fqns = map_task(trainer)(
         model_algorithm=["random_forest", "svm", "knn"]
     )
     best_model_run_fqn = evaluate_model(run_fqns)
