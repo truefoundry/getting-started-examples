@@ -42,7 +42,7 @@ def train_random_forest(
     model.fit(X_train, y_train)
     scores = model.predict(X_test)
     f1 = f1_score(y_test, scores)
-    run.log_metrics(
+    run.log_params(
         {
             "training_algorithm": "random_forest",
             "accuracy": model.score(X_train, y_train),
@@ -74,7 +74,7 @@ def train_svm(
     model.fit(X_train, y_train)
     scores = model.predict(X_test)
     f1 = f1_score(y_test, scores)
-    run.log_metrics(
+    run.log_params(
         {
             "model_type": "svm",
             "accuracy": model.score(X_train, y_train),
@@ -106,7 +106,7 @@ def train_knn(
     model.fit(X_train, y_train)
     scores = model.predict(X_test)
     f1 = f1_score(y_test, scores)
-    run.log_metrics(
+    run.log_params(
         {
             "model_type": "knn",
             "accuracy": model.score(X_train, y_train),
