@@ -22,7 +22,7 @@ python app.py
 1. Install `truefoundry`
 
 ```shell
-python -m pip install -U "truefoundry>=0.4.1,<0.5.0"
+python -m pip install -U "truefoundry>=0.5.9,<0.6.0"
 ```
 
 2. Login
