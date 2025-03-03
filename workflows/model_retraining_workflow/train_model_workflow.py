@@ -1,32 +1,31 @@
 import datetime
-from functools import partial
 import os
+import random
+from functools import partial
 from typing import List, Tuple
+
+import numpy as np
+import pandas as pd
+import whylogs as why
+from deploy_model.deploy import deploy_service
+from sklearn.model_selection import train_test_split
+from train_models import train_respective_model
+from truefoundry.deploy import Resources
+from truefoundry.ml import get_client
 from truefoundry.workflow import (
-    task,
-    workflow,
-    map_task,
+    ExecutionConfig,
     PythonTaskConfig,
     TaskPythonBuild,
-    ExecutionConfig,
+    map_task,
+    task,
+    workflow,
 )
-from truefoundry.deploy import Resources
-import numpy as np
-
-from train_models import train_respective_model
-from truefoundry.ml import get_client
-from deploy_model.deploy import deploy_service
-import random
-import pandas as pd
-from sklearn.model_selection import train_test_split
-import whylogs as why
 from whylogs.api.writer.whylabs import WhyLabsWriter
-
 
 task_config = PythonTaskConfig(
     image=TaskPythonBuild(
         python_version="3.10",
-        pip_packages=["truefoundry[workflow]>=0.5.1"],
+        pip_packages=["truefoundry[workflow]>=0.5.9,<0.6.0"],
         requirements_path="requirements.txt",
     ),
     resources=Resources(
@@ -46,10 +45,10 @@ task_config = PythonTaskConfig(
     },
 )
 
+
 # This is a dummy function to simulate drift detection, In actual implementation one would fetch anomaly from whylabs or this workflow will be triggered when whylabs sends a webhook event(https://docs.whylabs.ai/docs/)
 @task(task_config=task_config)
 def check_drift() -> bool:
-
     drift_value = random.randint(1, 10)
     if drift_value > 5:
         print("Drift is detected in the data")
@@ -90,9 +89,7 @@ def load_and_preprocess_data(
     writer.option(reference_profile_name=f"train_data-{current_time.isoformat()}")
     writer.write(profile)
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     return (X_train.values, X_test.values, y_train.values, y_test.values)
 
@@ -110,9 +107,7 @@ def train_models(
     if not is_drift_present:
         print("No drift detected in the data, skipping model training")
         return "No drift detected in the data"
-    return train_respective_model(
-        model_algorithm, X_train, y_train, X_test, y_test, ml_repo
-    )
+    return train_respective_model(model_algorithm, X_train, y_train, X_test, y_test, ml_repo)
 
 
 @task(task_config=task_config)
@@ -162,9 +157,7 @@ def check_drift_and_train_model(ml_repo: str, workspace_fqn: str) -> str:
         ml_repo=ml_repo,
         is_drift_present=is_drift_present,
     )
-    run_fqns = map_task(partial_function)(
-        model_algorithm=["random_forest", "svm", "knn"]
-    )
+    run_fqns = map_task(partial_function)(model_algorithm=["random_forest", "svm", "knn"])
     best_model_run_fqn = evaluate_model(run_fqns, is_drift_present)
     url = deploy_model(
         run_fqn=best_model_run_fqn,
