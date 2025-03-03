@@ -18,7 +18,7 @@ task_config = PythonTaskConfig(
     image=TaskPythonBuild(
         python_version="3.9",
         pip_packages=[
-            "truefoundry[workflow]==0.5.2",
+            "truefoundry[workflow]>=0.5.9,<0.6.0",
             "tensorflow==2.15.0",
             "s3fs>=2024.10.0",
         ],

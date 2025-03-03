@@ -92,7 +92,7 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "streamlit", specifier = ">=1.42.1" },
     { name = "streamlit-chat", specifier = ">=0.1.1" },
-    { name = "truefoundry", specifier = ">=0.5.6" },
+    { name = "truefoundry", specifier = ">=0.5.9" },
     { name = "uvicorn", specifier = ">=0.34.0" },
     { name = "watchdog", specifier = ">=6.0.0" },
 ]

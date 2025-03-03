@@ -6,7 +6,7 @@ This is a sample workflow for the California Housing Dataset.
 
 1. Install the TrueFoundry Python SDK
 ```
-pip install truefoundry[workflow]==0.4.8
+pip install "truefoundry[workflow]>=0.5.9,<0.6.0"
 ```
 
 Login to TrueFoundry

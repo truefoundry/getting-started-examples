@@ -1,31 +1,30 @@
 import datetime
-from functools import partial
 import os
+import random
+from functools import partial
 from typing import List, Tuple
+
+import numpy as np
+import pandas as pd
+import whylogs as why
+from deploy_model.deploy import deploy_service
+from sklearn.model_selection import train_test_split
+from train_models import train_respective_model
+from truefoundry.deploy import Resources
+from truefoundry.ml import get_client
 from truefoundry.workflow import (
-    task,
-    workflow,
-    map_task,
     PythonTaskConfig,
     TaskPythonBuild,
+    map_task,
+    task,
+    workflow,
 )
-from truefoundry.deploy import Resources
-import numpy as np
-
-from train_models import train_respective_model
-from truefoundry.ml import get_client
-from deploy_model.deploy import deploy_service
-import random
-import pandas as pd
-from sklearn.model_selection import train_test_split
-import whylogs as why
 from whylogs.api.writer.whylabs import WhyLabsWriter
-
 
 task_config = PythonTaskConfig(
     image=TaskPythonBuild(
         python_version="3.10",
-        pip_packages=["truefoundry[workflow]>=0.5.1"],
+        pip_packages=["truefoundry[workflow]>=0.5.9,<0.6.0"],
         requirements_path="requirements.txt",
     ),
     resources=Resources(
@@ -46,9 +45,7 @@ task_config = PythonTaskConfig(
 
 
 @task(task_config=task_config)
-def load_and_preprocess_data(
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-
+def load_and_preprocess_data() -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     # In case of drift, the latest data will be fetched from external source, we are just using data.csv for demo purpose.
     df = pd.read_csv("data.csv")
 
@@ -63,9 +60,7 @@ def load_and_preprocess_data(
         columns={"Exited": "Output"},
     )
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     return (X_train.values, X_test.values, y_train.values, y_test.values)
 
@@ -79,14 +74,11 @@ def train_models(
     ml_repo: str,
     model_algorithm: str,
 ) -> str:
-    return train_respective_model(
-        model_algorithm, X_train, y_train, X_test, y_test, ml_repo
-    )
+    return train_respective_model(model_algorithm, X_train, y_train, X_test, y_test, ml_repo)
 
 
 @task(task_config=task_config)
 def evaluate_model(run_fqns: List[str]) -> str:
-
     client = get_client()
     best_model_run_fqn = None
     best_accuracy = 0
@@ -102,7 +94,6 @@ def evaluate_model(run_fqns: List[str]) -> str:
 
 @task(task_config=task_config)
 def deploy_model(run_fqn: str, workspace_fqn: str) -> str:
-
     client = get_client()
     run = client.get_run_by_fqn(run_fqn)
     models = run.list_model_versions()
@@ -113,7 +104,7 @@ def deploy_model(run_fqn: str, workspace_fqn: str) -> str:
 
 
 @workflow
-def check_drift_and_train_model(ml_repo: str = "<ml-repo>", workspace_fqn: str="<workspace-fqn>") -> str:
+def check_drift_and_train_model(ml_repo: str = "<ml-repo>", workspace_fqn: str = "<workspace-fqn>") -> str:
     X_train, X_test, y_train, y_test = load_and_preprocess_data()
     trainer = partial(
         train_models,
@@ -123,9 +114,7 @@ def check_drift_and_train_model(ml_repo: str = "<ml-repo>", workspace_fqn: str="
         y_test=y_test,
         ml_repo=ml_repo,
     )
-    run_fqns = map_task(trainer)(
-        model_algorithm=["random_forest", "svm", "knn"]
-    )
+    run_fqns = map_task(trainer)(model_algorithm=["random_forest", "svm", "knn"])
     best_model_run_fqn = evaluate_model(run_fqns)
     url = deploy_model(
         run_fqn=best_model_run_fqn,
