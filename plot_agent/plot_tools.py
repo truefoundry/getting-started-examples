@@ -6,6 +6,13 @@ from datetime import datetime
 from agno.agent import Agent
 from agno.tools import Toolkit
 from agno.utils.log import logger
+import os
+import uuid
+from matplotlib.ticker import FuncFormatter
+
+# Create plots directory if it doesn't exist
+PLOTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plots")
+os.makedirs(PLOTS_DIR, exist_ok=True)
 
 class PlotTools(Toolkit):
     def __init__(self):
@@ -15,32 +22,66 @@ class PlotTools(Toolkit):
     def _parse_tabular_data(self, data: str) -> pd.DataFrame:
         """Convert tabular string data to pandas DataFrame."""
         try:
+            # Check if data is empty
+            if not data or data.strip() == "":
+                logger.warning("Empty data provided for parsing")
+                return pd.DataFrame()
+            
             # Split the data into lines and get headers
             lines = data.strip().split('\n')
-            headers = [col.strip() for col in lines[0].split('|')]
+            
+            # Debug the raw data
+            logger.info(f"Parsing tabular data with {len(lines)} lines")
+            if len(lines) > 0:
+                logger.info(f"First line: {lines[0]}")
+            
+            # Extract headers - handle both space-separated and pipe-separated formats
+            if '|' in lines[0]:
+                headers = [col.strip() for col in lines[0].split('|') if col.strip()]
+            else:
+                headers = [col.strip() for col in lines[0].split() if col.strip()]
+            
+            logger.info(f"Extracted headers: {headers}")
             
             # Parse the data rows
             rows = []
             for line in lines[1:]:
-                if line.strip():  # Skip empty lines
-                    row = [val.strip() for val in line.split('|')]
-                    rows.append(row)
+                if line.strip() and not line.startswith('-'):  # Skip empty lines and separator lines
+                    if '|' in line:
+                        row = [val.strip() for val in line.split('|') if val.strip()]
+                    else:
+                        row = [val.strip() for val in line.split() if val.strip()]
+                    
+                    # Ensure row has the same length as headers
+                    if len(row) == len(headers):
+                        rows.append(row)
+                    else:
+                        logger.warning(f"Skipping row with mismatched columns: {line}")
             
             # Create DataFrame
             df = pd.DataFrame(rows, columns=headers)
             
             # Convert data types where possible
             for col in df.columns:
-                # Try to convert to numeric
-                try:
-                    df[col] = pd.to_numeric(df[col])
-                except:
-                    # Try to convert to datetime if 'time' or 'date' in column name
-                    if 'time' in col.lower() or 'date' in col.lower():
-                        try:
-                            df[col] = pd.to_datetime(df[col])
-                        except:
-                            pass
+                # Special handling for cost column to ensure positive float values
+                if 'cost' in col.lower():
+                    df[col] = pd.to_numeric(df[col], errors='coerce')
+                    # Ensure positive values for cost
+                    df[col] = df[col].abs()
+                # Try to convert other columns to numeric
+                else:
+                    try:
+                        df[col] = pd.to_numeric(df[col])
+                    except:
+                        # Try to convert to datetime if 'time' or 'date' in column name
+                        if 'time' in col.lower() or 'date' in col.lower():
+                            try:
+                                df[col] = pd.to_datetime(df[col])
+                            except:
+                                pass
+            
+            logger.info(f"Successfully parsed data into DataFrame with shape {df.shape}")
+            logger.info(f"DataFrame columns: {df.columns.tolist()}")
             return df
         except Exception as e:
             logger.warning(f"Failed to parse tabular data: {e}")
@@ -57,27 +98,19 @@ class PlotTools(Toolkit):
         figsize: Optional[List[float]] = [12, 8],  # Increased default figure size
         style: Optional[str] = "seaborn-v0_8-darkgrid",
         palette: Optional[str] = "husl",
-        output_path: Optional[str] = "plot.png"
+        output_path: Optional[str] = None
     ) -> str:
-        """
-        Create a visualization based on the input data and plot type.
-        
-        Args:
-            data: Tabular data as string with columns separated by '|' and rows by newlines
-            plot_type: Type of plot ('line', 'bar', 'scatter', 'histogram', 'box', 'violin')
-            x_col: Column name for x-axis
-            y_col: Column name for y-axis (optional for histogram)
-            title: Plot title
-            hue: Column name for color grouping (optional)
-            figsize: List of [width, height] for the figure size
-            style: matplotlib style to use (e.g. 'seaborn-v0_8-darkgrid', 'seaborn-v0_8-whitegrid')
-            palette: Color palette to use
-            output_path: Path where to save the plot
-            
-        Returns:
-            str: Path to the saved plot image or error message
-        """
+        """Create a plot based on the data and parameters."""
         try:
+            # Generate a unique filename if output_path is not provided
+            if output_path is None:
+                filename = f"plot_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{str(uuid.uuid4())[:8]}.png"
+                output_path = os.path.join(PLOTS_DIR, filename)
+            elif not os.path.isabs(output_path):
+                output_path = os.path.join(PLOTS_DIR, output_path)
+            
+            logger.info(f"Creating plot, will save to: {output_path}")
+            
             logger.info(f"Creating {plot_type} plot with x={x_col}, y={y_col}, hue={hue}")
             
             # Set style with error handling
@@ -89,6 +122,7 @@ class PlotTools(Toolkit):
             
             # Parse data
             df = self._parse_tabular_data(data)
+            print(f"DataFrame: {df}")
             
             # If model_name column exists, clean up the names
             if 'model_name' in df.columns:
@@ -98,7 +132,7 @@ class PlotTools(Toolkit):
             plt.figure(figsize=tuple(figsize))
             
             # Create plot based on type
-            if plot_type == 'line':
+            if plot_type == 'line' or plot_type == 'time series':  # Added time series as an alias for line
                 sns.lineplot(data=df, x=x_col, y=y_col, hue=hue, marker='o')
                 if hue:  # Move legend outside for better readability
                     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0)
@@ -136,8 +170,20 @@ class PlotTools(Toolkit):
             
             # Format y-axis for cost values (if dealing with small numbers)
             if y_col and 'cost' in y_col.lower():
-                plt.gca().yaxis.set_major_formatter(plt.ScalarFormatter(useMathText=True))
-                plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+                # Set y-axis to start at 0
+                plt.ylim(bottom=0)
+                
+                # Get and print y-axis values
+                y_values = plt.gca().get_yticks()
+                print("Y-axis values before formatting:", y_values)
+                
+                def cost_formatter(x, p):
+                    # Only format if value is non-negative
+                    if x < 0:
+                        return ''
+                    return f'{x:.4f}'
+                
+                plt.gca().yaxis.set_major_formatter(FuncFormatter(cost_formatter))
             
             # Rotate x-axis labels if they're dates or long text
             if x_col.lower() in ['date', 'created_at'] or (isinstance(df[x_col].iloc[0], str) and df[x_col].str.len().max() > 10):
@@ -157,11 +203,11 @@ class PlotTools(Toolkit):
             plt.close()
             
             logger.info(f"Successfully created plot at {output_path}")
-            return f"Plot saved successfully at {output_path}"
+            return output_path
             
         except Exception as e:
             logger.warning(f"Failed to create plot: {e}")
-            return f"Error: {str(e)}"
+            raise ValueError(f"Failed to create plot: {e}")
 
 # Example usage
 if __name__ == "__main__":

@@ -40,14 +40,25 @@ class ClickHouseTools(Toolkit):
             output = []
             # Add column headers
             headers = [col[0] for col in result.column_names]
+            logger.info(f"Query returned columns: {headers}")
             output.append(" | ".join(headers))
+            
+            # Add separator line
             output.append("-" * len(" | ".join(headers)))
             
             # Add rows
             for row in result.result_rows:
-                output.append(" | ".join(str(cell) for cell in row))
+                formatted_row = []
+                for cell in row:
+                    if cell is None:
+                        formatted_row.append("NULL")
+                    else:
+                        formatted_row.append(str(cell))
+                output.append(" | ".join(formatted_row))
             
-            return "\n".join(output)
+            result_str = "\n".join(output)
+            logger.info(f"Query returned {len(result.result_rows)} rows")
+            return result_str
             
         except Exception as e:
             logger.warning(f"Failed to execute ClickHouse query: {e}")

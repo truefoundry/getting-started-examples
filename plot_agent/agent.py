@@ -10,8 +10,9 @@ from agno.utils.log import logger
 
 class SQLQueryResult(BaseModel):
     query: str = Field(..., description="The SQL query that was executed.")
-    data: str = Field(..., description="The query results in tabular format.")
-    error: Optional[str] = Field(None, description="Error message if query failed.")
+    column_names: List[str] = Field(..., description="List of column names in the query result.")
+    rows: List[List[str]] = Field(..., description="List of row values, where each row is a list of column values.")
+    error: Optional[str] = Field(None, description="Error message if the query failed.")
 
 class PlotResult(BaseModel):
     plot_type: str = Field(..., description="Type of plot created.")
@@ -107,7 +108,9 @@ class SQLAndPlotWorkflow(Workflow):
                 content=f"SQL Query Error: {sql_result.error}"
             )
             return
-        print(f"SQL Query Result: {sql_result}")
+        print(f"SQL Query Result: {sql_result.column_names}")
+        print(f"SQL Query Result: {sql_result.query}")
+        print(f"SQL Query Result: {sql_result.rows}")
         # Step 2: Generate visualization
         yield from self._create_visualization(sql_result)
 
@@ -135,7 +138,8 @@ class SQLAndPlotWorkflow(Workflow):
         
         return SQLQueryResult(
             query="",
-            data="",
+            column_names=[],
+            rows=[],
             error=f"Failed to execute SQL query after {MAX_ATTEMPTS} attempts"
         )
 
@@ -143,11 +147,17 @@ class SQLAndPlotWorkflow(Workflow):
         """Create visualization from SQL results."""
         try:
             logger.info("Generating visualization request")
+            
+            # Convert SQL result into tabular format that plot_tools expects
+            # Convert columns and rows into pipe-separated format
+            formatted_data = " | ".join(sql_result.column_names) + "\n"
+            formatted_data += "\n".join([" | ".join(row) for row in sql_result.rows])
+            
             # Get visualization request from plot agent
             viz_response: RunResponse = self.plot_agent.run(
                 json.dumps({
                     "query": sql_result.query,
-                    "data": sql_result.data
+                    "data": formatted_data
                 }, indent=4)
             )
             
@@ -228,7 +238,7 @@ class SQLAndPlotWorkflow(Workflow):
             logger.info(f"Creating {viz_request.plot_type} plot with x={viz_request.x_col}, y={viz_request.y_col}")
             try:
                 plot_result = plot_tools.create_plot(
-                    data=sql_result.data,
+                    data=formatted_data,
                     plot_type=viz_request.plot_type,
                     x_col=viz_request.x_col,
                     y_col=viz_request.y_col,
@@ -260,13 +270,14 @@ class SQLAndPlotWorkflow(Workflow):
                 content=f"Failed to create visualization: {str(e)}"
             )
 
-# Example usage:
-workflow = SQLAndPlotWorkflow()
-
-# Analyze and visualize data
-for response in workflow.run_workflow("Show me the cost trends by model over the last week. Filter models that show a 0 cost."):
-    if response.event == "workflow_error":
-        print(f"Error: {response.content}")
-    elif response.event == "visualization_complete":
-        plot_result = response.content
-        print(f"Generated {plot_result.plot_type} plot at {plot_result.plot_path}")
+if __name__ == "__main__":
+    # Example usage:
+    workflow = SQLAndPlotWorkflow()
+    
+    # Analyze and visualize data
+    for response in workflow.run_workflow("Show me the cost trends by model over the last week. Filter models that show a 0 cost."):
+        if response.event == "workflow_error":
+            print(f"Error: {response.content}")
+        elif response.event == "visualization_complete":
+            plot_result = response.content
+            print(f"Generated {plot_result.plot_type} plot at {plot_result.plot_path}")
