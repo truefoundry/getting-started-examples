@@ -34,7 +34,7 @@ service = Service(
 
   # --- Environment Variables ---
   env={
-    "FASTAPI_ENDPOINT": os.getenv("API_BASE_URL"),
+    "API_BASE_URL": os.getenv("API_BASE_URL"),
   },
 
   # --- Resources ---
