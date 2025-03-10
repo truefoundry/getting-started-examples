@@ -19,10 +19,10 @@ Simply enter your query below and the system will generate the appropriate SQL q
 """)
 
 # API endpoint configuration
-API_BASE_URL = os.getenv("FASTAPI_ENDPOINT", "http://localhost:8000")
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 if not API_BASE_URL:
-    st.error("Error: FASTAPI_ENDPOINT environment variable is not set. Please set it to your API endpoint URL.")
+    st.error("Error: API_BASE_URL environment variable is not set. Please set it to your API endpoint URL.")
     st.stop()
 
 def submit_query(query):
