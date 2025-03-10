@@ -19,7 +19,7 @@ Simply enter your query below and the system will generate the appropriate SQL q
 """)
 
 # API endpoint configuration
-API_BASE_URL = os.getenv("API_BASE_URL")
+API_BASE_URL = os.getenv("FASTAPI_ENDPOINT")
 
 
 def submit_query(query):

@@ -60,8 +60,9 @@ cp .env.example .env
 
 2. Edit the `.env` file with your actual credentials:
 ```env
-# OpenAI API Configuration
-OPENAI_API_KEY=your_openai_api_key_here
+# Truefoundry LLMGateway Configuration
+LLM_GATEWAY_BASE_URL=your_llm_gateway_base_url_here
+LLM_GATEWAY_API_KEY=your_llm_gateway_api_key_here
 
 # ClickHouse Database Configuration
 CLICKHOUSE_HOST=your_clickhouse_host_here
