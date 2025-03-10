@@ -19,8 +19,11 @@ Simply enter your query below and the system will generate the appropriate SQL q
 """)
 
 # API endpoint configuration
-API_BASE_URL = os.getenv("FASTAPI_ENDPOINT")
+API_BASE_URL = os.getenv("FASTAPI_ENDPOINT", "http://localhost:8000")
 
+if not API_BASE_URL:
+    st.error("Error: FASTAPI_ENDPOINT environment variable is not set. Please set it to your API endpoint URL.")
+    st.stop()
 
 def submit_query(query):
     response = requests.post(
@@ -84,7 +87,7 @@ st.sidebar.header("Example Queries")
 st.sidebar.markdown("""
 - Show me the cost trends by model over the last week. Filter models that show a 0 cost.
 - Compare usage patterns across the top 5 models
-- Display daily active users over time
+- List the top 5 most active users by request count in the last 30 days.
 """)
 
 # Add information about the project
