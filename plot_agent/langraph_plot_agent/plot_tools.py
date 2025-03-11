@@ -317,8 +317,8 @@ class PlotTools:
 
 # Example usage
 if __name__ == "__main__":
-    # Create a sample agent with plot tools
-    agent = Agent(tools=[PlotTools()], show_tool_calls=True, markdown=True)
+    # Create a sample plot tools instance
+    plot_tools = PlotTools()
     
     # Example data
     sample_data = """
@@ -330,12 +330,12 @@ if __name__ == "__main__":
     """
     
     # Create a test plot
-    plot_tools = PlotTools()
-    plot_tools.create_plot(
+    plot_path = plot_tools.create_plot(
         data=sample_data.strip(),
         plot_type="line",
         x_col="created_at",
         y_col="cost",
         title="Cost Over Time by Model",
         hue="model_name"
-    ) 
+    )
+    print(f"Plot created at: {plot_path}") 
