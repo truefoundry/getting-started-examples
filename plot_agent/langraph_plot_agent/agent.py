@@ -1,25 +1,12 @@
-from typing import List, Dict, Any, Optional, Iterator, TypedDict, Annotated, Literal, cast, Tuple
+from typing import List, Dict, Any, Optional, Iterator, TypedDict, Literal
 from pydantic import BaseModel, Field
 import json
 import os
 import logging
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, FunctionMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.tools import tool
-from langchain_core.pydantic_v1 import BaseModel as LCBaseModel
-from langchain_core.pydantic_v1 import Field as LCField
-from langchain_core.pydantic_v1 import validator
-from langchain_core.runnables.config import RunnableConfig
-from langchain_core.callbacks.base import BaseCallbackHandler
-from langchain_core.callbacks.manager import CallbackManagerForChainRun
-from langchain.output_parsers.openai_tools import JsonOutputToolsParser
-from langchain.output_parsers import PydanticOutputParser
-from langchain_core.messages import ToolMessage
 from langgraph.graph import StateGraph, END
-from langgraph.prebuilt import ToolNode
 from clickhouse_tools import ClickHouseTools
 from plot_tools import PlotTools
 
@@ -64,7 +51,7 @@ class WorkflowState(TypedDict):
     next: Optional[str]
 
 # Custom callback handler to track events
-class EventTrackingHandler(BaseCallbackHandler):
+class EventTrackingHandler:
     def __init__(self):
         self.events = []
         
