@@ -3,3 +3,4 @@
 .ipynb_checkpoints/
 **/venv
 plot_agent/.env
+plot_agent/langraph_plot_agent/.env
