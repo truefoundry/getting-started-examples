@@ -39,6 +39,20 @@ def get_plot(job_id):
     response = requests.get(f"{API_BASE_URL}/plot/{job_id}")
     return response.content
 
+def get_workflow_graph():
+    response = requests.get(f"{API_BASE_URL}/graph")
+    return response.content
+
+# Add a button to view the workflow graph
+if st.button("View LangGraph Workflow"):
+    try:
+        with st.spinner("Generating workflow graph..."):
+            graph_data = get_workflow_graph()
+            image = Image.open(io.BytesIO(graph_data))
+            st.image(image, caption="LangGraph Workflow Visualization", use_column_width=True)
+    except Exception as e:
+        st.error(f"Error displaying workflow graph: {e}")
+
 # Create the main query input
 query = st.text_area(
     "Enter your query",
@@ -77,6 +91,10 @@ if st.button("Generate Visualization"):
                                 st.warning(f"Visualization Error: {content}")
                             elif event_type == "visualization_complete":
                                 st.success("Visualization complete!")
+                            elif event_type == "sql_complete":
+                                st.info("SQL query executed successfully!")
+                            elif event_type == "workflow_complete":
+                                st.success("Workflow completed successfully!")
                             else:
                                 st.info(f"{event_type}: {content}")
                 
