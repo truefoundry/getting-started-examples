@@ -24,18 +24,17 @@ class ClickHouseTools(Toolkit):
 
     def execute_query(self, query: str, limit: Optional[int] = None) -> str:
         """
-        Executes a ClickHouse query and returns the results.
+        Use this function to execute a ClickHouse query and return the results from the database back so that it can be used for plotting.
 
         Args:
             query (str): The SQL query to execute
             limit (Optional[int]): Maximum number of rows to return
         Returns:
             str: The query results as a formatted string
+
         """
         try:
             logger.info(f"Executing ClickHouse query: {query}")
-            if limit:
-                query = f"{query} LIMIT {limit}"
             
             result = self.client.query(query)
             
