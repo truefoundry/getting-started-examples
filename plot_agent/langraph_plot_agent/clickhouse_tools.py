@@ -130,5 +130,6 @@ class ClickHouseTools:
 
 # Example usage
 if __name__ == "__main__":
-    agent = Agent(tools=[ClickHouseTools()], show_tool_calls=True, markdown=True)
-    agent.print_response("Show me the first 5 rows from the request_logs table.") 
+    tools = ClickHouseTools()
+    result = tools.execute_query("SELECT * FROM request_logs LIMIT 5")
+    print(result) 
