@@ -3,7 +3,6 @@ import requests
 import time
 from PIL import Image
 import io
-import os
 
 # Configure the app
 st.set_page_config(
