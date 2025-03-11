@@ -6,7 +6,7 @@ import uvicorn
 import os
 import uuid
 import logging
-from agent import SQLAndPlotWorkflow, PlotResult
+from agent import SQLAndPlotWorkflow, PlotResult, plot_graph
 from fastapi.middleware.cors import CORSMiddleware
 
 # Configure logging
@@ -55,12 +55,17 @@ workflow = SQLAndPlotWorkflow()
 @app.post("/query", response_model=WorkflowResponse)
 async def execute_query(request: QueryRequest, background_tasks: BackgroundTasks):
     """
-    Execute a natural language query to analyze and visualize data.
-    The query will be processed asynchronously.
+    Execute a natural language query to generate SQL and visualizations.
+    
+    Args:
+        request: The query request containing the natural language query
+        
+    Returns:
+        A response with a job ID for tracking the query execution
     """
     job_id = str(uuid.uuid4())
     
-    # Initialize job in the store
+    # Initialize the job in the results store
     results_store[job_id] = {
         "status": "processing",
         "events": [],
@@ -68,124 +73,128 @@ async def execute_query(request: QueryRequest, background_tasks: BackgroundTasks
         "error": None
     }
     
-    # Add task to background
+    # Process the query in the background
     background_tasks.add_task(process_query, job_id, request.query)
     
     return WorkflowResponse(
         job_id=job_id,
         status="processing",
-        message="Query is being processed. Check status with /status/{job_id}"
+        message="Query is being processed"
     )
 
 @app.get("/status/{job_id}", response_model=JobStatusResponse)
 async def get_job_status(job_id: str):
     """
-    Get the status of a previously submitted query job.
+    Get the status of a job.
+    
+    Args:
+        job_id: The ID of the job to check
+        
+    Returns:
+        The current status of the job
     """
     if job_id not in results_store:
         raise HTTPException(status_code=404, detail="Job not found")
     
+    job_data = results_store[job_id]
+    
     return JobStatusResponse(
         job_id=job_id,
-        status=results_store[job_id]["status"],
-        events=results_store[job_id]["events"],
-        plot_result=results_store[job_id]["plot_result"],
-        error=results_store[job_id]["error"]
+        status=job_data["status"],
+        events=job_data["events"],
+        plot_result=job_data["plot_result"],
+        error=job_data["error"]
     )
 
 @app.get("/plot/{job_id}")
 async def get_plot(job_id: str):
     """
     Get the plot image for a completed job.
+    
+    Args:
+        job_id: The ID of the job
+        
+    Returns:
+        The plot image file
     """
     if job_id not in results_store:
-        logger.error(f"Job {job_id} not found in results store")
         raise HTTPException(status_code=404, detail="Job not found")
     
-    if results_store[job_id]["status"] != "completed":
-        logger.error(f"Job {job_id} not completed. Status: {results_store[job_id]['status']}")
-        raise HTTPException(status_code=400, detail="Job not completed or no plot available")
+    job_data = results_store[job_id]
     
-    if not results_store[job_id]["plot_result"]:
-        logger.error(f"No plot result for job {job_id}")
-        raise HTTPException(status_code=400, detail="No plot available for this job")
+    if job_data["status"] != "completed":
+        raise HTTPException(status_code=400, detail="Plot not ready yet")
     
-    plot_path = results_store[job_id]["plot_result"]["plot_path"]
-    logger.info(f"Plot path for job {job_id}: {plot_path}")
+    if not job_data["plot_result"]:
+        raise HTTPException(status_code=404, detail="No plot available for this job")
     
-    # Convert relative path to absolute path if necessary
-    if not os.path.isabs(plot_path):
-        plot_path = os.path.join(PLOTS_DIR, plot_path)
-        logger.info(f"Converted to absolute path: {plot_path}")
+    plot_path = job_data["plot_result"].get("plot_path")
     
-    if not os.path.exists(plot_path):
-        logger.error(f"Plot file not found at path: {plot_path}")
-        raise HTTPException(status_code=404, detail=f"Plot file not found at path: {plot_path}")
+    if not plot_path or not os.path.exists(plot_path):
+        raise HTTPException(status_code=404, detail="Plot file not found")
     
     return FileResponse(plot_path)
 
-async def process_query(job_id: str, query: str):
+@app.get("/graph")
+async def get_workflow_graph():
     """
-    Process the query in the background and update the results store.
+    Generate and return the workflow graph visualization.
+    
+    Returns:
+        The workflow graph image file
     """
     try:
+        graph_path = plot_graph()
+        return FileResponse(graph_path)
+    except Exception as e:
+        logger.error(f"Error generating workflow graph: {e}")
+        raise HTTPException(status_code=500, detail=f"Error generating workflow graph: {str(e)}")
+
+async def process_query(job_id: str, query: str):
+    """
+    Process a query and update the results store.
+    
+    Args:
+        job_id: The ID of the job
+        query: The natural language query to process
+    """
+    try:
+        logger.info(f"Processing query for job {job_id}: {query}")
+        
+        # Execute the workflow
         for response in workflow.run_workflow(query):
-            # Store each event
+            event = response.get("event", "unknown")
+            content = response.get("content", {})
+            
+            # Add the event to the results store
             results_store[job_id]["events"].append({
-                "event": response["event"],
-                "content": response["content"]
+                "event": event,
+                "content": str(content)
             })
             
-            # Update status based on events
-            if response["event"] == "workflow_error":
-                results_store[job_id]["status"] = "failed"
-                results_store[job_id]["error"] = response["content"]
-                break
+            # Update the plot result if available
+            if event == "visualization_complete" and isinstance(content, PlotResult):
+                results_store[job_id]["plot_result"] = content.dict()
             
-            elif response["event"] == "visualization_complete":
+            # Update the status based on the event
+            if event == "workflow_error":
+                results_store[job_id]["status"] = "failed"
+                results_store[job_id]["error"] = str(content)
+            elif event == "workflow_complete":
                 results_store[job_id]["status"] = "completed"
-                # Convert PlotResult to dict for storage
-                if isinstance(response["content"], PlotResult):
-                    plot_result = response["content"].model_dump()
-                    # Ensure plot is saved in plots directory with job_id
-                    if not os.path.isabs(plot_result["plot_path"]):
-                        original_path = plot_result["plot_path"]
-                        new_plot_path = os.path.join(PLOTS_DIR, f"{job_id}_{os.path.basename(original_path)}")
-                        
-                        # Check if original file exists
-                        if not os.path.exists(original_path):
-                            logger.error(f"Original plot file not found: {original_path}")
-                            results_store[job_id]["status"] = "failed"
-                            results_store[job_id]["error"] = f"Plot file not found: {original_path}"
-                            break
-                            
-                        try:
-                            os.rename(original_path, new_plot_path)
-                            plot_result["plot_path"] = new_plot_path
-                            logger.info(f"Successfully moved plot to: {new_plot_path}")
-                        except Exception as e:
-                            logger.error(f"Failed to move plot file: {e}")
-                            # If rename fails, try to copy the file instead
-                            try:
-                                import shutil
-                                shutil.copy2(original_path, new_plot_path)
-                                os.remove(original_path)  # Clean up original file
-                                plot_result["plot_path"] = new_plot_path
-                                logger.info(f"Successfully copied plot to: {new_plot_path}")
-                            except Exception as copy_error:
-                                logger.error(f"Failed to copy plot file: {copy_error}")
-                                results_store[job_id]["status"] = "failed"
-                                results_store[job_id]["error"] = f"Failed to save plot: {copy_error}"
-                                break
-                    
-                    results_store[job_id]["plot_result"] = plot_result
-                else:
-                    results_store[job_id]["plot_result"] = response["content"]
-    
+        
+        # If we get here without setting a final status, mark as completed
+        if results_store[job_id]["status"] == "processing":
+            results_store[job_id]["status"] = "completed"
+            
     except Exception as e:
         logger.error(f"Error processing query: {e}")
         results_store[job_id]["status"] = "failed"
         results_store[job_id]["error"] = str(e)
+        results_store[job_id]["events"].append({
+            "event": "workflow_error",
+            "content": str(e)
+        })
 
 if __name__ == "__main__":
-    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True) 
+    uvicorn.run(app, host="0.0.0.0", port=8000) 
