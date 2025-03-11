@@ -5,8 +5,13 @@ from typing import Optional, Dict, Any, List
 import uvicorn
 import os
 import uuid
+import logging
 from agent import SQLAndPlotWorkflow, PlotResult
-from agno.utils.log import logger
+from fastapi.middleware.cors import CORSMiddleware
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Create plots directory if it doesn't exist
 PLOTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plots")
@@ -17,7 +22,6 @@ app = FastAPI(
     description="API for executing SQL queries and generating visualizations",
     version="1.0.0"
 )
-from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
@@ -128,21 +132,21 @@ async def process_query(job_id: str, query: str):
         for response in workflow.run_workflow(query):
             # Store each event
             results_store[job_id]["events"].append({
-                "event": response.event,
-                "content": response.content
+                "event": response["event"],
+                "content": response["content"]
             })
             
             # Update status based on events
-            if response.event == "workflow_error":
+            if response["event"] == "workflow_error":
                 results_store[job_id]["status"] = "failed"
-                results_store[job_id]["error"] = response.content
+                results_store[job_id]["error"] = response["content"]
                 break
             
-            elif response.event == "visualization_complete":
+            elif response["event"] == "visualization_complete":
                 results_store[job_id]["status"] = "completed"
                 # Convert PlotResult to dict for storage
-                if isinstance(response.content, PlotResult):
-                    plot_result = response.content.dict()
+                if isinstance(response["content"], PlotResult):
+                    plot_result = response["content"].model_dump()
                     # Ensure plot is saved in plots directory with job_id
                     if not os.path.isabs(plot_result["plot_path"]):
                         original_path = plot_result["plot_path"]
@@ -176,7 +180,7 @@ async def process_query(job_id: str, query: str):
                     
                     results_store[job_id]["plot_result"] = plot_result
                 else:
-                    results_store[job_id]["plot_result"] = response.content
+                    results_store[job_id]["plot_result"] = response["content"]
     
     except Exception as e:
         logger.error(f"Error processing query: {e}")
