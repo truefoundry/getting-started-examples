@@ -6,7 +6,12 @@ from plot_tools import PlotTools
 from typing import List, Dict, Any, Optional, Iterator
 from pydantic import BaseModel, Field
 import json
+import os
 from agno.utils.log import logger
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 class SQLQueryResult(BaseModel):
     query: str = Field(..., description="The SQL query that was executed.")
@@ -30,14 +35,17 @@ class VisualizationRequest(BaseModel):
     hue: Optional[str] = Field(None, description="Column for color grouping.")
 
 class SQLAndPlotWorkflow(Workflow):
+        
     # SQL Agent that generates and executes Clickhouse queries
     sql_agent: Agent = Agent(
-        model=OpenAIChat(id="gpt-4o"),
+        # model=OpenAIChat(id="openai-main/gpt-4o", api_key=os.getenv("LLM_GATEWAY_API_KEY"), base_url=os.getenv("LLM_GATEWAY_BASE_URL")),
+        model=OpenAIChat(id="gpt-4o", api_key=os.getenv("OPENAI_API_KEY")),
         description="You are an expert in generating and executing Clickhouse SQL queries from user queries in English.",
         instructions=[
-            "First, generate an optimized and accurate ClickHouse SQL query based on the user’s query. Make sure that only relevant fields are selected and queries are efficient.",
+            "First, generate an optimized and accurate ClickHouse SQL query based on the user's query. Make sure that only relevant fields are selected and queries are efficient.",
             "Then, always execute the generated SQL query against ClickHouse using a tool call.",
             "Return the SQL query in the format of a SQLQueryResult object.",
+            "Please verify if you made the tool call to execute the sql query against clickhouse. If not retry go back to the previous step and make the tool call.",
             "We have a Clickhouse table called request_logs which contains the requests for the calls made to an LLM.",
             "The table structure is defined below in the format of columnName: type: description:",
             "- id: String: This is the row id which is a random string. Not very useful in queries.",
@@ -57,17 +65,21 @@ class SQLAndPlotWorkflow(Workflow):
             "- metadata: Map(LowCardinality(String), String): Metadata associated with the request.",
             "- applied_configs: Map(LowCardinality(String), Map(LowCardinality(String), String)): Configuration settings applied to the request.",
             "- created_at: DateTime64(9) Delta(8), ZSTD(1): The timestamp when the request was made.",
+            "Clickhouse has slighlty different syntax rules than MySQL or PostgreSQL. Please make sure to use the correct syntax for Clickhouse."
+            "Syntax rule: Use toIntervalXXX(N) (e.g., toIntervalDay(30)) instead of INTERVAL N UNIT (e.g., INTERVAL 30 DAY) for interval arithmetic in ClickHouse."
+            "Syntax rule: Do not end in a semicolon (;) in the query. Only end with a newline.",
         ],
         tools=[ClickHouseTools()],
         show_tool_calls=True,
         markdown=True,
         response_model=SQLQueryResult,
-        # structured_outputs=True,
+        structured_outputs=True,
         # debug_mode=True,
     )
 
     # Plot Agent that creates visualizations
     plot_agent: Agent = Agent(
+        # model=OpenAIChat(id="gpt-4o", api_key=os.getenv("LLM_GATEWAY_API_KEY"), base_url="https://llm-gateway.truefoundry.com/api/inference/openai"),
         model=OpenAIChat(id="gpt-4o"),
         description="You are an expert in creating data visualizations from SQL query results.",
         instructions=[
@@ -86,10 +98,13 @@ class SQLAndPlotWorkflow(Workflow):
             "Provide a brief analysis of key patterns, trends, or anomalies observed in each visualization."
         ],
         tools=[PlotTools()],
+        show_tool_calls=True,
         markdown=True,
         response_model=VisualizationRequest,
-        structured_outputs=True,
+        # structured_outputs=True,
+        # debug_mode=True,
     )
+
 
     def run_workflow(self, query: str) -> Iterator[RunResponse]:
         """
@@ -126,7 +141,6 @@ class SQLAndPlotWorkflow(Workflow):
                 logger.info(f"Executing SQL query, attempt {attempt + 1}/{MAX_ATTEMPTS}")
                 sql_response: RunResponse = self.sql_agent.run(query)
                 
-           
                 if not sql_response or not sql_response.content:
                     logger.warning(f"Attempt {attempt + 1}/{MAX_ATTEMPTS}: Empty SQL response")
                     continue
@@ -134,7 +148,7 @@ class SQLAndPlotWorkflow(Workflow):
                 if not isinstance(sql_response.content, SQLQueryResult):
                     logger.warning(f"Attempt {attempt + 1}/{MAX_ATTEMPTS}: Invalid response type")
                     continue
-                    
+                
                 return sql_response.content
                 
             except Exception as e:
@@ -279,7 +293,7 @@ if __name__ == "__main__":
     workflow = SQLAndPlotWorkflow()
     
     # Analyze and visualize data
-    for response in workflow.run_workflow("Show me the cost trends by model over the last week. Filter models that show a 0 cost."):
+    for response in workflow.run_workflow("List the top 5 most active users by request count in the last 30 days."):
         if response.event == "workflow_error":
             print(f"Error: {response.content}")
         elif response.event == "visualization_complete":
