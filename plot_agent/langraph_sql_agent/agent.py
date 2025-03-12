@@ -64,9 +64,70 @@ class AgentState(TypedDict):
 
 def sql_agent_node(state: AgentState) -> AgentState:
     prompt = ChatPromptTemplate.from_template("Generate a ClickHouse SQL query for: {query}")
-    chain = prompt | ChatOpenAI(model="gpt-4o") | (lambda x: x.content) | execute_clickhouse_query
-    sql_result = chain.invoke({"query": state["query"]})
-    return {"query": state["query"], "sql_result": sql_result}
+    chain = prompt | ChatOpenAI(model="gpt-4o") | (lambda x: x.content)
+    
+    # Get the SQL query
+    sql_query = chain.invoke({"query": state["query"]})
+    
+    # Execute the query and get the result as a string
+    result_str = execute_clickhouse_query(sql_query)
+    
+    # Parse the result string into a SQLQueryResult object
+    if "Error:" in result_str:
+        # Handle error case
+        return {
+            "query": state["query"], 
+            "sql_result": SQLQueryResult(
+                query=sql_query,
+                column_names=[],
+                rows=[],
+                error=result_str
+            )
+        }
+    else:
+        # Parse successful result
+        try:
+            lines = result_str.strip().split('\n')
+            if len(lines) < 2:
+                return {
+                    "query": state["query"], 
+                    "sql_result": SQLQueryResult(
+                        query=sql_query,
+                        column_names=[],
+                        rows=[],
+                        error="No results or invalid format returned"
+                    )
+                }
+            
+            # Extract column names from the first line
+            column_names = [col.strip() for col in lines[0].split('|') if col.strip()]
+            
+            # Extract rows (skip header and separator line)
+            rows = []
+            for line in lines[2:]:  # Skip header and separator line
+                if line.strip():
+                    row = [cell.strip() for cell in line.split('|') if cell]
+                    rows.append(row)
+            
+            return {
+                "query": state["query"], 
+                "sql_result": SQLQueryResult(
+                    query=sql_query,
+                    column_names=column_names,
+                    rows=rows,
+                    error=None
+                )
+            }
+        except Exception as e:
+            return {
+                "query": state["query"], 
+                "sql_result": SQLQueryResult(
+                    query=sql_query,
+                    column_names=[],
+                    rows=[],
+                    error=f"Failed to parse query result: {str(e)}"
+                )
+            }
 
 def plot_agent_node(state: AgentState) -> AgentState:
     sql_result = state["sql_result"]
