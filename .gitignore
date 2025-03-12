@@ -5,3 +5,4 @@
 plot_agent/.env
 plot_agent/langraph_plot_agent/.env
 plot_agent/agno_plot_agent/.env
+plot_agent/langraph_sql_agent/.env
