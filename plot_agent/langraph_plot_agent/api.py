@@ -6,7 +6,7 @@ import uvicorn
 import os
 import uuid
 import logging
-from agent import SQLAndPlotWorkflow, PlotResult, plot_graph
+from agent import ReactSQLAndPlotWorkflow, PlotResult, plot_graph
 from fastapi.middleware.cors import CORSMiddleware
 
 # Configure logging
@@ -50,7 +50,7 @@ class JobStatusResponse(BaseModel):
     error: Optional[str] = None
 
 # Initialize the workflow
-workflow = SQLAndPlotWorkflow()
+workflow = ReactSQLAndPlotWorkflow()
 
 @app.post("/query", response_model=WorkflowResponse)
 async def execute_query(request: QueryRequest, background_tasks: BackgroundTasks):
