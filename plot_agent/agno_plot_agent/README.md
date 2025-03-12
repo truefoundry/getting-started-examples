@@ -81,32 +81,41 @@ from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 from plot_tools import PlotTools
 from query_tools import QueryTools
+import os
 
-# Query Agent for SQL generation
-    sql_agent: Agent = Agent(
-        model=OpenAIChat(id="gpt-4o"),
-        description="",
-        instructions=[
-        ],
-        tools=[ClickHouseTools()],
-        show_tool_calls=True,
-        markdown=True,
-        response_model=SQLQueryResult,
-        structured_outputs=True,
-    )
+# Query Agent for SQL generation - Using TrueFoundry LLM Gateway
+sql_agent: Agent = Agent(
+    model=OpenAIChat(
+        id="openai-main/gpt-4o",  # Format: provider-name/model-name
+        api_key=os.getenv("LLM_GATEWAY_API_KEY"),
+        base_url=os.getenv("LLM_GATEWAY_BASE_URL")
+    ),
+    description="",
+    instructions=[],
+    tools=[ClickHouseTools()],
+    show_tool_calls=True,
+    markdown=True,
+    response_model=SQLQueryResult,
+    structured_outputs=True,
+)
 
-# Visualization Agent for plot generation
-    plot_agent: Agent = Agent(
-        model=OpenAIChat(id="gpt-4o"),
-        description="",
-        instructions=[
-        ],
-        tools=[PlotTools()],
-        markdown=True,
-        response_model=VisualizationRequest,
-        structured_outputs=True,
-    )
+# Visualization Agent - Using TrueFoundry LLM Gateway
+plot_agent: Agent = Agent(
+    model=OpenAIChat(
+        id="openai-main/gpt-4o",
+        api_key=os.getenv("LLM_GATEWAY_API_KEY"),
+        base_url=os.getenv("LLM_GATEWAY_BASE_URL")
+    ),
+    description="",
+    instructions=[],
+    tools=[PlotTools()],
+    markdown=True,
+    response_model=VisualizationRequest,
+    structured_outputs=True,
+)
 ```
+
+Note: When using the TrueFoundry LLM Gateway, the model ID format should be `provider-name/model-name` (e.g., `openai-main/gpt-4o`). Make sure your `.env` file contains the correct LLM Gateway credentials as shown in the Environment Configuration section.
 
 ### 4. Start the Services
 
