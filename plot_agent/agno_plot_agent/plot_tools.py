@@ -124,10 +124,6 @@ class PlotTools(Toolkit):
             df = self._parse_tabular_data(data)
             print(f"DataFrame: {df}")
             
-            # If model_name column exists, clean up the names
-            if 'model_name' in df.columns:
-                df['model_name'] = df['model_name'].apply(lambda x: x.split('/')[-1])  # Take only the part after the last '/'
-            
             # Create figure
             plt.figure(figsize=tuple(figsize))
             
