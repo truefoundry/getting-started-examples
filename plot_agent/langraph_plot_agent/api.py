@@ -167,14 +167,22 @@ async def process_query(job_id: str, query: str):
             content = response.get("content", {})
             
             # Add the event to the results store
+            if isinstance(content, (dict, str)):
+                event_content = content
+            else:
+                # Handle non-dict/str content by converting to dict
+                event_content = content.dict() if hasattr(content, "dict") else str(content)
+                
             results_store[job_id]["events"].append({
                 "event": event,
-                "content": str(content)
+                "content": event_content
             })
             
             # Update the plot result if available
             if event == "visualization_complete" and isinstance(content, PlotResult):
                 results_store[job_id]["plot_result"] = content.dict()
+            elif event == "visualization_complete" and isinstance(content, dict):
+                results_store[job_id]["plot_result"] = content
             
             # Update the status based on the event
             if event == "workflow_error":

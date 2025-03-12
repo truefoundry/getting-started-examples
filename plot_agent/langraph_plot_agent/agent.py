@@ -10,6 +10,10 @@ from langgraph.graph import StateGraph, END
 from clickhouse_tools import ClickHouseTools
 from plot_tools import PlotTools
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
