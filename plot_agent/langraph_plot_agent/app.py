@@ -42,15 +42,15 @@ def get_workflow_graph():
     response = requests.get(f"{API_BASE_URL}/graph")
     return response.content
 
-# Add a button to view the workflow graph
-if st.button("View LangGraph Workflow"):
-    try:
-        with st.spinner("Generating workflow graph..."):
-            graph_data = get_workflow_graph()
-            image = Image.open(io.BytesIO(graph_data))
-            st.image(image, caption="LangGraph Workflow Visualization", use_column_width=True)
-    except Exception as e:
-        st.error(f"Error displaying workflow graph: {e}")
+# # Add a button to view the workflow graph
+# if st.button("View LangGraph Workflow"):
+#     try:
+#         with st.spinner("Generating workflow graph..."):
+#             graph_data = get_workflow_graph()
+#             image = Image.open(io.BytesIO(graph_data))
+#             st.image(image, caption="LangGraph Workflow Visualization", use_column_width=True)
+#     except Exception as e:
+#         st.error(f"Error displaying workflow graph: {e}")
 
 # Create the main query input
 query = st.text_area(
@@ -120,12 +120,9 @@ if st.button("Generate Visualization"):
 # Add some helpful examples in the sidebar
 st.sidebar.header("Example Queries")
 st.sidebar.markdown("""
-- Show me the cost trends by model over the last week
-- Compare usage patterns across different models
-- Display daily active users over time
-- Analyze error rates by model type
-- Show me the distribution of latency by model
-- What are the top 5 models by cost?
+- Show me the cost trends by model over the last week. Filter models that show a 0 cost.
+- Compare usage patterns across the top 5 models
+- List the top 5 most active users by request count in the last 30 days.
 """)
 
 # Add information about the project
@@ -137,10 +134,7 @@ It allows you to:
 - Track query processing in real-time
 - View generated visualizations
 - Download results
-
-This implementation uses LangGraph for the agent framework.
-""")
-
+""") 
 # Add a footer
 st.markdown("---")
-st.markdown("Built with Streamlit, FastAPI, and LangGraph") 
+st.markdown("Built with Streamlit, FastAPI, and LangGraph and deployed on TrueFoundry") 
