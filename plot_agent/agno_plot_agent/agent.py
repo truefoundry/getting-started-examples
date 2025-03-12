@@ -95,6 +95,8 @@ class SQLAndPlotWorkflow(Workflow):
             "- Properly labeled axes with units where applicable",
             "- Legends for multiple series",
             "- Color schemes that are accessible",
+            "Rules: ",
+            "- The value of the x-axis should be a column name from the data.",
             "Provide a brief analysis of key patterns, trends, or anomalies observed in each visualization."
         ],
         tools=[PlotTools()],
@@ -293,7 +295,7 @@ if __name__ == "__main__":
     workflow = SQLAndPlotWorkflow()
     
     # Analyze and visualize data
-    for response in workflow.run_workflow("List the top 5 most active users by request count in the last 30 days."):
+    for response in workflow.run_workflow("Compare usage patterns across the top 5 models"):
         if response.event == "workflow_error":
             print(f"Error: {response.content}")
         elif response.event == "visualization_complete":
