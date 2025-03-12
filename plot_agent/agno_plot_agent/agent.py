@@ -38,8 +38,7 @@ class SQLAndPlotWorkflow(Workflow):
         
     # SQL Agent that generates and executes Clickhouse queries
     sql_agent: Agent = Agent(
-        # model=OpenAIChat(id="openai-main/gpt-4o", api_key=os.getenv("LLM_GATEWAY_API_KEY"), base_url=os.getenv("LLM_GATEWAY_BASE_URL")),
-        model=OpenAIChat(id="gpt-4o", api_key=os.getenv("OPENAI_API_KEY")),
+        model=OpenAIChat(id="openai-main/gpt-4o", api_key=os.getenv("LLM_GATEWAY_API_KEY"), base_url=os.getenv("LLM_GATEWAY_BASE_URL")),
         description="You are an expert in generating and executing Clickhouse SQL queries from user queries in English.",
         instructions=[
             "First, generate an optimized and accurate ClickHouse SQL query based on the user's query. Make sure that only relevant fields are selected and queries are efficient.",
@@ -79,8 +78,7 @@ class SQLAndPlotWorkflow(Workflow):
 
     # Plot Agent that creates visualizations
     plot_agent: Agent = Agent(
-        # model=OpenAIChat(id="gpt-4o", api_key=os.getenv("LLM_GATEWAY_API_KEY"), base_url="https://llm-gateway.truefoundry.com/api/inference/openai"),
-        model=OpenAIChat(id="gpt-4o"),
+        model=OpenAIChat(id="openai-main/gpt-4o", api_key=os.getenv("LLM_GATEWAY_API_KEY"), base_url=os.getenv("LLM_GATEWAY_BASE_URL")),
         description="You are an expert in creating data visualizations from SQL query results.",
         instructions=[
             "You will receive data from Clickhouse SQL queries in a tabular format with columns separated by ' | ' and rows separated by newlines.",
