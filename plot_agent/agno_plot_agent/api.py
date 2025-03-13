@@ -125,18 +125,21 @@ async def process_query(job_id: str, query: str):
     Process the query in the background and update the results store.
     """
     try:
-        for response in workflow.run_workflow(query):
-            # Store each event
+        # Get only the first response from the generator
+        generator = workflow.run_workflow(query)
+        try:
+            response = next(generator)
+            
+            # Store the event
             results_store[job_id]["events"].append({
                 "event": response.event,
                 "content": response.content
             })
             
-            # Update status based on events
+            # Update status based on event
             if response.event == "workflow_error":
                 results_store[job_id]["status"] = "failed"
                 results_store[job_id]["error"] = response.content
-                break
             
             elif response.event == "visualization_complete":
                 results_store[job_id]["status"] = "completed"
@@ -153,30 +156,32 @@ async def process_query(job_id: str, query: str):
                             logger.error(f"Original plot file not found: {original_path}")
                             results_store[job_id]["status"] = "failed"
                             results_store[job_id]["error"] = f"Plot file not found: {original_path}"
-                            break
-                            
-                        try:
-                            os.rename(original_path, new_plot_path)
-                            plot_result["plot_path"] = new_plot_path
-                            logger.info(f"Successfully moved plot to: {new_plot_path}")
-                        except Exception as e:
-                            logger.error(f"Failed to move plot file: {e}")
-                            # If rename fails, try to copy the file instead
+                        else:    
                             try:
-                                import shutil
-                                shutil.copy2(original_path, new_plot_path)
-                                os.remove(original_path)  # Clean up original file
+                                os.rename(original_path, new_plot_path)
                                 plot_result["plot_path"] = new_plot_path
-                                logger.info(f"Successfully copied plot to: {new_plot_path}")
-                            except Exception as copy_error:
-                                logger.error(f"Failed to copy plot file: {copy_error}")
-                                results_store[job_id]["status"] = "failed"
-                                results_store[job_id]["error"] = f"Failed to save plot: {copy_error}"
-                                break
+                                logger.info(f"Successfully moved plot to: {new_plot_path}")
+                            except Exception as e:
+                                logger.error(f"Failed to move plot file: {e}")
+                                # If rename fails, try to copy the file instead
+                                try:
+                                    import shutil
+                                    shutil.copy2(original_path, new_plot_path)
+                                    os.remove(original_path)  # Clean up original file
+                                    plot_result["plot_path"] = new_plot_path
+                                    logger.info(f"Successfully copied plot to: {new_plot_path}")
+                                except Exception as copy_error:
+                                    logger.error(f"Failed to copy plot file: {copy_error}")
+                                    results_store[job_id]["status"] = "failed"
+                                    results_store[job_id]["error"] = f"Failed to save plot: {copy_error}"
                     
                     results_store[job_id]["plot_result"] = plot_result
                 else:
                     results_store[job_id]["plot_result"] = response.content
+        except StopIteration:
+            # No results from the generator
+            results_store[job_id]["status"] = "failed"
+            results_store[job_id]["error"] = "No results returned from workflow"
     
     except Exception as e:
         logger.error(f"Error processing query: {e}")

@@ -34,8 +34,7 @@ class VisualizationRequest(BaseModel):
     title: Optional[str] = Field(None, description="Plot title.")
     hue: Optional[str] = Field(None, description="Column for color grouping.")
 
-class SQLAndPlotWorkflow(Workflow):
-        
+class SQLAndPlotWorkflow(Workflow):        
     # SQL Agent that generates and executes Clickhouse queries
     sql_agent: Agent = Agent(
         model=OpenAIChat(id="openai-main/gpt-4o", api_key=os.getenv("LLM_GATEWAY_API_KEY"), base_url=os.getenv("LLM_GATEWAY_BASE_URL")),
@@ -95,7 +94,6 @@ class SQLAndPlotWorkflow(Workflow):
             "- Color schemes that are accessible",
             "Rules: ",
             "- The value of the x-axis should be a column name from the data.",
-            "Provide a brief analysis of key patterns, trends, or anomalies observed in each visualization."
         ],
         tools=[PlotTools()],
         show_tool_calls=True,
@@ -206,51 +204,13 @@ class SQLAndPlotWorkflow(Workflow):
                 viz_request = viz_response.content
                 logger.info(f"Using visualization request: {viz_request.model_dump()}")
             else:
-                # Unstructured response case - try to parse or use defaults
-                logger.warning("Received unstructured response, attempting to parse")
-                try:
-                    # If it's a string, try to convert to a dict or use basic defaults
-                    if isinstance(viz_response.content, str):
-                        # Simple heuristic - look for common plot types in the response
-                        plot_type = "bar"  # Default
-                        for pt in ["line", "bar", "scatter", "histogram", "box", "violin"]:
-                            if pt in viz_response.content.lower():
-                                plot_type = pt
-                                break
-                                
-                        # Try to extract column names from the data
-                        columns = sql_result.data.split('\n')[0].split('|')
-                        columns = [col.strip() for col in columns if col.strip()]
-                        
-                        x_col = columns[0] if columns else "Unknown"
-                        y_col = columns[1] if len(columns) > 1 else None
-                        
-                        viz_request = VisualizationRequest(
-                            plot_type=plot_type,
-                            x_col=x_col,
-                            y_col=y_col,
-                            title=f"Analysis of {x_col} and {y_col or ''}"
-                        )
-                    else:
-                        # If it's some other type (e.g., dict), try to convert
-                        viz_data = viz_response.content
-                        if hasattr(viz_data, "get"):
-                            viz_request = VisualizationRequest(
-                                plot_type=viz_data.get("plot_type", "bar"),
-                                x_col=viz_data.get("x_col", "Unknown"),
-                                y_col=viz_data.get("y_col"),
-                                title=viz_data.get("title"),
-                                hue=viz_data.get("hue")
-                            )
-                        else:
-                            raise ValueError(f"Cannot parse visualization request from {type(viz_response.content)}")
-                except Exception as e:
-                    logger.error(f"Failed to parse visualization request: {e}")
-                    yield RunResponse(
-                        event="visualization_error",
-                        content=f"Failed to parse visualization request: {e}"
-                    )
-                    return
+                # Don't handle unstructured responses, just return an error
+                logger.error(f"Received unstructured response of type {type(viz_response.content)}")
+                yield RunResponse(
+                    event="visualization_error",
+                    content=f"Visualization error: Expected VisualizationRequest but got {type(viz_response.content).__name__}"
+                )
+                return
             
             # Now create the plot with proper error handling
             logger.info(f"Creating {viz_request.plot_type} plot with x={viz_request.x_col}, y={viz_request.y_col}")
@@ -274,12 +234,14 @@ class SQLAndPlotWorkflow(Workflow):
                         title=viz_request.title
                     )
                 )
+                return  # Add explicit return after successful completion
             except Exception as plot_error:
                 logger.error(f"Plot creation failed: {plot_error}")
                 yield RunResponse(
                     event="visualization_error",
                     content=f"Failed to create plot: {plot_error}"
                 )
+                return
             
         except Exception as e:
             logger.error(f"Failed to create visualization: {str(e)}")
@@ -287,6 +249,7 @@ class SQLAndPlotWorkflow(Workflow):
                 event="visualization_error",
                 content=f"Failed to create visualization: {str(e)}"
             )
+            return
 
 if __name__ == "__main__":
     # Example usage:
