@@ -1,0 +1,23 @@
+[project]
+name = "crewai_plot_agent"
+version = "0.1.0"
+description = "crewai_plot_agent using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "crewai[tools]>=0.102.0,<1.0.0"
+]
+
+[project.scripts]
+crewai_plot_agent = "crewai_plot_agent.main:run"
+run_crew = "crewai_plot_agent.main:run"
+train = "crewai_plot_agent.main:train"
+replay = "crewai_plot_agent.main:replay"
+test = "crewai_plot_agent.main:test"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"
