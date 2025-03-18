@@ -7,6 +7,9 @@ from typing import List, Optional, Dict, Any
 # If you want to run a snippet of code before or after the crew starts, 
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
+from traceloop.sdk import Traceloop
+
+Traceloop.init(app_name="crewai")
 
 
 class SQLQueryResult(BaseModel):

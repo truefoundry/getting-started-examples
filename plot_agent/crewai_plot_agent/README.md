@@ -115,7 +115,10 @@ env={
     "CLICKHOUSE_USER": "your_user",
     "CLICKHOUSE_PASSWORD": "your_password",
     "CLICKHOUSE_DATABASE": "default",
-    "CREWAI_VERBOSE": "true"  # For detailed CrewAI logs
+    "CREWAI_VERBOSE": "true",  # For detailed CrewAI logs
+    "TRACELOOP_BASE_URL": "<your_host_name>/api/otel" # "https://internal.devtest.truefoundry.tech/api/otel"
+    "TRACELOOP_HEADERS"="Authorization=Bearer%20<your_tfy_api_key>"
+
 },
 ```
 
