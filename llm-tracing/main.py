@@ -86,4 +86,5 @@ async def generate_response(request: OpenAIRequest):
         response = await generate_openai_response(client, request.model_name, request.user_message)
         return {"response": response}
     except Exception as e:
-        return {"error": str(e)}, 500
+        from fastapi.responses import JSONResponse
+        return JSONResponse(status_code=500, content={"error": "An internal error occurred. Please try again later."})
