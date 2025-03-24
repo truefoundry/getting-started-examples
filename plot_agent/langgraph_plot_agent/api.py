@@ -5,8 +5,13 @@ from typing import Optional, Dict, Any, List
 import uvicorn
 import os
 import uuid
-from agent import SQLAndPlotWorkflow, PlotResult
-from agno.utils.log import logger
+from agent import build_agent, agent
+import logging
+import json
+from models import PlotResult
+
+logger = logging.getLogger(__name__)
+
 
 # Create plots directory if it doesn't exist
 PLOTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plots")
@@ -45,8 +50,8 @@ class JobStatusResponse(BaseModel):
     plot_result: Optional[Dict[str, Any]] = None
     error: Optional[str] = None
 
-# Initialize the workflow
-workflow = SQLAndPlotWorkflow()
+# Initialize the agent
+# agent is already imported from agent module
 
 @app.post("/query", response_model=WorkflowResponse)
 async def execute_query(request: QueryRequest, background_tasks: BackgroundTasks):
@@ -122,67 +127,89 @@ async def get_plot(job_id: str):
 
 async def process_query(job_id: str, query: str):
     """
-    Process the query in the background and update the results store.
+    Process the query in the background using LangGraph agent and update the results store.
     """
     try:
-        # Get only the first response from the generator
-        generator = workflow.run_workflow(query)
-        try:
-            response = next(generator)
+        # Initialize with the user's message
+        messages = [{"type": "human", "content": query}]
+        config = {"configurable": {"thread_id": job_id}}
+        
+        # Track visualization completion
+        plot_found = False
+        plot_result = None
+        
+        # Stream the agent responses
+        for step in agent.stream({"messages": messages}, config=config):
+            # Get the state snapshot
+            state_snapshot = step["messages"]
             
-            # Store the event
-            results_store[job_id]["events"].append({
-                "event": response.event,
-                "content": response.content
-            })
-            
-            # Update status based on event
-            if response.event == "workflow_error":
-                results_store[job_id]["status"] = "failed"
-                results_store[job_id]["error"] = response.content
-            
-            elif response.event == "visualization_complete":
-                results_store[job_id]["status"] = "completed"
-                # Convert PlotResult to dict for storage
-                if isinstance(response.content, PlotResult):
-                    plot_result = response.content.dict()
-                    # Ensure plot is saved in plots directory with job_id
-                    if not os.path.isabs(plot_result["plot_path"]):
-                        original_path = plot_result["plot_path"]
-                        new_plot_path = os.path.join(PLOTS_DIR, f"{job_id}_{os.path.basename(original_path)}")
-                        
-                        # Check if original file exists
-                        if not os.path.exists(original_path):
-                            logger.error(f"Original plot file not found: {original_path}")
-                            results_store[job_id]["status"] = "failed"
-                            results_store[job_id]["error"] = f"Plot file not found: {original_path}"
-                        else:    
-                            try:
-                                os.rename(original_path, new_plot_path)
-                                plot_result["plot_path"] = new_plot_path
-                                logger.info(f"Successfully moved plot to: {new_plot_path}")
-                            except Exception as e:
-                                logger.error(f"Failed to move plot file: {e}")
-                                # If rename fails, try to copy the file instead
-                                try:
-                                    import shutil
-                                    shutil.copy2(original_path, new_plot_path)
-                                    os.remove(original_path)  # Clean up original file
-                                    plot_result["plot_path"] = new_plot_path
-                                    logger.info(f"Successfully copied plot to: {new_plot_path}")
-                                except Exception as copy_error:
-                                    logger.error(f"Failed to copy plot file: {copy_error}")
-                                    results_store[job_id]["status"] = "failed"
-                                    results_store[job_id]["error"] = f"Failed to save plot: {copy_error}"
+            if len(state_snapshot) > 0:
+                latest_message = state_snapshot[-1]
+                
+                # Store all agent messages as events
+                if latest_message.get("type") in ["assistant", "tool"]:
+                    content = latest_message.get("content", "")
                     
-                    results_store[job_id]["plot_result"] = plot_result
-                else:
-                    results_store[job_id]["plot_result"] = response.content
-        except StopIteration:
-            # No results from the generator
-            results_store[job_id]["status"] = "failed"
-            results_store[job_id]["error"] = "No results returned from workflow"
-    
+                    # Convert to string if it's not already
+                    if not isinstance(content, str):
+                        content = json.dumps(content)
+                    
+                    results_store[job_id]["events"].append({
+                        "event": latest_message["type"],
+                        "content": content
+                    })
+                    
+                    # Check for plot creation tool results
+                    if latest_message.get("type") == "tool" and isinstance(latest_message.get("content"), dict):
+                        tool_content = latest_message.get("content", {})
+                        tool_name = latest_message.get("name", "")
+                        
+                        # Check if this is the result of a plot creation
+                        if tool_name == "create_plot" and "plot_path" in tool_content:
+                            plot_found = True
+                            
+                            # Extract plot information 
+                            plot_result = {
+                                "plot_type": tool_content.get("plot_type", "unknown"),
+                                "plot_path": tool_content.get("plot_path", ""),
+                                "x_col": tool_content.get("x_col", ""),
+                                "y_col": tool_content.get("y_col", ""),
+                                "title": tool_content.get("title", "")
+                            }
+                            
+                            # Ensure plot is saved in plots directory with job_id
+                            original_path = plot_result["plot_path"]
+                            if not os.path.isabs(original_path) and os.path.exists(original_path):
+                                new_plot_path = os.path.join(PLOTS_DIR, f"{job_id}_{os.path.basename(original_path)}")
+                                
+                                try:
+                                    os.rename(original_path, new_plot_path)
+                                    plot_result["plot_path"] = new_plot_path
+                                    logger.info(f"Successfully moved plot to: {new_plot_path}")
+                                except Exception as e:
+                                    logger.error(f"Failed to move plot file: {e}")
+                                    # If rename fails, try to copy the file instead
+                                    try:
+                                        import shutil
+                                        shutil.copy2(original_path, new_plot_path)
+                                        os.remove(original_path)  # Clean up original file
+                                        plot_result["plot_path"] = new_plot_path
+                                        logger.info(f"Successfully copied plot to: {new_plot_path}")
+                                    except Exception as copy_error:
+                                        logger.error(f"Failed to copy plot file: {copy_error}")
+                                        results_store[job_id]["status"] = "failed"
+                                        results_store[job_id]["error"] = f"Failed to save plot: {copy_error}"
+                
+        # After processing all steps, check if a plot was found
+        if plot_found and plot_result:
+            results_store[job_id]["status"] = "completed"
+            results_store[job_id]["plot_result"] = plot_result
+        else:
+            # Check if there was an error
+            if results_store[job_id]["error"] is None:
+                results_store[job_id]["status"] = "failed"
+                results_store[job_id]["error"] = "No visualization created by the agent"
+        
     except Exception as e:
         logger.error(f"Error processing query: {e}")
         results_store[job_id]["status"] = "failed"
