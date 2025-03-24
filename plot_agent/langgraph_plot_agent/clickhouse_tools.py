@@ -1,5 +1,5 @@
 from typing import Optional
-from langgraph.graph import tool
+from langchain_core.tools import tool
 from clickhouse_connect import get_client
 from dotenv import load_dotenv
 import os
