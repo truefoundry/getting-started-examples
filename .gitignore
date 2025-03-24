@@ -2,3 +2,4 @@
 **/__pycache__/
 .ipynb_checkpoints/
 **/venv
+plot_agent/langgraph_plot_agent/.env
