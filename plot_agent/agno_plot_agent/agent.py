@@ -9,9 +9,12 @@ import json
 import os
 from agno.utils.log import logger
 from dotenv import load_dotenv
-
+from traceloop.sdk import Traceloop
+from traceloop.sdk.decorators import workflow, agent, task
 
 load_dotenv()
+
+Traceloop.init(app_name="agno")
 
 class SQLQueryResult(BaseModel):
     query: str = Field(..., description="The SQL query that was executed.")
@@ -34,6 +37,7 @@ class VisualizationRequest(BaseModel):
     title: Optional[str] = Field(None, description="Plot title.")
     hue: Optional[str] = Field(None, description="Column for color grouping.")
 
+@agent(name="sql_and_plot_workflow")
 class SQLAndPlotWorkflow(Workflow):        
     # SQL Agent that generates and executes Clickhouse queries
     sql_agent: Agent = Agent(
@@ -104,6 +108,7 @@ class SQLAndPlotWorkflow(Workflow):
     )
 
 
+    @workflow(name="plotting workflow")
     def run_workflow(self, query: str) -> Iterator[RunResponse]:
         """
         Execute the SQL and plotting workflow.
@@ -130,6 +135,7 @@ class SQLAndPlotWorkflow(Workflow):
         # Step 2: Generate visualization
         yield from self._create_visualization(sql_result)
 
+    @task(name="execute sql query")
     def _execute_sql_query(self, query: str) -> SQLQueryResult:
         """Execute SQL query and return results."""
         MAX_ATTEMPTS = 3
@@ -159,6 +165,7 @@ class SQLAndPlotWorkflow(Workflow):
             error=f"Failed to execute SQL query after {MAX_ATTEMPTS} attempts"
         )
 
+    @task(name="create visualization")
     def _create_visualization(self, sql_result: SQLQueryResult) -> Iterator[RunResponse]:
         """Create visualization from SQL results."""
         try:
