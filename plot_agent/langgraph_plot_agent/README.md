@@ -1,25 +1,23 @@
 # SQL and Plot Workflow API
 
-A powerful data visualization system that uses AI agents to automatically generate SQL queries and create meaningful visualizations from natural language requests. Built with Agno framework and deployable on TrueFoundry.
+A powerful data visualization system that uses AI agents to automatically generate SQL queries and create meaningful visualizations from natural language requests. Built with LangGraph and deployable on TrueFoundry.
 
 ## Architecture Overview
 
 This project consists of several key components working together:
 
-1. **Query Agent**: An AI agent powered by Agno that:
-   - Uses GPT-4o for natural language understanding
-   - Generates appropriate SQL queries for ClickHouse
+1. **LangGraph Agent**: A unified AI agent powered by LangGraph that:
+   - Uses GPT-4 for natural language understanding
+   - Orchestrates the workflow between SQL query generation and visualization
    - Handles data extraction and preprocessing
-   - Validates query safety and performance
+   - Manages the state and flow of the conversation
 
-2. **Visualization Agent**: A second AI agent that:
-   - Analyzes the data structure and content
-   - Determines the most appropriate visualization type
-   - Generates plots using matplotlib/seaborn
-   - Handles formatting and styling of visualizations
+2. **Tools Integration**:
+   - `execute_clickhouse_query`: Handles SQL query execution against ClickHouse database
+   - `create_plot`: Generates visualizations using matplotlib/seaborn
 
 3. **FastAPI Backend**: RESTful API that:
-   - Coordinates between agents
+   - Coordinates the agent workflow
    - Manages asynchronous job processing
    - Serves plot images and results
 
@@ -32,11 +30,9 @@ This project consists of several key components working together:
 ## Data Flow
 
 1. User submits a natural language query through Streamlit UI
-2. Query is processed by the Query Agent to generate SQL
-3. SQL is executed against ClickHouse database
-4. Results are passed to Visualization Agent
-5. Visualization Agent creates appropriate plots
-6. Results are displayed in Streamlit UI
+2. Query is processed by the LangGraph agent
+3. Agent orchestrates between SQL execution and visualization tools
+4. Results are displayed in Streamlit UI
 
 ## Setup and Installation
 
@@ -63,6 +59,7 @@ cp .env.example .env
 # Truefoundry LLMGateway Configuration
 LLM_GATEWAY_BASE_URL=your_llm_gateway_base_url_here
 LLM_GATEWAY_API_KEY=your_llm_gateway_api_key_here
+MODEL_ID=openai-main/gpt-4o  # Format: provider-name/model-name
 
 # ClickHouse Database Configuration
 CLICKHOUSE_HOST=your_clickhouse_host_here
@@ -74,48 +71,47 @@ CLICKHOUSE_DATABASE=default
 
 ### 3. Agent Implementation
 
-The project uses two Agno agents. Here's how they're configured:
+The project uses LangGraph for agent implementation. Here's how it's configured:
 
 ```python
-from agno.agent import Agent
-from agno.models.openai import OpenAIChat
-from plot_tools import PlotTools
-from query_tools import QueryTools
-import os
+from langgraph.graph import StateGraph, START, END
+from langchain_openai import ChatOpenAI
+from typing import Annotated, TypedDict
 
-# Query Agent for SQL generation - Using TrueFoundry LLM Gateway
-sql_agent: Agent = Agent(
-    model=OpenAIChat(
-        id="openai-main/gpt-4o",  # Format: provider-name/model-name
-        api_key=os.getenv("LLM_GATEWAY_API_KEY"),
-        base_url=os.getenv("LLM_GATEWAY_BASE_URL")
-    ),
-    description="",
-    instructions=[],
-    tools=[ClickHouseTools()],
-    show_tool_calls=True,
-    markdown=True,
-    response_model=SQLQueryResult,
-    structured_outputs=True,
-)
+# Define the state structure
+class State(TypedDict):
+    messages: Annotated[list[AnyMessage], add_messages]
 
-# Visualization Agent - Using TrueFoundry LLM Gateway
-plot_agent: Agent = Agent(
-    model=OpenAIChat(
-        id="openai-main/gpt-4o",
+# Create the agent
+def create_agent():
+    builder = StateGraph(State)
+    
+    # Initialize LLM with TrueFoundry configuration
+    llm = ChatOpenAI(
+        model=os.getenv("MODEL_ID"),
         api_key=os.getenv("LLM_GATEWAY_API_KEY"),
-        base_url=os.getenv("LLM_GATEWAY_BASE_URL")
-    ),
-    description="",
-    instructions=[],
-    tools=[PlotTools()],
-    markdown=True,
-    response_model=VisualizationRequest,
-    structured_outputs=True,
-)
+        base_url=os.getenv("LLM_GATEWAY_BASE_URL"),
+        streaming=True
+    )
+    
+    # Bind tools to LLM
+    llm.bind_tools(tools_list)
+    
+    # Define nodes and edges
+    builder.add_node("assistant", llm)
+    builder.add_node("tools", ToolNode(tools_list))
+    
+    # Configure the graph flow
+    builder.add_edge(START, "assistant")
+    builder.add_edge("tools", "assistant")
+    builder.add_conditional_edges(
+        "assistant",
+        tools_condition_modified,
+    )
+    builder.add_edge("assistant", "__end__")
+    
+    return builder.compile()
 ```
-
-Note: When using the TrueFoundry LLM Gateway, the model ID format should be `provider-name/model-name` (e.g., `openai-main/gpt-4o`). Make sure your `.env` file contains the correct LLM Gateway credentials as shown in the Environment Configuration section.
 
 ### 4. Start the Services
 
@@ -165,18 +161,10 @@ Your SQL and Plot Workflow API is now deployed and running on TrueFoundry!
 ```bash
 curl -X POST -H "Content-Type: application/json" \
   -d '{"query": "Show me the cost trends by model over the last week"}' \
-  https://agno-plot-agent-demo-8000.aws.demo.truefoundry.cloud/query
+  https://your-service-url.truefoundry.cloud/query
 ```
 
-If everything is set up correctly, you should receive a response like:
-
-```json
-{
-  "job_id": "123e4567-e89b-12d3-a456-426614174000",
-  "status": "processing",
-  "message": "Query is being processed. Check status with /status/{job_id}"
-}
-```
+If everything is set up correctly, you should receive a response with a job ID that you can use to track the status of your query.
 
 ### Monitoring and Management
 
@@ -195,7 +183,7 @@ If everything is set up correctly, you should receive a response like:
 
 1. **Submit a Query via API**:
 ```bash
-curl -X POST "https://plot-agent-8000.your-workspace.truefoundry.cloud/query" \
+curl -X POST "https://your-service-url.truefoundry.cloud/query" \
      -H "Content-Type: application/json" \
      -d '{"query": "Show me the cost trends by model over the last week"}'
 ```
@@ -237,20 +225,20 @@ Response:
   "status": "completed",
   "events": [
     {
-      "event": "sql_query_start",
-      "content": "Generating SQL query..."
+      "event": "query_start",
+      "content": "Processing query..."
     },
     {
-      "event": "sql_query_complete",
-      "content": "SQL query executed successfully"
+      "event": "sql_execution",
+      "content": "Executing SQL query..."
     },
     {
-      "event": "visualization_start",
+      "event": "visualization",
       "content": "Creating visualization..."
     },
     {
-      "event": "visualization_complete",
-      "content": "Visualization created successfully"
+      "event": "complete",
+      "content": "Query completed successfully"
     }
   ]
 }
@@ -285,7 +273,7 @@ Your Streamlit application should use an environment variable to point to the Fa
 In your **Streamlit environment** configuration:
 
 ```bash
-FASTAPI_ENDPOINT="https://agno-plot-agent-demo-8000.aws.demo.truefoundry.cloud"
+FASTAPI_ENDPOINT="https://your-service-url.truefoundry.cloud"
 ```
 
 Then, modify your **Streamlit app** to read this environment variable:
@@ -302,8 +290,8 @@ This ensures that Streamlit dynamically references the correct FastAPI instance.
 If deploying locally or if TrueFoundry does not handle port conflicts automatically, ensure **FastAPI and Streamlit run on separate ports**.
 
 Example:
- - **FastAPI**: `https://agno-plot-agent-demo-8000.aws.demo.truefoundry.cloud`
- - **Streamlit**: `https://agno-streamlit-demo-8501.aws.demo.truefoundry.cloud`
+ - **FastAPI**: `https://your-service-url.truefoundry.cloud`
+ - **Streamlit**: `https://your-streamlit-url.truefoundry.cloud`
 
 To run Streamlit on a different port locally:
 
@@ -313,8 +301,8 @@ streamlit run app.py --server.port 8501
 
 ### **Final Notes**
 After deploying both services, make sure to:
- - Test API connectivity from Streamlit to FastAPI.
- - Update Streamlit's `.env` file with the correct FastAPI endpoint.
- - Confirm CORS settings allow requests from Streamlit.
+ - Test API connectivity from Streamlit to FastAPI
+ - Update Streamlit's `.env` file with the correct FastAPI endpoint
+ - Confirm CORS settings allow requests from Streamlit
 
 This ensures your SQL and Plot Workflow API functions properly across both services.
