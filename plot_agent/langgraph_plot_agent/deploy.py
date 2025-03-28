@@ -33,8 +33,14 @@ service = Service(
   ],
 
   # --- Environment Variables ---
-  env={
-    "API_BASE_URL": os.getenv("API_BASE_URL"),
+ env={
+      "LLM_GATEWAY_BASE_URL": os.getenv("LLM_GATEWAY_BASE_URL"),
+      "LLM_GATEWAY_API_KEY": os.getenv("LLM_GATEWAY_API_KEY"),
+      "CLICKHOUSE_HOST": os.getenv("CLICKHOUSE_HOST"),
+      "CLICKHOUSE_PORT": os.getenv("CLICKHOUSE_PORT", "443"),
+      "CLICKHOUSE_USER": os.getenv("CLICKHOUSE_USER"),
+      "CLICKHOUSE_PASSWORD": os.getenv("CLICKHOUSE_PASSWORD"),
+      "CLICKHOUSE_DATABASE": os.getenv("CLICKHOUSE_DATABASE", "default"),
   },
 
   # --- Resources ---

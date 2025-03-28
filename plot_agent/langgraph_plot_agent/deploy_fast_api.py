@@ -10,7 +10,7 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 service = Service(
-  name="agno-plot-agent",
+  name="langgraph-plot-agent",
 
   # --- Build configuration i.e. How to package and build source code ---
   # This will instruct TrueFoundry to automatically generate the Dockerfile and build it
@@ -29,13 +29,14 @@ service = Service(
   ports=[
     Port(
       port=8000,
-      host="agno-plot-agent-demo-8000.aws.demo.truefoundry.cloud",
+      host="langgraph-plot-agent-demo-8000.aws.demo.truefoundry.cloud",
     )
   ],
 
   # --- Environment Variables ---
   env={
-      "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY"),
+      "LLM_GATEWAY_BASE_URL": os.getenv("LLM_GATEWAY_BASE_URL"),
+      "LLM_GATEWAY_API_KEY": os.getenv("LLM_GATEWAY_API_KEY"),
       "CLICKHOUSE_HOST": os.getenv("CLICKHOUSE_HOST"),
       "CLICKHOUSE_PORT": os.getenv("CLICKHOUSE_PORT", "443"),
       "CLICKHOUSE_USER": os.getenv("CLICKHOUSE_USER"),
