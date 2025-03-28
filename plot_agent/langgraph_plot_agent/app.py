@@ -4,6 +4,10 @@ import time
 from PIL import Image
 import io
 import os
+from dotenv import load_dotenv
+
+load_dotenv('.env')
+
 # Configure the app
 st.set_page_config(
     page_title="SQL and Plot Workflow",

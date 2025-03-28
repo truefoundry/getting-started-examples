@@ -29,7 +29,7 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from dotenv import load_dotenv
 
 
-load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
+load_dotenv('.env')
 
 
 class State(TypedDict):

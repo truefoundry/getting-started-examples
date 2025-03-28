@@ -5,13 +5,17 @@ from typing import Optional, Dict, Any, List
 import uvicorn
 import os
 import uuid
-from agent import build_agent, agent
+from agent import create_agent, agent
 import logging
 import json
 from models import PlotResult
+from langgraph.graph.message import AnyMessage
 
 logger = logging.getLogger(__name__)
 
+from dotenv import load_dotenv
+
+load_dotenv('.env')
 
 # Create plots directory if it doesn't exist
 PLOTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plots")
@@ -130,8 +134,8 @@ async def process_query(job_id: str, query: str):
     Process the query in the background using LangGraph agent and update the results store.
     """
     try:
-        # Initialize with the user's message
-        messages = [{"type": "human", "content": query}]
+        # Initialize with the user's message in the correct format
+        messages = [AnyMessage(type="human", content=query, id=str(uuid.uuid4()))]
         config = {"configurable": {"thread_id": job_id}}
         
         # Track visualization completion
@@ -147,22 +151,22 @@ async def process_query(job_id: str, query: str):
                 latest_message = state_snapshot[-1]
                 
                 # Store all agent messages as events
-                if latest_message.get("type") in ["assistant", "tool"]:
-                    content = latest_message.get("content", "")
+                if latest_message.type in ["assistant", "tool"]:
+                    content = latest_message.content
                     
                     # Convert to string if it's not already
                     if not isinstance(content, str):
                         content = json.dumps(content)
                     
                     results_store[job_id]["events"].append({
-                        "event": latest_message["type"],
+                        "event": latest_message.type,
                         "content": content
                     })
                     
                     # Check for plot creation tool results
-                    if latest_message.get("type") == "tool" and isinstance(latest_message.get("content"), dict):
-                        tool_content = latest_message.get("content", {})
-                        tool_name = latest_message.get("name", "")
+                    if latest_message.type == "tool" and isinstance(latest_message.content, dict):
+                        tool_content = latest_message.content
+                        tool_name = latest_message.name
                         
                         # Check if this is the result of a plot creation
                         if tool_name == "create_plot" and "plot_path" in tool_content:

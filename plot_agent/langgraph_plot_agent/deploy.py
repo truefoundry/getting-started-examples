@@ -41,6 +41,7 @@ service = Service(
       "CLICKHOUSE_USER": os.getenv("CLICKHOUSE_USER"),
       "CLICKHOUSE_PASSWORD": os.getenv("CLICKHOUSE_PASSWORD"),
       "CLICKHOUSE_DATABASE": os.getenv("CLICKHOUSE_DATABASE", "default"),
+      "MODEL_ID": os.getenv("MODEL_ID"),
   },
 
   # --- Resources ---
