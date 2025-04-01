@@ -17,7 +17,7 @@ from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable, RunnableConfig
 from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import ToolNode, tools_condition
+from langgraph.prebuilt import ToolNode, tools_condition, create_react_agent
 from langgraph.graph.message import add_messages
 from dotenv import load_dotenv
 
@@ -28,35 +28,17 @@ class State(TypedDict):
 
 tools_list = [execute_clickhouse_query, create_plot]
 
-def create_agent():
-    builder = StateGraph(State)
+llm = ChatOpenAI(
+    model=os.getenv("MODEL_ID"), 
+    api_key=os.getenv("LLM_GATEWAY_API_KEY"), 
+    base_url=os.getenv("LLM_GATEWAY_BASE_URL"),
+    streaming=True  # Enable streaming for the LLM
+)
 
-    llm = ChatOpenAI(
-        model=os.getenv("MODEL_ID"), 
-        api_key=os.getenv("LLM_GATEWAY_API_KEY"), 
-        base_url=os.getenv("LLM_GATEWAY_BASE_URL"),
-        streaming=True  # Enable streaming for the LLM
-    )
-
-    llm.bind_tools(tools_list)
-
-    # Define nodes: these do the work
-    builder.add_node("assistant", llm)
-    builder.add_node("tools", ToolNode(tools_list))
-
-    # Define edges: these determine how the control flow moves
-    builder.add_edge(START, "assistant")
-    builder.add_edge("tools", "assistant")
-    builder.add_conditional_edges(
-        "assistant",
-        tools_condition,
-    )
-    builder.add_edge("assistant", "__end__")
-
-    agent = builder.compile()
-    return agent
-
-agent = create_agent()
+agent = create_react_agent(
+    model=llm,
+    tools=tools_list
+)
 
 from IPython.display import Image, display
 
@@ -66,28 +48,12 @@ except Exception:
     # This requires some extra dependencies and is optional
     pass
 
-config = {"configurable": {"thread_id": "1"}}
 
 user_input = "Show me the cost trends by model over the last week. Filter models that show a 0 cost."
 
 if __name__ == "__main__":
     # Initialize with the user's message in the correct format
     messages = [HumanMessage(content=user_input)]
+
+    agent.invoke({"messages": messages})
     
-    # Stream the results with proper state initialization
-    for step in agent.stream({"messages": messages}, config=config):
-        # Get the state snapshot
-        state_snapshot = step["messages"]
-        
-        # Process and display the latest message
-        if len(state_snapshot) > 0:
-            latest_message = state_snapshot[-1]
-            
-            # If it's an assistant or tool message, print it
-            if isinstance(latest_message, (AIMessage, BaseMessage)):
-                content = latest_message.content
-                if isinstance(content, str):
-                    print(f"{latest_message.type.upper()}: {content}")
-                else:
-                    print(f"{latest_message.type.upper()}: {json.dumps(content, indent=2)}")
-        
