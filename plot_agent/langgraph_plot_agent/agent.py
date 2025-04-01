@@ -32,7 +32,8 @@ llm = ChatOpenAI(
     model=os.getenv("MODEL_ID"), 
     api_key=os.getenv("LLM_GATEWAY_API_KEY"), 
     base_url=os.getenv("LLM_GATEWAY_BASE_URL"),
-    streaming=True  # Enable streaming for the LLM
+    streaming=True,  # Enable streaming for the LLM
+    temperature=0.0
 )
 
 agent = create_react_agent(
@@ -51,9 +52,21 @@ except Exception:
 
 user_input = "Show me the cost trends by model over the last week. Filter models that show a 0 cost."
 
+user_input = "List the top 5 most active users by request count in the last 30 days."
 if __name__ == "__main__":
     # Initialize with the user's message in the correct format
+    user_input = "Compare usage patterns across the top 5 models"
     messages = [HumanMessage(content=user_input)]
-
-    agent.invoke({"messages": messages})
     
+    try:
+        # You should use the correct table name for costs
+        # For debugging purposes, you might want to print available tables first
+        result = agent.invoke({"messages": messages})
+        
+        # Process and display the final result
+        for message in result["messages"]:
+            print(f"{message.type}: {message.content}")
+            
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+
