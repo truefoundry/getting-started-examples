@@ -12,34 +12,21 @@ import json
 import os
 from langgraph.graph import StateGraph, START, END
 from typing import Annotated
-
 from typing_extensions import TypedDict
-
-from langgraph.graph.message import AnyMessage, add_messages
-
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable, RunnableConfig
-
 from langchain_openai import ChatOpenAI
-
 from langgraph.prebuilt import ToolNode, tools_condition
-
+from langgraph.graph.message import add_messages
 from dotenv import load_dotenv
 
 load_dotenv('.env')
 
 class State(TypedDict):
-    messages: Annotated[list[AnyMessage], add_messages]
+    messages: Annotated[List[BaseMessage], add_messages]
 
 tools_list = [execute_clickhouse_query, create_plot]
-
-def tools_condition_modified(state):
-    ans = tools_condition(state)
-    human_messages_id = [m.id for m in state["messages"] if m.type == "human"]
-    if ans == "tools":
-        return "tools"
-    else:
-        return "__end__"
 
 def create_agent():
     builder = StateGraph(State)
@@ -62,7 +49,7 @@ def create_agent():
     builder.add_edge("tools", "assistant")
     builder.add_conditional_edges(
         "assistant",
-        tools_condition_modified,
+        tools_condition,
     )
     builder.add_edge("assistant", "__end__")
 
@@ -84,10 +71,10 @@ config = {"configurable": {"thread_id": "1"}}
 user_input = "Show me the cost trends by model over the last week. Filter models that show a 0 cost."
 
 if __name__ == "__main__":
-    # Initialize with the user's message
-    messages = [{"type": "human", "content": user_input}]
+    # Initialize with the user's message in the correct format
+    messages = [HumanMessage(content=user_input)]
     
-    # Stream the results
+    # Stream the results with proper state initialization
     for step in agent.stream({"messages": messages}, config=config):
         # Get the state snapshot
         state_snapshot = step["messages"]
@@ -97,10 +84,10 @@ if __name__ == "__main__":
             latest_message = state_snapshot[-1]
             
             # If it's an assistant or tool message, print it
-            if latest_message.get("type") in ["assistant", "tool"]:
-                content = latest_message.get("content", "")
+            if isinstance(latest_message, (AIMessage, BaseMessage)):
+                content = latest_message.content
                 if isinstance(content, str):
-                    print(f"{latest_message['type'].upper()}: {content}")
+                    print(f"{latest_message.type.upper()}: {content}")
                 else:
-                    print(f"{latest_message['type'].upper()}: {json.dumps(content, indent=2)}")
+                    print(f"{latest_message.type.upper()}: {json.dumps(content, indent=2)}")
         

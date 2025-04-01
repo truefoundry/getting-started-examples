@@ -9,7 +9,7 @@ from agent import create_agent, agent
 import logging
 import json
 from models import PlotResult
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 import traceback
 import sys
 
@@ -139,7 +139,7 @@ async def process_query(job_id: str, query: str):
     """
     try:
         # Initialize with the user's message in the correct format
-        messages = [HumanMessage(content=query, id=str(uuid.uuid4()))]
+        messages = [HumanMessage(content=query)]
         config = {"configurable": {"thread_id": job_id}}
         
         # Track visualization completion
@@ -148,12 +148,12 @@ async def process_query(job_id: str, query: str):
 
         try:
             # Invoke the agent to get final output
-            final_messages = agent.invoke(messages, config=config)
+            final_messages = agent.invoke({"messages": messages}, config=config)
             
             for message in final_messages:
                 logger.debug(f"Processing message: {message}")
 
-                if message.type in ["assistant", "tool"]:
+                if isinstance(message, (AIMessage, BaseMessage)):
                     content = message.content
 
                     # Convert to string if it's not already
