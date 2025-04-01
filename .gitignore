@@ -3,3 +3,5 @@
 .ipynb_checkpoints/
 **/venv
 plot_agent/langgraph_plot_agent/.env
+plot_agent/agno_plot_agent/.env
+plot_agent/agno_plot_agent/plots/plot_20250401_124310_2ec9f367.png
