@@ -1,6 +1,6 @@
 from clickhouse_tools import execute_clickhouse_query
 from plot_tools import create_plot
-from typing import List, Dict, Any, Optional, Iterator
+from typing import List, Dict, Any, Union, Iterator
 from models import SQLQueryResult, PlotResult, VisualizationRequest
 from agent_config import (
     SQL_AGENT_DESCRIPTION,
@@ -24,13 +24,9 @@ from langchain_openai import ChatOpenAI
 
 from langgraph.prebuilt import ToolNode, tools_condition
 
-
-
 from dotenv import load_dotenv
 
-
 load_dotenv('.env')
-
 
 class State(TypedDict):
     messages: Annotated[list[AnyMessage], add_messages]
@@ -86,8 +82,6 @@ except Exception:
 config = {"configurable": {"thread_id": "1"}}
 
 user_input = "Show me the cost trends by model over the last week. Filter models that show a 0 cost."
-
-
 
 if __name__ == "__main__":
     # Initialize with the user's message

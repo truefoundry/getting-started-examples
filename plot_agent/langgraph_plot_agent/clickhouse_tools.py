@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Union
 from langchain_core.tools import tool
 from clickhouse_connect import get_client
 from dotenv import load_dotenv
@@ -20,7 +20,7 @@ client = get_client(
     database=os.getenv('CLICKHOUSE_DATABASE', 'default')
 )
 @tool
-def execute_clickhouse_query(query: str, limit: Optional[int] = None) -> str:
+def execute_clickhouse_query(query: str, limit: Union[int, None] = None) -> str:
     """Execute a ClickHouse query and return formatted results.
     
     Args:

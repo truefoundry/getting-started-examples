@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict, Any
+from typing import List, Union, Dict, Any
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -12,6 +12,8 @@ from matplotlib.ticker import FuncFormatter
 import logging
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
 # Create plots directory if it doesn't exist
 PLOTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plots")
 os.makedirs(PLOTS_DIR, exist_ok=True)
@@ -89,14 +91,14 @@ def create_plot(
     data: str,
     plot_type: str,
     x_col: str,
-    y_col: Optional[str] = None,
-    title: Optional[str] = None,
-    hue: Optional[str] = None,
-    figsize: Optional[List[float]] = [12, 8],  # Increased default figure size
-    style: Optional[str] = "seaborn-v0_8-darkgrid",
-    palette: Optional[str] = "husl",
-    output_path: Optional[str] = None
-) -> str:
+    y_col: Union[str, None] = None,
+    title: Union[str, None] = None,
+    hue: Union[str, None] = None,
+    figsize: Union[List[float], None] = [12, 8],  # Increased default figure size
+    style: Union[str, None] = "seaborn-v0_8-darkgrid",
+    palette: Union[str, None] = "husl",
+    output_path: Union[str, None] = None
+) -> Dict[str, Any]:
     """Create a plot based on the data and parameters."""
     try:
         # Generate a unique filename if output_path is not provided

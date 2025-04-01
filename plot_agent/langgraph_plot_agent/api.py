@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse, FileResponse
-from pydantic import BaseModel
-from typing import Optional, Dict, Any, List
+from pydantic import BaseModel, Field
+from typing import Dict, Any, List, Union
 import uvicorn
 import os
 import uuid
@@ -9,9 +9,13 @@ from agent import create_agent, agent
 import logging
 import json
 from models import PlotResult
-from langgraph.graph.message import AnyMessage
+from langchain_core.messages import HumanMessage
+import traceback
+import sys
 
 logger = logging.getLogger(__name__)
+# Set logging level to DEBUG for more detailed logs
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 from dotenv import load_dotenv
 
@@ -51,8 +55,8 @@ class JobStatusResponse(BaseModel):
     job_id: str
     status: str
     events: List[Dict[str, Any]]
-    plot_result: Optional[Dict[str, Any]] = None
-    error: Optional[str] = None
+    plot_result: Union[Dict[str, Any], None] = Field(default=None)
+    error: Union[str, None] = Field(default=None)
 
 # Initialize the agent
 # agent is already imported from agent module
@@ -131,48 +135,49 @@ async def get_plot(job_id: str):
 
 async def process_query(job_id: str, query: str):
     """
-    Process the query in the background using LangGraph agent and update the results store.
+    Process the query in the background using LangGraph agent (non-streaming) and update the results store.
     """
     try:
         # Initialize with the user's message in the correct format
-        messages = [AnyMessage(type="human", content=query, id=str(uuid.uuid4()))]
+        messages = [HumanMessage(content=query, id=str(uuid.uuid4()))]
         config = {"configurable": {"thread_id": job_id}}
         
         # Track visualization completion
         plot_found = False
         plot_result = None
-        
-        # Stream the agent responses
-        for step in agent.stream({"messages": messages}, config=config):
-            # Get the state snapshot
-            state_snapshot = step["messages"]
+
+        try:
+            # Invoke the agent to get final output
+            final_messages = agent.invoke(messages, config=config)
             
-            if len(state_snapshot) > 0:
-                latest_message = state_snapshot[-1]
-                
-                # Store all agent messages as events
-                if latest_message.type in ["assistant", "tool"]:
-                    content = latest_message.content
-                    
+            for message in final_messages:
+                logger.debug(f"Processing message: {message}")
+
+                if message.type in ["assistant", "tool"]:
+                    content = message.content
+
                     # Convert to string if it's not already
                     if not isinstance(content, str):
-                        content = json.dumps(content)
-                    
+                        try:
+                            content = json.dumps(content)
+                        except Exception as e:
+                            logger.error(f"Error serializing content: {str(e)}")
+                            content = str(content)
+
                     results_store[job_id]["events"].append({
-                        "event": latest_message.type,
+                        "event": message.type,
                         "content": content
                     })
-                    
+
                     # Check for plot creation tool results
-                    if latest_message.type == "tool" and isinstance(latest_message.content, dict):
-                        tool_content = latest_message.content
-                        tool_name = latest_message.name
-                        
-                        # Check if this is the result of a plot creation
+                    if message.type == "tool" and isinstance(message.content, dict):
+                        tool_content = message.content
+                        tool_name = message.name
+                        logger.debug(f"Tool execution: {tool_name} with content: {tool_content}")
+
                         if tool_name == "create_plot" and "plot_path" in tool_content:
                             plot_found = True
-                            
-                            # Extract plot information 
+
                             plot_result = {
                                 "plot_type": tool_content.get("plot_type", "unknown"),
                                 "plot_path": tool_content.get("plot_path", ""),
@@ -180,44 +185,49 @@ async def process_query(job_id: str, query: str):
                                 "y_col": tool_content.get("y_col", ""),
                                 "title": tool_content.get("title", "")
                             }
-                            
+
                             # Ensure plot is saved in plots directory with job_id
                             original_path = plot_result["plot_path"]
                             if not os.path.isabs(original_path) and os.path.exists(original_path):
                                 new_plot_path = os.path.join(PLOTS_DIR, f"{job_id}_{os.path.basename(original_path)}")
-                                
+
                                 try:
                                     os.rename(original_path, new_plot_path)
                                     plot_result["plot_path"] = new_plot_path
                                     logger.info(f"Successfully moved plot to: {new_plot_path}")
                                 except Exception as e:
                                     logger.error(f"Failed to move plot file: {e}")
-                                    # If rename fails, try to copy the file instead
                                     try:
                                         import shutil
                                         shutil.copy2(original_path, new_plot_path)
-                                        os.remove(original_path)  # Clean up original file
+                                        os.remove(original_path)
                                         plot_result["plot_path"] = new_plot_path
                                         logger.info(f"Successfully copied plot to: {new_plot_path}")
                                     except Exception as copy_error:
                                         logger.error(f"Failed to copy plot file: {copy_error}")
                                         results_store[job_id]["status"] = "failed"
                                         results_store[job_id]["error"] = f"Failed to save plot: {copy_error}"
-                
-        # After processing all steps, check if a plot was found
+        except Exception as invoke_error:
+            logger.error(f"Error in agent invocation: {str(invoke_error)}")
+            logger.error("Full traceback:")
+            logger.error(traceback.format_exc())
+            raise invoke_error
+
+        # Update status after processing
         if plot_found and plot_result:
             results_store[job_id]["status"] = "completed"
             results_store[job_id]["plot_result"] = plot_result
         else:
-            # Check if there was an error
             if results_store[job_id]["error"] is None:
                 results_store[job_id]["status"] = "failed"
                 results_store[job_id]["error"] = "No visualization created by the agent"
-        
+
     except Exception as e:
-        logger.error(f"Error processing query: {e}")
+        logger.error(f"Error processing query: {str(e)}")
+        logger.error("Full traceback:")
+        logger.error(traceback.format_exc())
         results_store[job_id]["status"] = "failed"
-        results_store[job_id]["error"] = str(e)
+        results_store[job_id]["error"] = f"Error: {str(e)}\n\nTraceback:\n{traceback.format_exc()}"
 
 if __name__ == "__main__":
-    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True) 
+    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True, log_level="debug") 
