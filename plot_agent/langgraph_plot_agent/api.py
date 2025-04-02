@@ -5,13 +5,14 @@ from typing import Dict, Any, List, Union
 import uvicorn
 import os
 import uuid
-from agent import create_agent, agent
+from agent import agent
 import logging
 import json
 from models import PlotResult
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 import traceback
 import sys
+import shutil
 
 logger = logging.getLogger(__name__)
 # Set logging level to DEBUG for more detailed logs
@@ -140,7 +141,6 @@ async def process_query(job_id: str, query: str):
     try:
         # Initialize with the user's message in the correct format
         messages = [HumanMessage(content=query)]
-        config = {"configurable": {"thread_id": job_id}}
         
         # Track visualization completion
         plot_found = False
@@ -148,15 +148,14 @@ async def process_query(job_id: str, query: str):
 
         try:
             # Invoke the agent to get final output
-            final_messages = agent.invoke({"messages": messages}, config=config)
+            final_result = agent.invoke({"messages": messages})
             
-            for message in final_messages:
+            for message in final_result["messages"]:
                 logger.debug(f"Processing message: {message}")
 
                 if isinstance(message, (AIMessage, BaseMessage)):
                     content = message.content
 
-                    # Convert to string if it's not already
                     if not isinstance(content, str):
                         try:
                             content = json.dumps(content)
@@ -198,7 +197,7 @@ async def process_query(job_id: str, query: str):
                                 except Exception as e:
                                     logger.error(f"Failed to move plot file: {e}")
                                     try:
-                                        import shutil
+                                        
                                         shutil.copy2(original_path, new_plot_path)
                                         os.remove(original_path)
                                         plot_result["plot_path"] = new_plot_path

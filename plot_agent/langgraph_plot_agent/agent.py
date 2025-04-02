@@ -15,9 +15,9 @@ from typing import Annotated
 from typing_extensions import TypedDict
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import Runnable, RunnableConfig
+
 from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import ToolNode, tools_condition, create_react_agent
+from langgraph.prebuilt import create_react_agent
 from langgraph.graph.message import add_messages
 from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -46,37 +46,34 @@ COMBINED_AGENT_INSTRUCTIONS = (
     + "\n".join(PLOT_AGENT_INSTRUCTIONS)
 )
 
-
 # Define the custom prompt explicitly
 prompt = ChatPromptTemplate.from_messages([
     ("system", COMBINED_AGENT_INSTRUCTIONS),  # explicit SQL instructions
     MessagesPlaceholder(variable_name="messages"),
 ])
 
-
+# Create the agent using ReAct pattern with LangChain
 agent = create_react_agent(
     model=llm,
     tools=tools_list,
     prompt=prompt
 )
 
-from IPython.display import Image, display
-
-try:
-    display(Image(agent.get_graph().draw_mermaid_png()))
-except Exception:
-    # This requires some extra dependencies and is optional
-    pass
-
+# You can visualize the graph structure if running in a notebook environment
+# try:
+#     from IPython.display import Image, display
+#     display(Image(agent.get_graph().draw_mermaid_png()))
+# except Exception:
+#     # This requires some extra dependencies and is optional
+#     pass
 
 if __name__ == "__main__":
-    # Initialize with the user's message in the correct format
+    # Test the agent with a sample query
     user_input = "List the top 5 most active users by request count in the last 30 days and plot the results."
     messages = [HumanMessage(content=user_input)]
     
     try:
-        # You should use the correct table name for costs
-        # For debugging purposes, you might want to print available tables first
+        # Invoke the agent
         result = agent.invoke({"messages": messages})
         
         # Process and display the final result
@@ -85,9 +82,3 @@ if __name__ == "__main__":
             
     except Exception as e:
         print(f"Error occurred: {str(e)}")
-
-
-result = agent.invoke({"messages": [HumanMessage(content="List top 5 models by usage count")]})
-
-for message in result["messages"]:
-    print(message.content)
