@@ -22,7 +22,13 @@ from langgraph.graph.message import add_messages
 from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
+from traceloop.sdk import Traceloop
+from traceloop.sdk.decorators import workflow, agent, task
+
 load_dotenv('.env')
+
+
+Traceloop.init(app_name="langgraph")
 
 class State(TypedDict):
     messages: Annotated[List[BaseMessage], add_messages]
@@ -53,11 +59,16 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 
 # Create the agent using ReAct pattern with LangChain
-agent = create_react_agent(
-    model=llm,
-    tools=tools_list,
-    prompt=prompt
-)
+
+@agent(name="sql_and_plot_workflow")
+def create_sql_plot_agent(llm, tools_list, prompt):
+    return create_react_agent(
+        model=llm,
+        tools=tools_list,
+        prompt=prompt
+    )
+
+agent = create_sql_plot_agent(llm, tools_list, prompt)
 
 # You can visualize the graph structure if running in a notebook environment
 # try:

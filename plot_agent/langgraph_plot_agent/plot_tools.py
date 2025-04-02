@@ -7,6 +7,8 @@ from langchain_core.tools import tool
 import os
 import uuid
 from matplotlib.ticker import FuncFormatter
+from traceloop.sdk.decorators import  tool as traceloop_tool
+from traceloop.sdk.decorators import task
 
 #import logger
 import logging
@@ -87,6 +89,8 @@ def parse_tabular_data(data: str) -> pd.DataFrame:
         raise ValueError(f"Failed to parse tabular data: {e}")
 
 @tool
+#@traceloop_tool(name="create_plot")
+@task(name="create_plot")
 def create_plot(
     data: str,
     plot_type: str,

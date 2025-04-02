@@ -4,7 +4,8 @@ from clickhouse_connect import get_client
 from dotenv import load_dotenv
 import os
 import logging
-
+from traceloop.sdk.decorators import  tool as traceloop_tool
+from traceloop.sdk.decorators import task
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,10 @@ client = get_client(
     password=os.getenv('CLICKHOUSE_PASSWORD'),
     database=os.getenv('CLICKHOUSE_DATABASE', 'default')
 )
+
 @tool
+#@traceloop_tool(name="execute_clickhouse_query")
+@task(name="execute_clickhouse_query")
 def execute_clickhouse_query(query: str, limit: Union[int, None] = None) -> str:
     """Execute a ClickHouse query and return formatted results.
     
