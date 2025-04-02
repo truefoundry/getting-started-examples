@@ -20,6 +20,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import ToolNode, tools_condition, create_react_agent
 from langgraph.graph.message import add_messages
 from dotenv import load_dotenv
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 load_dotenv('.env')
 
@@ -36,9 +37,27 @@ llm = ChatOpenAI(
     temperature=0.0
 )
 
+# Define combined instructions
+COMBINED_AGENT_INSTRUCTIONS = (
+    "You are an agent capable of generating Clickhouse SQL queries and creating visualizations from their results."
+    "\n\nSQL QUERY GENERATION INSTRUCTIONS:\n"
+    + "\n".join(SQL_AGENT_INSTRUCTIONS)
+    + "\n\nDATA VISUALIZATION INSTRUCTIONS:\n"
+    + "\n".join(PLOT_AGENT_INSTRUCTIONS)
+)
+
+
+# Define the custom prompt explicitly
+prompt = ChatPromptTemplate.from_messages([
+    ("system", COMBINED_AGENT_INSTRUCTIONS),  # explicit SQL instructions
+    MessagesPlaceholder(variable_name="messages"),
+])
+
+
 agent = create_react_agent(
     model=llm,
-    tools=tools_list
+    tools=tools_list,
+    prompt=prompt
 )
 
 from IPython.display import Image, display
@@ -50,12 +69,9 @@ except Exception:
     pass
 
 
-user_input = "Show me the cost trends by model over the last week. Filter models that show a 0 cost."
-
-user_input = "List the top 5 most active users by request count in the last 30 days."
 if __name__ == "__main__":
     # Initialize with the user's message in the correct format
-    user_input = "Compare usage patterns across the top 5 models"
+    user_input = "List the top 5 most active users by request count in the last 30 days and plot the results."
     messages = [HumanMessage(content=user_input)]
     
     try:
@@ -70,3 +86,8 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Error occurred: {str(e)}")
 
+
+result = agent.invoke({"messages": [HumanMessage(content="List top 5 models by usage count")]})
+
+for message in result["messages"]:
+    print(message.content)
