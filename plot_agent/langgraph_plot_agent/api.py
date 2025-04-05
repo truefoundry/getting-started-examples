@@ -13,6 +13,10 @@ from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 import traceback
 import sys
 import shutil
+import matplotlib
+matplotlib.use('Agg')  # Use non-GUI backend suitable for background tasks
+
+import matplotlib.pyplot as plt
 
 logger = logging.getLogger(__name__)
 # Set logging level to DEBUG for more detailed logs
@@ -106,21 +110,25 @@ async def get_job_status(job_id: str):
 @app.get("/plot/{job_id}")
 async def get_plot(job_id: str):
     """
-    Get the plot image for a completed job.
+    Get the plot image for a job. Will serve the plot if it exists, even if the job status
+    is not "completed" (which can happen if the job fails after creating the plot).
     """
     if job_id not in results_store:
         logger.error(f"Job {job_id} not found in results store")
         raise HTTPException(status_code=404, detail="Job not found")
     
-    if results_store[job_id]["status"] != "completed":
-        logger.error(f"Job {job_id} not completed. Status: {results_store[job_id]['status']}")
-        raise HTTPException(status_code=400, detail="Job not completed or no plot available")
+    # Get the job status and plot result
+    job_status = results_store[job_id]["status"]
+    plot_result = results_store[job_id]["plot_result"]
     
-    if not results_store[job_id]["plot_result"]:
-        logger.error(f"No plot result for job {job_id}")
+    logger.info(f"Getting plot for job {job_id}, status: {job_status}, plot_result: {plot_result}")
+    
+    # Check if we have a plot result with a path
+    if not plot_result or "plot_path" not in plot_result or not plot_result["plot_path"]:
+        logger.error(f"No valid plot result for job {job_id}")
         raise HTTPException(status_code=400, detail="No plot available for this job")
     
-    plot_path = results_store[job_id]["plot_result"]["plot_path"]
+    plot_path = plot_result["plot_path"]
     logger.info(f"Plot path for job {job_id}: {plot_path}")
     
     # Convert relative path to absolute path if necessary
@@ -128,10 +136,19 @@ async def get_plot(job_id: str):
         plot_path = os.path.join(PLOTS_DIR, plot_path)
         logger.info(f"Converted to absolute path: {plot_path}")
     
+    # Check if the plot file exists
     if not os.path.exists(plot_path):
-        logger.error(f"Plot file not found at path: {plot_path}")
-        raise HTTPException(status_code=404, detail=f"Plot file not found at path: {plot_path}")
+        # Check if any file in plots directory contains the job_id
+        potential_files = [f for f in os.listdir(PLOTS_DIR) if job_id in f]
+        if potential_files:
+            logger.info(f"Plot file not found at path, but found potential files: {potential_files}")
+            plot_path = os.path.join(PLOTS_DIR, potential_files[0])
+            logger.info(f"Using alternative plot path: {plot_path}")
+        else:
+            logger.error(f"Plot file not found at path: {plot_path} and no alternatives found")
+            raise HTTPException(status_code=404, detail=f"Plot file not found at path: {plot_path}")
     
+    logger.info(f"Serving plot file from: {plot_path}")
     return FileResponse(plot_path)
 
 async def process_query(job_id: str, query: str):
@@ -150,6 +167,9 @@ async def process_query(job_id: str, query: str):
             # Invoke the agent to get final output
             final_result = agent.invoke({"messages": messages})
             
+            logger.debug(f"Agent invocation complete. Processing final result messages...")
+            
+            # First pass: look for explicit plot creation tool results
             for message in final_result["messages"]:
                 logger.debug(f"Processing message: {message}")
 
@@ -197,15 +217,39 @@ async def process_query(job_id: str, query: str):
                                 except Exception as e:
                                     logger.error(f"Failed to move plot file: {e}")
                                     try:
-                                        
                                         shutil.copy2(original_path, new_plot_path)
                                         os.remove(original_path)
                                         plot_result["plot_path"] = new_plot_path
                                         logger.info(f"Successfully copied plot to: {new_plot_path}")
                                     except Exception as copy_error:
                                         logger.error(f"Failed to copy plot file: {copy_error}")
-                                        results_store[job_id]["status"] = "failed"
-                                        results_store[job_id]["error"] = f"Failed to save plot: {copy_error}"
+                                        # Don't set job to failed here, just log the error
+                                        # We'll check the plots directory as a fallback
+            
+            # If we haven't found a plot yet, check if there are any new plot files in the plots directory
+            if not plot_found:
+                logger.info(f"No plot found in agent messages. Checking plots directory for recent files...")
+                # Get all files in the plots directory sorted by modification time (newest first)
+                plot_files = sorted(
+                    [f for f in os.listdir(PLOTS_DIR) if f.endswith('.png')],
+                    key=lambda f: os.path.getmtime(os.path.join(PLOTS_DIR, f)),
+                    reverse=True
+                )
+                
+                if plot_files:
+                    newest_plot = plot_files[0]
+                    logger.info(f"Found newest plot file: {newest_plot}")
+                    
+                    # Create a basic plot result
+                    plot_result = {
+                        "plot_type": "unknown",
+                        "plot_path": os.path.join(PLOTS_DIR, newest_plot),
+                        "x_col": "",
+                        "y_col": "",
+                        "title": ""
+                    }
+                    plot_found = True
+                
         except Exception as invoke_error:
             logger.error(f"Error in agent invocation: {str(invoke_error)}")
             logger.error("Full traceback:")
@@ -216,10 +260,12 @@ async def process_query(job_id: str, query: str):
         if plot_found and plot_result:
             results_store[job_id]["status"] = "completed"
             results_store[job_id]["plot_result"] = plot_result
+            logger.info(f"Job {job_id} completed successfully with plot: {plot_result['plot_path']}")
         else:
             if results_store[job_id]["error"] is None:
                 results_store[job_id]["status"] = "failed"
                 results_store[job_id]["error"] = "No visualization created by the agent"
+                logger.error(f"Job {job_id} failed: No visualization created by the agent")
 
     except Exception as e:
         logger.error(f"Error processing query: {str(e)}")

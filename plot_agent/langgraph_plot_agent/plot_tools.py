@@ -1,4 +1,7 @@
 from typing import List, Union, Dict, Any
+import matplotlib
+matplotlib.use('Agg')  # Set non-GUI backend before importing pyplot - important for background tasks
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -7,8 +10,9 @@ from langchain_core.tools import tool
 import os
 import uuid
 from matplotlib.ticker import FuncFormatter
-from traceloop.sdk.decorators import  tool as traceloop_tool
+from traceloop.sdk.decorators import tool as traceloop_tool
 from traceloop.sdk.decorators import task
+import shutil
 
 #import logger
 import logging
