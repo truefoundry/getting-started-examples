@@ -246,4 +246,4 @@ yarl==1.18.3
 yq==3.4.3
 zipp==3.21.0
 zstandard==0.23.0
-traceloop-sdk==0.38.12
+traceloop-sdk==0.39.3
