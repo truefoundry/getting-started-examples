@@ -15,4 +15,5 @@ dependencies = [
     "uvicorn>=0.34.0",
     "watchdog>=6.0.0",
     "truefoundry>=0.5.9,<0.6.0",
+    "traceloop-sdk==0.39.0"
 ]

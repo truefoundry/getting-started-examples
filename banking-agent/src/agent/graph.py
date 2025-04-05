@@ -4,12 +4,14 @@ from langgraph.prebuilt import create_react_agent
 from src.agent.banking_tools import tools
 from src.agent.llm import llm
 from src.agent.prompt import prompt_template
+from traceloop.sdk.decorators import workflow, task
 
 memory = MemorySaver()
 
 AGENT = create_react_agent(model=llm, tools=tools, state_modifier=prompt_template, checkpointer=memory)
 
 
+@task()
 async def get_ai_response(events):
     for event in reversed(events):
         if event.get("messages"):
@@ -32,7 +34,6 @@ async def get_ai_response(events):
 
     return None
 
-
 def print_event(event):
     message = event.get("messages", [])
     if message:
@@ -41,6 +42,7 @@ def print_event(event):
         message.pretty_print()
 
 
+@workflow(name="banking-agent")
 async def run_agent(thread_id: str, user_input: str):
     config = {"configurable": {"thread_id": thread_id}}
     inputs = {"messages": [("user", user_input)]}
