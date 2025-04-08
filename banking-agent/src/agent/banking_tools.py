@@ -1,5 +1,6 @@
 from langchain_core.tools import tool
 from src.agent.accounts_model import Account, UserAccounts
+from traceloop.sdk.decorators import tool as traceloop_tool
 
 USER_ACCOUNTS = UserAccounts(
     accounts=[
@@ -10,12 +11,14 @@ USER_ACCOUNTS = UserAccounts(
 
 
 @tool
+@traceloop_tool()
 async def list_accounts() -> str:
     """List the names of the user's accounts."""
     return await USER_ACCOUNTS.get_account_names()
 
 
 @tool
+@traceloop_tool()
 async def get_account_balance(account_name: str) -> str:
     """Get the balance of one of the user accounts by its exact name."""
     try:
@@ -26,6 +29,7 @@ async def get_account_balance(account_name: str) -> str:
 
 
 @tool
+@traceloop_tool()
 async def transfer_money(amount: float, source_account: str, destination_account: str) -> str:
     """Transfer money between two accounts."""
     try:

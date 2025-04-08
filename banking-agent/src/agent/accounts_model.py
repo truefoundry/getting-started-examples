@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from traceloop.sdk.decorators import task
 
 class Account(BaseModel):
     """Represents a bank account with a name and balance."""
@@ -13,10 +13,12 @@ class UserAccounts(BaseModel):
 
     accounts: list[Account]
 
+    @task()
     async def get_account_names(self) -> list[str]:
         """Returns a list of the names of all accounts."""
         return [account.name for account in self.accounts]
 
+    @task()
     async def get_account(self, account_name: str) -> Account:
         """Returns the account with the given name.
 
@@ -31,6 +33,7 @@ class UserAccounts(BaseModel):
         )
         raise ValueError(error_message)
 
+    @task()
     async def transfer_money(self, amount: float, source_acc_name: str, dest_acc_name: str) -> None:
         """Transfers money from one account to another.
 
