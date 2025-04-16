@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 service = Service(
     name="demo-rag-api",
     # --- Build configuration i.e. How to package and build source code ---
-    # This will instruct TrueFoundry to automatically generate the Dockerfile and build it
+    # This will instruct TrueFoundry to generate the Dockerfile and build it automatically
     image=Build(
         build_spec=DockerFileBuild(
             dockerfile_path="./Dockerfile",
@@ -21,23 +21,23 @@ service = Service(
     ports=[
         Port(
             port=8000,
-            host="ml.tfy-eo.truefoundry.cloud",
-            path="/demo-rag-api-sai-ws-8000/",
+            host="ml.example.truefoundry.cloud",
+            path="path",
         )
     ],
     # --- Environment Variables ---
     env={
         "ENVIRONMENT": "dev",
         "DEV_API_URL": "http://localhost:8000",
-        "PROD_API_URL": "https://demo-rag-sai.tfy-usea1-ctl.devtest.truefoundry.tech/",
-        "TFY_API_KEY": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImpJTkY3bXJ2RjA3cWJNUzllelhYeU5GYTBWVSJ9.eyJhdWQiOiI2OTZlNzQ2NS03MjZlLTYxNmMtM2EzOS02MTM4Mzg2NTYxNjEiLCJleHAiOjM2OTkzNDQ1MjgsImlhdCI6MTczOTc5MjUyOCwiaXNzIjoidHJ1ZWZvdW5kcnkuY29tIiwic3ViIjoiY203OHpqdWFyYnY1MzAxbDkxeG55OGVxaiIsImp0aSI6IjVjYjQyOTg2LTM4MjktNDYyYi04ZWEyLTM4YjlkMTBjNTg0MSIsInN1YmplY3RTbHVnIjoidGVzc3J0IiwidXNlcm5hbWUiOiJ0ZXNzcnQiLCJ1c2VyVHlwZSI6InNlcnZpY2VhY2NvdW50Iiwic3ViamVjdFR5cGUiOiJzZXJ2aWNlYWNjb3VudCIsInRlbmFudE5hbWUiOiJpbnRlcm5hbCIsInJvbGVzIjpbInRlbmFudC1tZW1iZXIiXSwiYXBwbGljYXRpb25JZCI6IjY5NmU3NDY1LTcyNmUtNjE2Yy0zYTM5LTYxMzgzODY1NjE2MSJ9.S8S3D4sDKxZJwJOSUBMEUd4x2AcQDbBlYI1IytGMBE6LJYO9Fk1raZ_j_SyicHKiMwcdCfmuLdjG3C7CGGmnfpP3tpLzv73KKYeV5vzpOqgmNG4b3WZjLdoeG6gVvcGF5PbVUYh51YC6nAw5NyGwGkwOD8R9EgtRgRhHmQr1teDCGEeZTkiFvZjbncdT9acoVr3ifAOq-CDUsV4pAsFUmsU50JhrFlsnjU-K8H24iWSQA9bdS1vConH7-c19ht0DWLXiizMj3Io_-K9EH4HYH4pkcx4QcOfGMxwNPpX5dMbSz7eMzhT21AOeWYNG5L0Xid-raMsyFdmeOaaNWMbHSg",
-        "TFY_LLM_GATEWAY_BASE_URL": "https://llm-gateway.truefoundry.com/api/inference/openai",
+        "PROD_API_URL": "PROD_API_URL",
+        "TFY_API_KEY": "TFY_API_KEY",
+        "TFY_LLM_GATEWAY_BASE_URL": "TFY_LLM_GATEWAY_BASE_URL",
         # QDRANT_API_URL=https://demo-rag-sai-qdrant.tfy-usea1-ctl.devtest.truefoundry.tech/
-        "QDRANT_API_URL": "https://ml.tfy-eo.truefoundry.cloud",
-        "QDRANT_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.OQqlajrayLt61kESpuVa997IoYbt42cpW35Xl70dIK8",
+        "QDRANT_API_URL": "QDRANT_API_URL",
+        "QDRANT_API_KEY": "QDRANT_API_KEY",
         "QDRANT_API_PORT": 443,
-        "QDRANT_API_PREFIX": "demo-rag-vector-db-sai-ws",
-        "CHROMADB_API_URL": "https://demo-rag-sai-chroma-sai-k-ws.tfy-usea1-ctl.devtest.truefoundry.tech",
+        "QDRANT_API_PREFIX": "QDRANT_API_PREFIX",
+        "CHROMADB_API_URL": "CHROMADB_API_URL",
     },
     # --- Resources ---
     resources=Resources(
@@ -54,4 +54,4 @@ service = Service(
 )
 
 # Get your workspace fqn from https://docs.truefoundry.com/docs/workspace#copy-workspace-fqn-fully-qualified-name
-service.deploy(workspace_fqn="tfy-ea-dev-eo-az:sai-ws")
+service.deploy(workspace_fqn="cluster:your-ws")
