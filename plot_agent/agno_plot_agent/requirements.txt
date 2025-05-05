@@ -14,3 +14,4 @@ clickhouse_connect>=0.6.8
 python-dotenv>=1.0.0
 traceloop-sdk>=0.33.9
 mcp-client>=0.2.0
+mcp>=0.1.0
