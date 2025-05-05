@@ -1,7 +1,7 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from src.crewai_plot_agent.tools.clickhouse_tool import ClickHouseTool
-from src.crewai_plot_agent.tools.plot_tool import PlotTools
+from .tools.clickhouse_tool import ClickHouseTool
+from .tools.plot_tool import PlotTools
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 # If you want to run a snippet of code before or after the crew starts, 
