@@ -7,7 +7,7 @@ sql_task:
     User Query: {topic}
 
     The query should be executed against the 'request_logs' table, which contains
-    the requests for the calls made to an LLM. The table structure is defined below 
+    the requests for the calls made to an LLM. The table structure is defined below
     in the format of columnName: type: description:
 
     - id: String: This is the row id which is a random string. Not very useful in queries.
@@ -56,13 +56,13 @@ plot_task:
     - Legends for multiple series.
     - Accessible color schemes.
 
-    Rules: 
+    Rules:
     - The value of the x-axis should be a column name from the data.
     - Generate only one plot/visualization.
 
   expected_output: >
     A structured response following the VisualizationRequest format:
-    - plot_path (str): The path to the plot file. This is the output of the plot tool exactly. 
+    - plot_path (str): The path to the plot file. This is the output of the plot tool exactly.
     - plot_type (str): The type of plot to create.
     - x_col (str): The column used for the x-axis.
     - y_col (Optional[str]): The column used for the y-axis, if applicable.
