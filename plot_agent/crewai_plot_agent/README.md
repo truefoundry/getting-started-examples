@@ -89,12 +89,12 @@ uv run crewai run
 
 2. Start the FastAPI server:
 ```bash
-uv run crewai_plot_agent/api.py
+uv run python -m crewai_plot_agent.api
 ```
 
 3. Start the Streamlit UI (in a new terminal):
 ```bash
-uv run streamlit run crewai_plot_agent/app.py
+uv run python -m streamlit run crewai_plot_agent/app.py
 ```
 
 ## Deployment on TrueFoundry

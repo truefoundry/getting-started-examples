@@ -22,7 +22,7 @@ service = Service(
     # This will instruct TrueFoundry to automatically generate the Dockerfile and build it
     image=Build(
         build_spec=PythonBuild(
-            command="streamlit run crewai_plot_agent/app.py",
+            command="python -m streamlit streamlit run crewai_plot_agent/app.py",
             requirements_path="requirements.txt",
         )
         # You can use PythonBuild or DockerFileBuild for build spec like follows:
