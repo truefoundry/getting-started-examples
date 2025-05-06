@@ -15,7 +15,7 @@ service = Service(
   # This will instruct TrueFoundry to automatically generate the Dockerfile and build it
   image=Build(
     build_spec=PythonBuild(
-      command="python src/crewai_plot_agent/api.py",
+      command="pip install -e . && python src/crewai_plot_agent/api.py",
       requirements_path="requirements.txt",
     )
     # You can use PythonBuild or DockerFileBuild for build spec like follows:
