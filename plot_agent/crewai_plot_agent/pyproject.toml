@@ -7,8 +7,10 @@ requires-python = ">=3.10,<3.13"
 dependencies = [
     "clickhouse-connect>=0.8.17",
     "crewai[tools]>=0.102.0,<1.0.0",
+    "fastapi>=0.115.11",
     "matplotlib>=3.10.1",
     "seaborn>=0.13.2",
+    "streamlit>=1.45.0",
     "traceloop-sdk>=0.40.2",
 ]
 
