@@ -7,7 +7,7 @@ from datetime import datetime
 import uvicorn
 import os
 import uuid
-from .crew import CrewaiPlotAgent
+from crewai_plot_agent.crew import CrewaiPlotAgent
 import json
 
 # Create plots directory if it doesn't exist
