@@ -7,6 +7,7 @@ import os
 import uuid
 from agent import SQLAndPlotWorkflow, PlotResult
 from agno.utils.log import logger
+from traceloop.sdk.decorators import agent
 
 # Create plots directory if it doesn't exist
 PLOTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plots")
@@ -120,6 +121,7 @@ async def get_plot(job_id: str):
     
     return FileResponse(plot_path)
 
+@agent(name="process_query")
 async def process_query(job_id: str, query: str):
     """
     Process the query in the background and update the results store.
