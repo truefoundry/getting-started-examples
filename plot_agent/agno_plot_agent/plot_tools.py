@@ -9,11 +9,13 @@ from agno.utils.log import logger
 import os
 import uuid
 from matplotlib.ticker import FuncFormatter
+from traceloop.sdk.decorators import tool
 
 # Create plots directory if it doesn't exist
 PLOTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plots")
 os.makedirs(PLOTS_DIR, exist_ok=True)
 
+@tool(name="plot_tools")
 class PlotTools(Toolkit):
     def __init__(self):
         super().__init__(name="plot_tools")

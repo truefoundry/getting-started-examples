@@ -5,7 +5,9 @@ from agno.tools import Toolkit
 from agno.utils.log import logger
 import os
 from dotenv import load_dotenv
+from traceloop.sdk.decorators import tool
 
+@tool(name="clickhouse_tools")
 class ClickHouseTools(Toolkit):
     def __init__(self):
         super().__init__(name="clickhouse_tools")
