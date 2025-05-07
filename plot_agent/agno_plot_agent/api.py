@@ -91,6 +91,7 @@ async def get_job_status(job_id: str):
     )
 
 @app.get("/plot/{job_id}")
+@agent(name="get_plot")
 async def get_plot(job_id: str):
     """
     Get the plot image for a completed job.
