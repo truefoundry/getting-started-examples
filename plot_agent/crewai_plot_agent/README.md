@@ -49,11 +49,6 @@ Ensure you have Python >=3.10 <3.13 installed on your system. This project uses 
 pip install uv
 ```
 
-2. Install CrewAI CLI:
-```bash
-pip install -U "crewai"
-```
-
 ### Environment Setup
 
 1. Create a `.env` file in your project root:
@@ -68,12 +63,12 @@ CLICKHOUSE_PASSWORD=your_password
 
 2. Install project dependencies:
 ```bash
-crewai install
+uv sync
 ```
 
 ### Configuration
 
-1. **Agent Configuration**: 
+1. **Agent Configuration**:
    - Modify `src/crewai_plot_agent/config/agents.yaml` to define your agents
    - Configure agent roles, goals, and backstories
 
@@ -89,17 +84,17 @@ crewai install
 
 1. Start the CrewAI workflow:
 ```bash
-crewai run
+uv run crewai run
 ```
 
 2. Start the FastAPI server:
 ```bash
-python api.py
+uv run python -m crewai_plot_agent.api
 ```
 
 3. Start the Streamlit UI (in a new terminal):
 ```bash
-streamlit run app.py
+uv run python -m streamlit run crewai_plot_agent/app.py
 ```
 
 ## Deployment on TrueFoundry
