@@ -10,7 +10,7 @@ import os
 from agno.utils.log import logger
 from dotenv import load_dotenv
 from traceloop.sdk import Traceloop
-from traceloop.sdk.decorators import workflow, task
+from traceloop.sdk.decorators import workflow, task, agent
 
 load_dotenv()
 
@@ -37,9 +37,10 @@ class VisualizationRequest(BaseModel):
     title: Optional[str] = Field(None, description="Plot title.")
     hue: Optional[str] = Field(None, description="Column for color grouping.")
 
-class SQLAndPlotWorkflow(Workflow):        
-    # SQL Agent that generates and executes Clickhouse queries
-    sql_agent: Agent = Agent(
+@agent(name="sql_agent")
+def create_sql_agent() -> Agent:
+    """Creates and returns a SQL agent for generating and executing Clickhouse queries."""
+    return Agent(
         model=OpenAIChat(id="openai-main/gpt-4o", api_key=os.getenv("LLM_GATEWAY_API_KEY"), base_url=os.getenv("LLM_GATEWAY_BASE_URL")),
         description="You are an expert in generating and executing Clickhouse SQL queries from user queries in English.",
         instructions=[
@@ -67,7 +68,7 @@ class SQLAndPlotWorkflow(Workflow):
             "- applied_configs: Map(LowCardinality(String), Map(LowCardinality(String), String)): Configuration settings applied to the request.",
             "- created_at: DateTime64(9) Delta(8), ZSTD(1): The timestamp when the request was made.",
             "Clickhouse has slighlty different syntax rules than MySQL or PostgreSQL. Please make sure to use the correct syntax for Clickhouse."
-            "Syntax rule: Use toIntervalXXX(N) (e.g., toIntervalDay(30)) instead of INTERVAL N UNIT (e.g., INTERVAL 30 DAY) for interval arithmetic in ClickHouse."
+            "Syntax rule: Use toIntervalXXX(N) (e.g., toIntervalDay(30)) instead of INTERVAL N UNIT (e.g., INTERVAL 30 DAY) for interval arithmetic in ClickHouse.",
             "Syntax rule: Do not end in a semicolon (;) in the query. Only end with a newline.",
         ],
         tools=[ClickHouseTools()],
@@ -75,11 +76,12 @@ class SQLAndPlotWorkflow(Workflow):
         markdown=True,
         response_model=SQLQueryResult,
         structured_outputs=True,
-        # debug_mode=True,
     )
 
-    # Plot Agent that creates visualizations
-    plot_agent: Agent = Agent(
+@agent(name="plot_agent")
+def create_plot_agent() -> Agent:
+    """Creates and returns a Plot agent for creating data visualizations."""
+    return Agent(
         model=OpenAIChat(id="openai-main/gpt-4o", api_key=os.getenv("LLM_GATEWAY_API_KEY"), base_url=os.getenv("LLM_GATEWAY_BASE_URL")),
         description="You are an expert in creating data visualizations from SQL query results.",
         instructions=[
@@ -102,10 +104,13 @@ class SQLAndPlotWorkflow(Workflow):
         show_tool_calls=True,
         markdown=True,
         response_model=VisualizationRequest,
-        # structured_outputs=True,
-        # debug_mode=True,
     )
 
+class SQLAndPlotWorkflow(Workflow):
+    def __init__(self):
+        super().__init__()
+        self.sql_agent = create_sql_agent()
+        self.plot_agent = create_plot_agent()
 
     @workflow(name="plotting workflow")
     def run_workflow(self, query: str) -> Iterator[RunResponse]:

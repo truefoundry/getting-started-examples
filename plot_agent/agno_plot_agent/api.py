@@ -91,7 +91,6 @@ async def get_job_status(job_id: str):
     )
 
 @app.get("/plot/{job_id}")
-@agent(name="get_plot")
 async def get_plot(job_id: str):
     """
     Get the plot image for a completed job.
@@ -122,7 +121,6 @@ async def get_plot(job_id: str):
     
     return FileResponse(plot_path)
 
-@agent(name="process_query")
 async def process_query(job_id: str, query: str):
     """
     Process the query in the background and update the results store.
