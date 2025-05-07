@@ -10,7 +10,7 @@ import os
 from agno.utils.log import logger
 from dotenv import load_dotenv
 from traceloop.sdk import Traceloop
-from traceloop.sdk.decorators import workflow, task, agent
+from traceloop.sdk.decorators import workflow, task
 
 load_dotenv()
 
@@ -37,7 +37,6 @@ class VisualizationRequest(BaseModel):
     title: Optional[str] = Field(None, description="Plot title.")
     hue: Optional[str] = Field(None, description="Column for color grouping.")
 
-@agent(name="sql_agent")
 def create_sql_agent() -> Agent:
     """Creates and returns a SQL agent for generating and executing Clickhouse queries."""
     return Agent(
@@ -78,7 +77,6 @@ def create_sql_agent() -> Agent:
         structured_outputs=True,
     )
 
-@agent(name="plot_agent")
 def create_plot_agent() -> Agent:
     """Creates and returns a Plot agent for creating data visualizations."""
     return Agent(
