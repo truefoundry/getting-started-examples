@@ -18,6 +18,7 @@ anyio==4.9.0
     # via
     #   anthropic
     #   httpx
+    #   langfuse
     #   mcp
     #   openai
     #   sse-starlette
@@ -28,7 +29,9 @@ attrs==25.3.0
     #   jsonschema
     #   referencing
 backoff==2.2.1
-    # via posthog
+    # via
+    #   langfuse
+    #   posthog
 blinker==1.9.0
     # via streamlit
 cachetools==5.5.2
@@ -106,6 +109,7 @@ httpx==0.28.1
     # via
     #   agno
     #   anthropic
+    #   langfuse
     #   mcp
     #   openai
 httpx-sse==0.4.0
@@ -116,6 +120,7 @@ idna==3.10
     # via
     #   anyio
     #   httpx
+    #   langfuse
     #   requests
     #   yarl
 importlib-metadata==8.6.1
@@ -137,6 +142,8 @@ jsonschema-specifications==2025.4.1
     # via jsonschema
 kiwisolver==1.4.8
     # via matplotlib
+langfuse==2.60.4
+    # via -r requirements.in
 lz4==4.4.4
     # via clickhouse-connect
 markdown-it-py==3.0.0
@@ -399,6 +406,7 @@ packaging==24.2
     # via
     #   altair
     #   huggingface-hub
+    #   langfuse
     #   matplotlib
     #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-sqlalchemy
@@ -432,6 +440,7 @@ pydantic==2.11.4
     #   agno
     #   anthropic
     #   fastapi
+    #   langfuse
     #   mcp
     #   openai
     #   pydantic-settings
@@ -481,6 +490,7 @@ regex==2024.11.6
 requests==2.32.3
     # via
     #   huggingface-hub
+    #   langfuse
     #   mcp-client
     #   opentelemetry-exporter-otlp-proto-http
     #   posthog
@@ -573,6 +583,7 @@ uvicorn==0.34.2
 wrapt==1.17.2
     # via
     #   deprecated
+    #   langfuse
     #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-sqlalchemy
     #   opentelemetry-instrumentation-threading
