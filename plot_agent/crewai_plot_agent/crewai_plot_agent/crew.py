@@ -5,14 +5,29 @@ from crewai.project import CrewBase, agent, crew, task
 from crewai_plot_agent.tools.clickhouse_tool import ClickHouseTool
 from crewai_plot_agent.tools.plot_tool import PlotTools
 from pydantic import BaseModel, Field
+import os
+import base64
+import openlit
 
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
 from traceloop.sdk import Traceloop
 
-Traceloop.init(app_name="crewai")
-
+# if TracingSystem.LANGFUSE is selected in the .env file
+if os.getenv("TRACING_SYSTEM") == "LANGFUSE":
+    LANGFUSE_PUBLIC_KEY = os.getenv("LANGFUSE_PUBLIC_KEY")
+    LANGFUSE_SECRET_KEY = os.getenv("LANGFUSE_SECRET_KEY")
+    LANGFUSE_AUTH=base64.b64encode(f"{LANGFUSE_PUBLIC_KEY}:{LANGFUSE_SECRET_KEY}".encode()).decode()
+    os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = f"Authorization=Basic {LANGFUSE_AUTH}"
+    openlit.init()
+elif os.getenv("TRACING_SYSTEM") == "TRUEFOUNDRY_WITH_OPENLIT":
+    os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = os.getenv("TRACELOOP_HEADERS")
+    os.environ["OTEL_EXPORTER_OTLP_ENDPOINT"] = os.getenv("TRACELOOP_BASE_URL")
+    openlit.init()
+else:
+    Traceloop.init(app_name="crewai")
+    
 
 class SQLQueryResult(BaseModel):
     query: str = Field(..., description="The SQL query that was executed.")
