@@ -18,6 +18,7 @@ anyio==4.9.0
     # via
     #   anthropic
     #   httpx
+    #   langfuse
     #   openai
     #   starlette
 attrs==25.3.0
@@ -26,7 +27,9 @@ attrs==25.3.0
     #   jsonschema
     #   referencing
 backoff==2.2.1
-    # via posthog
+    # via
+    #   langfuse
+    #   posthog
 blinker==1.9.0
     # via streamlit
 cachetools==5.5.2
@@ -100,6 +103,7 @@ httpcore==1.0.9
 httpx==0.28.1
     # via
     #   anthropic
+    #   langfuse
     #   langgraph-sdk
     #   langsmith
     #   openai
@@ -111,6 +115,7 @@ idna==3.10
     # via
     #   anyio
     #   httpx
+    #   langfuse
     #   requests
     #   yarl
 importlib-metadata==8.6.1
@@ -156,6 +161,8 @@ langchain-openai==0.3.16
     # via -r requirements.in
 langchain-text-splitters==0.3.8
     # via langchain
+langfuse==2.60.4
+    # via -r requirements.in
 langgraph==0.4.3
     # via -r requirements.in
 langgraph-checkpoint==2.0.25
@@ -439,6 +446,7 @@ packaging==24.2
     #   altair
     #   huggingface-hub
     #   langchain-core
+    #   langfuse
     #   langsmith
     #   marshmallow
     #   matplotlib
@@ -475,6 +483,7 @@ pydantic==2.11.4
     #   fastapi
     #   langchain
     #   langchain-core
+    #   langfuse
     #   langgraph
     #   langsmith
     #   openai
@@ -521,6 +530,7 @@ requests==2.32.3
     #   huggingface-hub
     #   langchain
     #   langchain-community
+    #   langfuse
     #   langsmith
     #   opentelemetry-exporter-otlp-proto-http
     #   posthog
@@ -611,6 +621,7 @@ uvicorn==0.34.2
 wrapt==1.17.2
     # via
     #   deprecated
+    #   langfuse
     #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-sqlalchemy
     #   opentelemetry-instrumentation-threading

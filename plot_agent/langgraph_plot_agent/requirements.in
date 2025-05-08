@@ -19,3 +19,4 @@ typing-extensions
 traceloop-sdk
 fastapi
 langchain_community
+langfuse
