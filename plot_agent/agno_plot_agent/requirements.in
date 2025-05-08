@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+pydantic
+python-multipart
+agno
+clickhouse-driver
+pandas
+matplotlib
+seaborn
+streamlit
+pillow
+openai
+clickhouse_connect
+python-dotenv
+traceloop-sdk
+mcp-client
+mcp
