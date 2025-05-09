@@ -51,9 +51,9 @@ blinker==1.9.0
     # via
     #   crewai
     #   streamlit
-boto3==1.38.11
+boto3==1.38.12
     # via openlit
-botocore==1.38.11
+botocore==1.38.12
     # via
     #   boto3
     #   openlit
@@ -227,7 +227,7 @@ importlib-resources==6.5.2
     # via chromadb
 inflection==0.5.1
     # via opentelemetry-instrumentation-llamaindex
-instructor==1.8.0
+instructor==1.8.1
     # via crewai
 ipython==9.2.0
     # via pyvis
@@ -320,7 +320,7 @@ markupsafe==3.0.2
     #   mako
 marshmallow==3.26.1
     # via dataclasses-json
-matplotlib==3.10.1
+matplotlib==3.10.3
     # via
     #   crewai-plot-agent (pyproject.toml)
     #   seaborn
@@ -342,7 +342,7 @@ multidict==6.4.3
     #   yarl
 mypy-extensions==1.1.0
     # via typing-inspect
-narwhals==1.38.1
+narwhals==1.38.2
     # via altair
 networkx==3.4.2
     # via pyvis
@@ -496,7 +496,9 @@ opentelemetry-instrumentation-cohere==0.40.3
 opentelemetry-instrumentation-crewai==0.40.3
     # via traceloop-sdk
 opentelemetry-instrumentation-fastapi==0.53b1
-    # via chromadb
+    # via
+    #   crewai-plot-agent (pyproject.toml)
+    #   chromadb
 opentelemetry-instrumentation-google-generativeai==0.40.3
     # via traceloop-sdk
 opentelemetry-instrumentation-groq==0.40.3
