@@ -10,16 +10,21 @@ from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
 # Create plots directory if it doesn't exist
 PLOTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools", "plots")
 os.makedirs(PLOTS_DIR, exist_ok=True)
+
+
 
 app = FastAPI(
     title="SQL and Plot Workflow API",
     description="API for executing SQL queries and generating visualizations using CrewAI agents",
     version="1.0.0",
 )
+
+FastAPIInstrumentor.instrument_app(app)
 
 # Enable CORS
 app.add_middleware(

@@ -14,6 +14,8 @@ import traceback
 import sys
 import shutil
 import matplotlib
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
 matplotlib.use('Agg')  # Use non-GUI backend suitable for background tasks
 
 import matplotlib.pyplot as plt
@@ -21,10 +23,12 @@ import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
 # Set logging level to DEBUG for more detailed logs
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
+from langfuse.callback import CallbackHandler
 from dotenv import load_dotenv
 
 load_dotenv('.env')
+
+langfuse_handler = CallbackHandler()
 
 # Create plots directory if it doesn't exist
 PLOTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plots")
@@ -35,6 +39,9 @@ app = FastAPI(
     description="API for executing SQL queries and generating visualizations",
     version="1.0.0"
 )
+
+FastAPIInstrumentor.instrument_app(app)
+
 from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
@@ -165,7 +172,7 @@ async def process_query(job_id: str, query: str):
 
         try:
             # Invoke the agent to get final output
-            final_result = agent.invoke({"messages": messages})
+            final_result = agent.invoke({"messages": messages}, config={"callbacks": [langfuse_handler]})
             
             logger.debug(f"Agent invocation complete. Processing final result messages...")
             
