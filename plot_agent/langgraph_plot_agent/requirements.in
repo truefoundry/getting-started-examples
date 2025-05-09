@@ -20,3 +20,4 @@ traceloop-sdk
 fastapi
 langchain_community
 langfuse
+opentelemetry-instrumentation-fastapi

@@ -14,6 +14,8 @@ import traceback
 import sys
 import shutil
 import matplotlib
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
 matplotlib.use('Agg')  # Use non-GUI backend suitable for background tasks
 
 import matplotlib.pyplot as plt
@@ -37,6 +39,9 @@ app = FastAPI(
     description="API for executing SQL queries and generating visualizations",
     version="1.0.0"
 )
+
+FastAPIInstrumentor.instrument_app(app)
+
 from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
