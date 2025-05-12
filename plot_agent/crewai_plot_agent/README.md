@@ -51,17 +51,26 @@ pip install uv
 
 ### Environment Setup
 
-1. Create a `.env` file in your project root:
-```env
-OPENAI_API_KEY=your_openai_api_key
-CLICKHOUSE_HOST=your_clickhouse_host
-CLICKHOUSE_PORT=9000
-CLICKHOUSE_DB=your_database
-CLICKHOUSE_USER=your_user
-CLICKHOUSE_PASSWORD=your_password
+1. Copy the example environment file:
+```bash
+cp .env.example .env
 ```
 
-2. Install project dependencies:
+2. Edit the `.env` file with your actual credentials:
+```env
+# Truefoundry LLMGateway Configuration
+LLM_GATEWAY_BASE_URL=your_llm_gateway_base_url_here
+LLM_GATEWAY_API_KEY=your_llm_gateway_api_key_here
+
+# ClickHouse Database Configuration
+CLICKHOUSE_HOST=your_clickhouse_host_here
+CLICKHOUSE_PORT=443
+CLICKHOUSE_USER=your_clickhouse_user_here
+CLICKHOUSE_PASSWORD=your_clickhouse_password_here
+CLICKHOUSE_DATABASE=default
+```
+
+3. Install project dependencies:
 ```bash
 uv sync
 ```
