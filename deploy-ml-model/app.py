@@ -18,6 +18,7 @@ class IrisRequest(BaseModel):
 
 @app.post("/predict")
 def predict(request: IrisRequest):
+    print(f"Received request: {request}")
     data = dict(
         sepal_length=request.sepal_length,
         sepal_width=request.sepal_width,
@@ -25,4 +26,5 @@ def predict(request: IrisRequest):
         petal_width=request.petal_width,
     )
     prediction = int(model.predict(pd.DataFrame([data]))[0])
+    print(f"Prediction: {prediction}")
     return {"prediction": prediction}
