@@ -12,6 +12,8 @@ dependencies = [
     "seaborn>=0.13.2",
     "streamlit>=1.45.0",
     "traceloop-sdk>=0.40.2",
+    "fastapi>=0.115.12",
+    "opentelemetry-instrumentation-fastapi",
 ]
 
 [project.scripts]

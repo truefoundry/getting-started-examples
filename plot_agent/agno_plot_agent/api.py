@@ -7,6 +7,7 @@ import os
 import uuid
 from agent import SQLAndPlotWorkflow, PlotResult
 from agno.utils.log import logger
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
 # Create plots directory if it doesn't exist
 PLOTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plots")
@@ -18,6 +19,8 @@ app = FastAPI(
     version="1.0.0"
 )
 from fastapi.middleware.cors import CORSMiddleware
+
+FastAPIInstrumentor.instrument_app(app)
 
 app.add_middleware(
     CORSMiddleware,
