@@ -13,7 +13,6 @@ dependencies = [
     "streamlit>=1.45.0",
     "traceloop-sdk>=0.40.2",
     "fastapi>=0.115.12",
-    "openlit>=1.33.20",
     "opentelemetry-instrumentation-fastapi",
 ]
 
