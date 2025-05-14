@@ -11,7 +11,6 @@ from agno.utils.log import logger
 from dotenv import load_dotenv
 from traceloop.sdk import Traceloop
 from traceloop.sdk.decorators import workflow, agent, task
-from langfuse.decorators import observe
 
 load_dotenv()
 
@@ -38,6 +37,7 @@ class VisualizationRequest(BaseModel):
     title: Optional[str] = Field(None, description="Plot title.")
     hue: Optional[str] = Field(None, description="Column for color grouping.")
 
+@agent(name="sql_and_plot_workflow")
 class SQLAndPlotWorkflow(Workflow):        
     # SQL Agent that generates and executes Clickhouse queries
     sql_agent: Agent = Agent(
@@ -109,7 +109,6 @@ class SQLAndPlotWorkflow(Workflow):
 
 
     @workflow(name="plotting workflow")
-    @observe(name="plotting workflow")
     def run_workflow(self, query: str) -> Iterator[RunResponse]:
         """
         Execute the SQL and plotting workflow.
@@ -137,7 +136,6 @@ class SQLAndPlotWorkflow(Workflow):
         yield from self._create_visualization(sql_result)
 
     @task(name="execute sql query")
-    @observe(name="execute sql query")
     def _execute_sql_query(self, query: str) -> SQLQueryResult:
         """Execute SQL query and return results."""
         MAX_ATTEMPTS = 3
@@ -168,7 +166,6 @@ class SQLAndPlotWorkflow(Workflow):
         )
 
     @task(name="create visualization")
-    @observe(name="create visualization")
     def _create_visualization(self, sql_result: SQLQueryResult) -> Iterator[RunResponse]:
         """Create visualization from SQL results."""
         try:
