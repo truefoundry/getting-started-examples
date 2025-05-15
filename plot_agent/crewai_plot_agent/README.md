@@ -81,7 +81,7 @@ You can find your LLM_GATEWAY_BASE_URL from the TrueFoundry console:
 	2.	Click on the deployed endpoint you want to use. Then click on code in the top right.
 	3.	Copy the base part of the URL from the endpoint details. It usually looks like:
  ```
-https://<your-subdomain>.llmgateway.truefoundry.cloud
+https://<your-platform-url>/api/llm/api/inference/openai
 ```
 ### Configuration
 
