@@ -4,6 +4,8 @@ Deploy MNIST model with TorchServe
 > [!important]
 > [TorchServe](https://github.com/pytorch/serve) is no longer being actively maintained. This example is just to demonstrate how to deploy any existing TorchServe apps.
 
+This example was adapted from [TorchServe's Official MNIST Example](https://github.com/pytorch/serve/tree/62c4d6a1fdc1d071dbcf758ebd756029af20bd5e/examples/image_classifier/mnist).
+
 ### Package the model
 
 ```shell
