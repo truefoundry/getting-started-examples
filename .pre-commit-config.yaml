@@ -12,7 +12,7 @@ repos:
       - id: check-yaml
       - id: check-ast
       - id: check-added-large-files
-        args: ['--maxkb=1000']
+        args: ['--maxkb=5000']
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.6
     hooks:

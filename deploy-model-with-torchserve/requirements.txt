@@ -1,0 +1,3 @@
+# Add any additional dependencies here
+# That your model handler might need
+# torch, torchvision, etc are already included in the base image
