@@ -85,7 +85,7 @@ class State(TypedDict):
 # Create the agent
 def create_agent():
     builder = StateGraph(State)
-    
+
     # Initialize LLM with TrueFoundry configuration
     llm = ChatOpenAI(
         model=os.getenv("MODEL_ID"),
@@ -93,14 +93,14 @@ def create_agent():
         base_url=os.getenv("LLM_GATEWAY_BASE_URL"),
         streaming=True
     )
-    
+
     # Bind tools to LLM
     llm.bind_tools(tools_list)
-    
+
     # Define nodes and edges
     builder.add_node("assistant", llm)
     builder.add_node("tools", ToolNode(tools_list))
-    
+
     # Configure the graph flow
     builder.add_edge(START, "assistant")
     builder.add_edge("tools", "assistant")
@@ -109,7 +109,7 @@ def create_agent():
         tools_condition_modified,
     )
     builder.add_edge("assistant", "__end__")
-    
+
     return builder.compile()
 ```
 

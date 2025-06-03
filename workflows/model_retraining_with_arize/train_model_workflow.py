@@ -1,12 +1,8 @@
-import datetime
-import os
-import random
 from functools import partial
 from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
-import whylogs as why
 from deploy_model.deploy import deploy_service
 from sklearn.model_selection import train_test_split
 from train_models import train_respective_model
@@ -19,12 +15,11 @@ from truefoundry.workflow import (
     task,
     workflow,
 )
-from whylogs.api.writer.whylabs import WhyLabsWriter
 
 task_config = PythonTaskConfig(
     image=TaskPythonBuild(
         python_version="3.10",
-        pip_packages=["truefoundry[workflow]>=0.5.9,<0.6.0"],
+        pip_packages=["truefoundry[workflow]>=0.9.2,<0.10.0"],
         requirements_path="requirements.txt",
     ),
     resources=Resources(
@@ -56,7 +51,7 @@ def load_and_preprocess_data() -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.n
 
     X = df.drop("Exited", axis=1)
     y = df["Exited"]
-    new_df = df.rename(
+    _ = df.rename(
         columns={"Exited": "Output"},
     )
 

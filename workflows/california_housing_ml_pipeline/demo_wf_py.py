@@ -63,12 +63,13 @@ def select_features(X_train: np.ndarray, X_test: np.ndarray, y_train: np.ndarray
 def train_complex_model(X_train: np.ndarray, y_train: np.ndarray) -> FlyteDirectory:
     """Train a Random Forest model with hyperparameter tuning."""
     print("Training complex model (Random Forest)...")
-    param_dist = {
-        "n_estimators": [100, 200, 300],
-        "max_depth": [None, 10, 20, 30],
-        "min_samples_split": [2, 5, 10],
-        "min_samples_leaf": [1, 2, 4],
-    }
+    # We can do a GridSearchCV to find the best hyperparameters
+    # param_dist = {
+    #     "n_estimators": [100, 200, 300],
+    #     "max_depth": [None, 10, 20, 30],
+    #     "min_samples_split": [2, 5, 10],
+    #     "min_samples_leaf": [1, 2, 4],
+    # }
     rf = RandomForestRegressor(random_state=42)
     model_path = "./classifier.joblib"
     joblib.dump(rf, model_path)
@@ -101,7 +102,7 @@ def adaptive_california_housing_ml_pipeline(
     # Conditional branching based on dataset size
     model_path = (
         conditional("model_selection")
-        .if_(train_simple_lasso_model == False)
+        .if_(train_simple_lasso_model is False)
         .then(train_complex_model(X_train=X_train_selected, y_train=y_train))
         .else_()
         .then(train_simple_model(X_train=X_train_selected, y_train=y_train))

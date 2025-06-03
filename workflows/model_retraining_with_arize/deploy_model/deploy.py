@@ -12,9 +12,8 @@ from truefoundry.deploy import (
     TruefoundryArtifactSource,
 )
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s")
+
 
 def deploy_service(model_version_fqn: str, workspace_fqn: str):
     service_name = "bank-customer-churn-prediction"
@@ -31,7 +30,7 @@ def deploy_service(model_version_fqn: str, workspace_fqn: str):
         ports=[
             Port(
                 port=8000,
-                host=f"<host>",
+                host="<host>",
             )
         ],
         resources=Resources(
@@ -58,5 +57,5 @@ def deploy_service(model_version_fqn: str, workspace_fqn: str):
     )
     deployment = service.deploy(workspace_fqn=workspace_fqn, wait=False)
 
-    url = f"{os.environ["TFY_HOST"]}/applications/{deployment.applicationId}?tab=deployments"
+    url = f"{os.environ['TFY_HOST']}/applications/{deployment.applicationId}?tab=deployments"
     return url

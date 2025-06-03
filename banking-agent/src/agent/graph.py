@@ -4,7 +4,7 @@ from langgraph.prebuilt import create_react_agent
 from src.agent.banking_tools import tools
 from src.agent.llm import llm
 from src.agent.prompt import prompt_template
-from traceloop.sdk.decorators import workflow, task
+from traceloop.sdk.decorators import task, workflow
 
 memory = MemorySaver()
 
@@ -33,6 +33,7 @@ async def get_ai_response(events):
                     return "An error occurred while processing the response."
 
     return None
+
 
 def print_event(event):
     message = event.get("messages", [])

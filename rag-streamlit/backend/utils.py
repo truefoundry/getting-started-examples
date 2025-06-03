@@ -15,11 +15,11 @@ root_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(root_dir))
 
 # from langchain_chroma import Chroma
-from config.settings import settings
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain_qdrant import QdrantVectorStore
-from qdrant_client import QdrantClient
-from qdrant_client.http.models import Distance, VectorParams
+from config.settings import settings  # noqa: E402
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings  # noqa: E402
+from langchain_qdrant import QdrantVectorStore  # noqa: E402
+from qdrant_client import QdrantClient  # noqa: E402
+from qdrant_client.http.models import Distance, VectorParams  # noqa: E402
 
 # Initialize Qdrant client for vector database operations
 qdrant_client = QdrantClient(

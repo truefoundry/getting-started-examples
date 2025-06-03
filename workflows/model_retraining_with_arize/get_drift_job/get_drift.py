@@ -1,4 +1,5 @@
 import os
+
 import requests
 from truefoundry.deploy import trigger_workflow
 
@@ -11,7 +12,7 @@ response = requests.post(
     json={"query": query},
     headers={
         "x-api-key": os.environ["ARIZE_GRAPHQL_API_KEY"],
-    }
+    },
 )
 
 calculations = response.json()["data"]["node"]["calculationsWithinTimeRange"]
@@ -22,9 +23,9 @@ for calculation in calculations:
 
 if calculationStatus == "triggered":
     print("Drift detected, triggering retraining workflow")
-    trigger_workflow(application_fqn="tfy-aws:dev-ws:retraining-model-wf", inputs={
-        "ml_repo": "bank-customer-churn",
-        "workspace_fqn": "tfy-aws:dev-ws"
-    })
+    trigger_workflow(
+        application_fqn="tfy-aws:dev-ws:retraining-model-wf",
+        inputs={"ml_repo": "bank-customer-churn", "workspace_fqn": "tfy-aws:dev-ws"},
+    )
 else:
     print("No drift detected")

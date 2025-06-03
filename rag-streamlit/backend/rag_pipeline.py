@@ -1,5 +1,4 @@
 import sys
-import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, TypedDict
@@ -11,7 +10,6 @@ from langchain_community.document_loaders import DirectoryLoader
 from langchain_core.documents import Document
 from langchain_experimental.text_splitter import SemanticChunker
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
 from utils import create_vector_store, embeddings, llm
 

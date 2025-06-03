@@ -1,14 +1,14 @@
 import datetime
 import os
 import uuid
+from typing import List
+
+import joblib
+import numpy as np
+from arize.api import Client
+from arize.utils.types import Environments, ModelTypes
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List
-import numpy as np
-import joblib
-import logging
-from arize.api import Client
-from arize.utils.types import ModelTypes, Environments
 
 # Load the saved model
 model_path = os.path.join(os.environ.get("MODEL_DOWNLOAD_PATH", "."), "model.pkl")
@@ -16,14 +16,15 @@ model_path = os.path.join(os.environ.get("MODEL_DOWNLOAD_PATH", "."), "model.pkl
 model = joblib.load(model_path)
 logger = None
 
-API_KEY = os.environ.get('ARIZE_API_KEY') #If passing api_key via env vars
-SPACE_ID = os.environ.get('ARIZE_SPACE_ID') #If passing space_id via env vars
+API_KEY = os.environ.get("ARIZE_API_KEY")  # If passing api_key via env vars
+SPACE_ID = os.environ.get("ARIZE_SPACE_ID")  # If passing space_id via env vars
 
 arize_client = Client(space_id=SPACE_ID, api_key=API_KEY)
 
 
 # Define the FastAPI app
 app = FastAPI()
+
 
 # Define a request body model for a single customer
 class CustomerData(BaseModel):
@@ -63,6 +64,7 @@ def encode_input(data: CustomerData):
         ]
     )
 
+
 # Define a batch prediction endpoint that accepts a list of customers
 @app.post("/predict_batch")
 def predict_batch_churn(customers: List[CustomerData]):
@@ -78,16 +80,15 @@ def predict_batch_churn(customers: List[CustomerData]):
     for i, customer in enumerate(customers):
         customer_dict = customer.dict()
         # logger.log(customer_dict)
-        response = arize_client.log(
+        _ = arize_client.log(
             prediction_id=str(uuid.uuid4()),
-            model_id='<model-id>',
+            model_id="<model-id>",
             model_type=ModelTypes.BINARY_CLASSIFICATION,
             environment=Environments.PRODUCTION,
-            model_version='v1',
+            model_version="v1",
             prediction_timestamp=int(datetime.datetime.now().timestamp()),
             prediction_label=results[i],
             features=customer_dict,
         )
-        
 
     return {"predictions": results}

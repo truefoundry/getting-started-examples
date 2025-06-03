@@ -1,5 +1,4 @@
 import datetime
-import os
 import random
 from functools import partial
 from typing import List, Tuple
@@ -25,7 +24,7 @@ from whylogs.api.writer.whylabs import WhyLabsWriter
 task_config = PythonTaskConfig(
     image=TaskPythonBuild(
         python_version="3.10",
-        pip_packages=["truefoundry[workflow]>=0.5.9,<0.6.0"],
+        pip_packages=["truefoundry[workflow]>=0.9.2,<0.10.0"],
         requirements_path="requirements.txt",
     ),
     resources=Resources(

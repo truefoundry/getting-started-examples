@@ -18,7 +18,7 @@ task_config = PythonTaskConfig(
     image=TaskPythonBuild(
         python_version="3.9",
         pip_packages=[
-            "truefoundry[workflow]>=0.5.9,<0.6.0",
+            "truefoundry[workflow]>=0.9.2,<0.10.0",
             "tensorflow==2.15.0",
             "s3fs>=2024.10.0",
         ],
@@ -128,7 +128,7 @@ def get_best_model(fqns: List[str], threshold: float) -> Tuple[str, bool]:
     best_fqn = None
     print(f"Finding the best models from {len(fqns)} models")
     for fqn_no in range(len(fqns)):
-        print(f"Comparing accuracy for model {fqn_no+1}")
+        print(f"Comparing accuracy for model {fqn_no + 1}")
         run = client.get_run_by_fqn(fqns[fqn_no])
         accuracy_metric = run.get_metrics().get("val_accuracy", 0)
         accuracy = accuracy_metric[-1].value
@@ -175,7 +175,7 @@ def model_training_workflow(
     model_version_fqn, does_model_pass_threshold_accuracy = get_best_model(fqns=fqns, threshold=accuracy_threshold)
     message = (
         conditional("Deploy model")
-        .if_(does_model_pass_threshold_accuracy == True)
+        .if_(does_model_pass_threshold_accuracy is True)
         .then(deploy_model(run_fqn=model_version_fqn, workspace_fqn=workspace_fqn))
         .else_()
         .then(do_nothing(threshold=accuracy_threshold))

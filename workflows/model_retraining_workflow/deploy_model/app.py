@@ -1,11 +1,12 @@
+import logging
 import os
+from typing import List
+
+import joblib
+import numpy as np
+import whylogs as why
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List
-import numpy as np
-import joblib
-import whylogs as why
-import logging
 
 logging.getLogger("whylabs").setLevel(logging.DEBUG)
 # Load the saved model
@@ -16,6 +17,7 @@ logger = None
 
 # Define the FastAPI app
 app = FastAPI()
+
 
 # Define a request body model for a single customer
 class CustomerData(BaseModel):
@@ -55,13 +57,12 @@ def encode_input(data: CustomerData):
         ]
     )
 
+
 # This funcition starts the whylogger logger and logs the prediction to whylabs every 5 minutes
 @app.on_event("startup")
 def start_logger():
     global logger
-    logger = why.logger(
-        mode="rolling", interval=300, when="S", base_name="fastapi_predictions"
-    )
+    logger = why.logger(mode="rolling", interval=300, when="S", base_name="fastapi_predictions")
     logger.append_writer("whylabs")
 
 

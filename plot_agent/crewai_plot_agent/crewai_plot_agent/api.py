@@ -1,4 +1,3 @@
-import json
 import os
 import uuid
 from datetime import datetime
@@ -8,14 +7,13 @@ import uvicorn
 from crewai_plot_agent.crew import CrewaiPlotAgent
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
-from pydantic import BaseModel
+from fastapi.responses import FileResponse
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from pydantic import BaseModel
 
 # Create plots directory if it doesn't exist
 PLOTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools", "plots")
 os.makedirs(PLOTS_DIR, exist_ok=True)
-
 
 
 app = FastAPI(

@@ -34,9 +34,7 @@ def train():
     """
     inputs = {"topic": "AI LLMs"}
     try:
-        CrewaiPlotAgent().crew().train(
-            n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs
-        )
+        CrewaiPlotAgent().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
 
     except Exception as e:
         raise Exception(f"An error occurred while training the crew: {e}")
@@ -59,9 +57,7 @@ def test():
     """
     inputs = {"topic": "AI LLMs"}
     try:
-        CrewaiPlotAgent().crew().test(
-            n_iterations=int(sys.argv[1]), openai_model_name=sys.argv[2], inputs=inputs
-        )
+        CrewaiPlotAgent().crew().test(n_iterations=int(sys.argv[1]), openai_model_name=sys.argv[2], inputs=inputs)
 
     except Exception as e:
         raise Exception(f"An error occurred while testing the crew: {e}")

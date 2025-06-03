@@ -84,18 +84,14 @@ if st.button("Generate Visualization"):
                                 # Get and display the plot
                                 plot_data = get_plot(job_id)
                                 image = Image.open(io.BytesIO(plot_data))
-                                st.image(
-                                    image, caption="Generated Visualization", use_column_width=True
-                                )
+                                st.image(image, caption="Generated Visualization", use_column_width=True)
                                 st.success("Visualization generated successfully!")
                                 break
                             except Exception as e:
                                 st.error(f"Error displaying plot: {str(e)}")
                                 break
                         elif current_status == "failed":
-                            st.error(
-                                f"Error: {status_result.get('error', 'Unknown error occurred')}"
-                            )
+                            st.error(f"Error: {status_result.get('error', 'Unknown error occurred')}")
                             break
 
                         time.sleep(1)  # Wait before checking again
