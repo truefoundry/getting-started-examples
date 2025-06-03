@@ -21,4 +21,4 @@ preds = clf.predict(X_test)
 print("Accuracy:", accuracy_score(y_test, preds))
 
 # Save model
-joblib.dump(clf, "iris_model.joblib")
+joblib.dump(clf, "iris_classifier.joblib")

@@ -31,7 +31,7 @@ uvicorn fastapi_service:app --port 8000 --host 0.0.0.0
 1. Install `truefoundry`
 
 ```shell
-python -m pip install -U "truefoundry>=0.5.9,<0.6.0"
+python -m pip install -U "truefoundry>=0.9.2,<0.10.0"
 ```
 
 2. Login
@@ -43,7 +43,7 @@ tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry
 3. Deploy!
 
 > Please refer to following docs
-> - [Getting workspace FQN](https://docs.truefoundry.com/docs/key-concepts#getting-workspace-fqn)
+> - [Getting workspace FQN](https://docs.truefoundry.com/docs/key-concepts#get-workspace-fqn)
 > - [Get host and path for deploying applications](https://docs.truefoundry.com/docs/define-ports-and-domains#identifying-available-domains)
 
 ```shell

@@ -3,7 +3,9 @@ import logging
 
 from truefoundry.deploy import Build, LocalSource, Port, PythonBuild, Resources, Service
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s"
+)
 
 
 def str_or_none(value):
@@ -50,14 +52,14 @@ service = Service(
         # These details will be used to templatize a DockerFile to build your Docker Image
         build_spec=PythonBuild(
             python_version="3.11",
-            command="uvicorn app:app --port 8000 --host 0.0.0.0",
+            command="gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 server:app",
             requirements_path="requirements.txt",
         ),
     ),
     # Set the ports your server will listen on
     ports=[
         # Providing a host and path value depends on the base domain urls configured in the cluster settings.
-        # You can learn how to find the base domain urls available to you https://docs.truefoundry.com/docs/define-ports-and-domains#identifying-available-domains
+        # You can learn how to find the base domain urls available to you # Please see https://docs.truefoundry.com/docs/define-ports-and-domains#specifying-host
         Port(port=8000, host=args.host, path=args.path)
     ],
     # Define the resource constraints.
@@ -66,12 +68,12 @@ service = Service(
     # Limits are the maximum amount of resources that a container can use.
     resources=Resources(
         cpu_request=0.1,
-        cpu_limit=0.1,
-        memory_request=500,
+        cpu_limit=0.3,
+        memory_request=200,
         memory_limit=500,
     ),
     # Define environment variables that your Service will have access to
-    env={"UVICORN_WEB_CONCURRENCY": "1", "ENVIRONMENT": "dev"},
+    env={"ENVIRONMENT": "dev"},
     labels={"tfy_openapi_path": "openapi.json"},
 )
 service.deploy(workspace_fqn=args.workspace_fqn, wait=False)

@@ -1,4 +1,4 @@
-truefoundry>=0.5.9,<0.6.0
+truefoundry>=0.9.2,<0.10.0
 fastapi[standard]==0.115.8
 pandas==2.2.3
 whylogs==1.6.4
