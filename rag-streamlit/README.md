@@ -22,7 +22,7 @@ The backend uses LangGraph for orchestrating the RAG pipeline:
      - Configurable chunk size (default: 1000) and overlap (default: 200)
      - DirectoryLoader for handling multiple document formats
    - Vector store integration:
-     - Uses Qdrant for document storage and retrieval 
+     - Uses Qdrant for document storage and retrieval
      - Configurable similarity search with top-k results (default: 10)
      - Collection-based document organization with UUID naming
    - LLM integration:

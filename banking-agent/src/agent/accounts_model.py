@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from traceloop.sdk.decorators import task
 
+
 class Account(BaseModel):
     """Represents a bank account with a name and balance."""
 
@@ -29,7 +30,7 @@ class UserAccounts(BaseModel):
             if account_name == account.name:
                 return account
         error_message = (
-            f"There is no account named {account_name}. " f"Options are {', '.join(await self.get_account_names())}"
+            f"There is no account named {account_name}. Options are {', '.join(await self.get_account_names())}"
         )
         raise ValueError(error_message)
 

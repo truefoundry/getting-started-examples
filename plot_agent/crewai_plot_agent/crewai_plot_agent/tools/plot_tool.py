@@ -2,7 +2,7 @@ import logging
 import os
 import uuid
 from datetime import datetime
-from typing import Any, List, Optional, Type
+from typing import List, Optional, Type
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -69,11 +69,11 @@ class PlotTools(BaseTool):
                 else:
                     try:
                         df[col] = pd.to_numeric(df[col])
-                    except:
+                    except Exception:
                         if "time" in col.lower() or "date" in col.lower():
                             try:
                                 df[col] = pd.to_datetime(df[col])
-                            except:
+                            except Exception:
                                 pass
 
             logger.info(f"Parsed DataFrame shape: {df.shape}")
@@ -100,9 +100,7 @@ class PlotTools(BaseTool):
         try:
             if output_path is None:
                 # Fallback to datetime-based filename
-                filename = (
-                    f"plot_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}.png"
-                )
+                filename = f"plot_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}.png"
                 output_path = os.path.join(PLOTS_DIR, filename)
             elif not os.path.isabs(output_path):
                 output_path = os.path.join(PLOTS_DIR, output_path)
@@ -112,9 +110,7 @@ class PlotTools(BaseTool):
             try:
                 plt.style.use(style)
             except Exception as style_error:
-                logger.warning(
-                    f"Failed to set style {style}, falling back to default: {style_error}"
-                )
+                logger.warning(f"Failed to set style {style}, falling back to default: {style_error}")
                 plt.style.use("default")
 
             df = self._parse_tabular_data(data)

@@ -1,26 +1,29 @@
-from agno.agent import Agent, RunResponse
-from agno.models.openai import OpenAIChat
-from agno.workflow import Workflow
-from clickhouse_tools import ClickHouseTools
-from plot_tools import PlotTools
-from typing import List, Dict, Any, Optional, Iterator
-from pydantic import BaseModel, Field
 import json
 import os
+from typing import Iterator, List, Optional
+
+from agno.agent import Agent, RunResponse
+from agno.models.openai import OpenAIChat
 from agno.utils.log import logger
+from agno.workflow import Workflow
+from clickhouse_tools import ClickHouseTools
 from dotenv import load_dotenv
+from plot_tools import PlotTools
+from pydantic import BaseModel, Field
 from traceloop.sdk import Traceloop
-from traceloop.sdk.decorators import workflow, agent, task
+from traceloop.sdk.decorators import agent, task, workflow
 
 load_dotenv()
 
 Traceloop.init(app_name="agno")
+
 
 class SQLQueryResult(BaseModel):
     query: str = Field(..., description="The SQL query that was executed.")
     column_names: List[str] = Field(..., description="List of column names in the query result.")
     rows: List[List[str]] = Field(..., description="List of row values, where each row is a list of column values.")
     error: Optional[str] = Field(None, description="Error message if the query failed.")
+
 
 class PlotResult(BaseModel):
     plot_type: str = Field(..., description="Type of plot created.")
@@ -30,6 +33,7 @@ class PlotResult(BaseModel):
     title: Optional[str] = Field(None, description="Title of the plot.")
     error: Optional[str] = Field(None, description="Error message if plotting failed.")
 
+
 class VisualizationRequest(BaseModel):
     plot_type: str = Field(..., description="Type of plot to create.")
     x_col: str = Field(..., description="Column for x-axis.")
@@ -37,11 +41,16 @@ class VisualizationRequest(BaseModel):
     title: Optional[str] = Field(None, description="Plot title.")
     hue: Optional[str] = Field(None, description="Column for color grouping.")
 
+
 @agent(name="sql_and_plot_workflow")
-class SQLAndPlotWorkflow(Workflow):        
+class SQLAndPlotWorkflow(Workflow):
     # SQL Agent that generates and executes Clickhouse queries
     sql_agent: Agent = Agent(
-        model=OpenAIChat(id="openai-main/gpt-4o", api_key=os.getenv("LLM_GATEWAY_API_KEY"), base_url=os.getenv("LLM_GATEWAY_BASE_URL")),
+        model=OpenAIChat(
+            id="openai-main/gpt-4o",
+            api_key=os.getenv("LLM_GATEWAY_API_KEY"),
+            base_url=os.getenv("LLM_GATEWAY_BASE_URL"),
+        ),
         description="You are an expert in generating and executing Clickhouse SQL queries from user queries in English.",
         instructions=[
             "First, generate an optimized and accurate ClickHouse SQL query based on the user's query. Make sure that only relevant fields are selected and queries are efficient.",
@@ -81,7 +90,11 @@ class SQLAndPlotWorkflow(Workflow):
 
     # Plot Agent that creates visualizations
     plot_agent: Agent = Agent(
-        model=OpenAIChat(id="openai-main/gpt-4o", api_key=os.getenv("LLM_GATEWAY_API_KEY"), base_url=os.getenv("LLM_GATEWAY_BASE_URL")),
+        model=OpenAIChat(
+            id="openai-main/gpt-4o",
+            api_key=os.getenv("LLM_GATEWAY_API_KEY"),
+            base_url=os.getenv("LLM_GATEWAY_BASE_URL"),
+        ),
         description="You are an expert in creating data visualizations from SQL query results.",
         instructions=[
             "You will receive data from Clickhouse SQL queries in a tabular format with columns separated by ' | ' and rows separated by newlines.",
@@ -89,7 +102,7 @@ class SQLAndPlotWorkflow(Workflow):
             "Choose appropriate visualizations based on the data type and relationships to show:",
             "- Time series plots for metrics over time using created_at",
             "- Bar charts for categorical data like model_name, request_type, tenant_name",
-            "- Histograms/distributions for numerical columns like tokens, latency, cost", 
+            "- Histograms/distributions for numerical columns like tokens, latency, cost",
             "- Scatter plots to show relationships between numerical metrics",
             "Ensure all visualizations have:",
             "- Clear titles describing the insight",
@@ -107,15 +120,14 @@ class SQLAndPlotWorkflow(Workflow):
         # debug_mode=True,
     )
 
-
     @workflow(name="plotting workflow")
     def run_workflow(self, query: str) -> Iterator[RunResponse]:
         """
         Execute the SQL and plotting workflow.
-        
+
         Args:
             query: Natural language query describing what to analyze
-            
+
         Yields:
             RunResponse objects containing workflow progress and results
         """
@@ -124,10 +136,7 @@ class SQLAndPlotWorkflow(Workflow):
         # Step 1: Get SQL query results
         sql_result = self._execute_sql_query(query)
         if sql_result.error:
-            yield RunResponse(
-                event="workflow_error",
-                content=f"SQL Query Error: {sql_result.error}"
-            )
+            yield RunResponse(event="workflow_error", content=f"SQL Query Error: {sql_result.error}")
             return
         print(f"SQL Query Result: {sql_result.column_names}")
         print(f"SQL Query Result: {sql_result.query}")
@@ -139,30 +148,27 @@ class SQLAndPlotWorkflow(Workflow):
     def _execute_sql_query(self, query: str) -> SQLQueryResult:
         """Execute SQL query and return results."""
         MAX_ATTEMPTS = 3
-        
+
         for attempt in range(MAX_ATTEMPTS):
             try:
                 logger.info(f"Executing SQL query, attempt {attempt + 1}/{MAX_ATTEMPTS}")
                 sql_response: RunResponse = self.sql_agent.run(query)
-                
+
                 if not sql_response or not sql_response.content:
                     logger.warning(f"Attempt {attempt + 1}/{MAX_ATTEMPTS}: Empty SQL response")
                     continue
-                    
+
                 if not isinstance(sql_response.content, SQLQueryResult):
                     logger.warning(f"Attempt {attempt + 1}/{MAX_ATTEMPTS}: Invalid response type")
                     continue
-                
+
                 return sql_response.content
-                
+
             except Exception as e:
                 logger.warning(f"SQL query attempt {attempt + 1}/{MAX_ATTEMPTS} failed: {str(e)}")
-        
+
         return SQLQueryResult(
-            query="",
-            column_names=[],
-            rows=[],
-            error=f"Failed to execute SQL query after {MAX_ATTEMPTS} attempts"
+            query="", column_names=[], rows=[], error=f"Failed to execute SQL query after {MAX_ATTEMPTS} attempts"
         )
 
     @task(name="create visualization")
@@ -170,41 +176,32 @@ class SQLAndPlotWorkflow(Workflow):
         """Create visualization from SQL results."""
         try:
             logger.info("Generating visualization request")
-            
+
             # Convert SQL result into tabular format that plot_tools expects
             # Convert columns and rows into pipe-separated format
             formatted_data = " | ".join(sql_result.column_names) + "\n"
             formatted_data += "\n".join([" | ".join(row) for row in sql_result.rows])
-            
+
             # Get visualization request from plot agent
             viz_response: RunResponse = self.plot_agent.run(
-                json.dumps({
-                    "query": sql_result.query,
-                    "data": formatted_data
-                }, indent=4)
+                json.dumps({"query": sql_result.query, "data": formatted_data}, indent=4)
             )
-            
+
             if not viz_response or not viz_response.content:
-                yield RunResponse(
-                    event="visualization_error",
-                    content="Empty visualization response"
-                )
+                yield RunResponse(event="visualization_error", content="Empty visualization response")
                 return
-                
+
             # Find the PlotTools instance in the tools
             plot_tools = None
             for tool in self.plot_agent.tools:
                 if isinstance(tool, PlotTools):
                     plot_tools = tool
                     break
-                    
+
             if not plot_tools:
-                yield RunResponse(
-                    event="visualization_error",
-                    content="PlotTools not found in plot_agent tools"
-                )
+                yield RunResponse(event="visualization_error", content="PlotTools not found in plot_agent tools")
                 return
-            
+
             # Handle both structured and unstructured responses
             if isinstance(viz_response.content, VisualizationRequest):
                 # Structured response case
@@ -215,10 +212,10 @@ class SQLAndPlotWorkflow(Workflow):
                 logger.error(f"Received unstructured response of type {type(viz_response.content)}")
                 yield RunResponse(
                     event="visualization_error",
-                    content=f"Visualization error: Expected VisualizationRequest but got {type(viz_response.content).__name__}"
+                    content=f"Visualization error: Expected VisualizationRequest but got {type(viz_response.content).__name__}",
                 )
                 return
-            
+
             # Now create the plot with proper error handling
             logger.info(f"Creating {viz_request.plot_type} plot with x={viz_request.x_col}, y={viz_request.y_col}")
             try:
@@ -228,9 +225,9 @@ class SQLAndPlotWorkflow(Workflow):
                     x_col=viz_request.x_col,
                     y_col=viz_request.y_col,
                     title=viz_request.title,
-                    hue=viz_request.hue
+                    hue=viz_request.hue,
                 )
-                
+
                 yield RunResponse(
                     event="visualization_complete",
                     content=PlotResult(
@@ -238,30 +235,25 @@ class SQLAndPlotWorkflow(Workflow):
                         plot_path=plot_result,
                         x_col=viz_request.x_col,
                         y_col=viz_request.y_col,
-                        title=viz_request.title
-                    )
+                        title=viz_request.title,
+                    ),
                 )
                 return  # Add explicit return after successful completion
             except Exception as plot_error:
                 logger.error(f"Plot creation failed: {plot_error}")
-                yield RunResponse(
-                    event="visualization_error",
-                    content=f"Failed to create plot: {plot_error}"
-                )
+                yield RunResponse(event="visualization_error", content=f"Failed to create plot: {plot_error}")
                 return
-            
+
         except Exception as e:
             logger.error(f"Failed to create visualization: {str(e)}")
-            yield RunResponse(
-                event="visualization_error",
-                content=f"Failed to create visualization: {str(e)}"
-            )
+            yield RunResponse(event="visualization_error", content=f"Failed to create visualization: {str(e)}")
             return
+
 
 if __name__ == "__main__":
     # Example usage:
     workflow = SQLAndPlotWorkflow()
-    
+
     # Analyze and visualize data
     for response in workflow.run_workflow("Compare usage patterns across the top 5 models"):
         if response.event == "workflow_error":

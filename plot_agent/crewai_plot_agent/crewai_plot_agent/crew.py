@@ -17,9 +17,7 @@ Traceloop.init(app_name="crewai")
 class SQLQueryResult(BaseModel):
     query: str = Field(..., description="The SQL query that was executed.")
     column_names: List[str] = Field(..., description="List of column names in the query result.")
-    rows: List[List[str]] = Field(
-        ..., description="List of row values, where each row is a list of column values."
-    )
+    rows: List[List[str]] = Field(..., description="List of row values, where each row is a list of column values.")
     error: Optional[str] = Field(None, description="Error message if the query failed.")
 
 
@@ -31,9 +29,7 @@ class PlotResult(BaseModel):
     title: str = Field(..., description="The title of the plot.")
     data_summary: Dict[str, Any] = Field(..., description="Summary of the data used for plotting.")
     insights: List[str] = Field(..., description="List of insights derived from the plot.")
-    plot_file_path: Optional[str] = Field(
-        None, description="Path to the saved plot file if available."
-    )
+    plot_file_path: Optional[str] = Field(None, description="Path to the saved plot file if available.")
     error: Optional[str] = Field(None, description="Error message if the plot generation failed.")
     time_range: Optional[Dict[str, str]] = Field(
         None,
@@ -61,9 +57,7 @@ class CrewaiPlotAgent:
     # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
     def sql_writer(self) -> Agent:
-        return Agent(
-            config=self.agents_config["sql_writer"], verbose=True, tools=[ClickHouseTool()]
-        )
+        return Agent(config=self.agents_config["sql_writer"], verbose=True, tools=[ClickHouseTool()])
 
     @agent
     def plot_writer(self) -> Agent:

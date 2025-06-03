@@ -24,8 +24,8 @@ uploaded_file = st.file_uploader("Choose a document", type=["txt", "pdf"])
 
 # Reset session state when a new file is uploaded
 if uploaded_file is not None:
-    current_file_name = getattr(st.session_state, 'current_file_name', None)
-    
+    current_file_name = getattr(st.session_state, "current_file_name", None)
+
     if current_file_name != uploaded_file.name:
         # Clear session state to remove previous chat & reset UI
         st.session_state.clear()
@@ -55,11 +55,7 @@ if uploaded_file is not None:
             try:
                 with open(file_path, "rb") as f:
                     files = {"file": (unique_filename, f, "application/octet-stream")}
-                    response = requests.post(
-                        f"{settings.API_URL}/init",
-                        files=files,
-                        timeout=60
-                    )
+                    response = requests.post(f"{settings.API_URL}/init", files=files, timeout=60)
 
                 if response.status_code == 200:
                     st.success("✅ Document uploaded & initialized successfully!")

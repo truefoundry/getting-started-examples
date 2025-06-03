@@ -1,5 +1,7 @@
 # SQL Agent configuration
-SQL_AGENT_DESCRIPTION = "You are an expert in generating and executing Clickhouse SQL queries from user queries in English."
+SQL_AGENT_DESCRIPTION = (
+    "You are an expert in generating and executing Clickhouse SQL queries from user queries in English."
+)
 
 SQL_AGENT_INSTRUCTIONS = [
     "CRITICAL: You MUST use the table name 'request_logs' in ALL your queries. Never use 'requests', 'model_usage', or any other table name.",
@@ -49,7 +51,7 @@ PLOT_AGENT_INSTRUCTIONS = [
     "Choose appropriate visualizations based on the data type and relationships to show:",
     "- Time series plots for metrics over time using created_at",
     "- Bar charts for categorical data like model_name, request_type, tenant_name",
-    "- Histograms/distributions for numerical columns like tokens, latency, cost", 
+    "- Histograms/distributions for numerical columns like tokens, latency, cost",
     "- Scatter plots to show relationships between numerical metrics",
     "Ensure all visualizations have:",
     "- Clear titles describing the insight",
@@ -58,4 +60,4 @@ PLOT_AGENT_INSTRUCTIONS = [
     "- Color schemes that are accessible",
     "Rules: ",
     "- The value of the x-axis should be a column name from the data.",
-] 
+]

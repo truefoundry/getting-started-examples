@@ -1,10 +1,10 @@
+import joblib
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
-from truefoundry.ml import get_client, ModelFramework
-import joblib
-from sklearn.metrics import f1_score
+from truefoundry.ml import ModelFramework, get_client
 
 client = get_client()
 

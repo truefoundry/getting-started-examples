@@ -10,7 +10,7 @@ import boto3
 import torch
 from datasets import load_dataset
 from transformers import pipeline
-from transformers.modeling_utils import tempfile
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

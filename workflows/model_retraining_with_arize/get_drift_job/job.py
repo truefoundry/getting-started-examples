@@ -1,8 +1,13 @@
-import argparse
 import logging
-import os
 
-from truefoundry.deploy import Build, Job, LocalSource, PythonBuild, Schedule, ConcurrencyPolicy
+from truefoundry.deploy import (
+    Build,
+    ConcurrencyPolicy,
+    Job,
+    LocalSource,
+    PythonBuild,
+    Schedule,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s")
 
@@ -23,9 +28,6 @@ job = Job(
     env={
         "ARIZE_GRAPHQL_API_KEY": "<Your-arize-graphql-api-key>",
     },
-    trigger=Schedule(
-        schedule='0 */2 * * *',
-        concurrency_policy=ConcurrencyPolicy.Forbid
-    )
+    trigger=Schedule(schedule="0 */2 * * *", concurrency_policy=ConcurrencyPolicy.Forbid),
 )
 job.deploy(workspace_fqn="tfy-aws:dev-ws", wait=False)
