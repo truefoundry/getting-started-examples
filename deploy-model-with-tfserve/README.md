@@ -10,7 +10,7 @@ python train.py
 
 You can inspect the model signature using the following command:
 
-```
+```bash
 saved_model_cli show --dir models/mnist/1/ --tag_set serve --signature_def serving_default
 ```
 
@@ -37,17 +37,8 @@ Method name is: tensorflow/serving/predict
 python deploy.py --workspace-fqn ... --host ... --path ...
 ```
 
-## Test the model
-
-
-
-
-
 ### Example Inference Call
 
-
-```
+```bash
 curl -X POST -H "Content-Type: application/json" --data @./example.json https://<endpoint>/v1/models/mnist/versions/1:predict
 ```
-
-curl -X POST -H "Content-Type: application/json" --data @./example.json https://mnist-classifier-tfserve-8000.tfy-usea1-ctl.devtest.truefoundry.tech/v1/models/mnist/versions/1:predict
