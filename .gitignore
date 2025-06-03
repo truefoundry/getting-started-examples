@@ -3,5 +3,6 @@
 .ipynb_checkpoints/
 **/venv
 .env
+.DS_Store
 plot_agent/agno_plot_agent/plots/plot_*.png
 plot_agent/langgraph_plot_agent/plots/plot_*.png

@@ -22,7 +22,6 @@ python deploy.py --workspace-fqn ... --host ... --path ...
 
 ### Example Inference Call
 
-
-```
+```bash
 curl -X POST -H "Content-Type: application/json" --data @./example.json https://<endpoint>/v2/models/mnist/infer
 ```
