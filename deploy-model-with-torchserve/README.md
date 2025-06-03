@@ -17,10 +17,10 @@ mv mnist.mar model_store/
 ### Deploy
 
 ```shell
- python deploy.py --workspace-fqn ... --host ... --path ...
+python deploy.py --workspace-fqn ... --host ... --path ...
 ```
 
-### Example Inference
+### Example Inference Call
 
 
 ```

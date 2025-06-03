@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--name",
     required=False,
-    default="mnist-classifier-torchserve-svc",
+    default="mnist-classifier-tfserve-svc",
     type=str,
     help="Name of the application.",
 )
@@ -50,14 +50,14 @@ service = Service(
         # These details will be used to templatize a DockerFile to build your Docker Image
         build_spec=DockerFileBuild(
             dockerfile_path="Dockerfile",
-            command="torchserve --foreground --start --model-store model_store --models all --ts-config config.properties --disable-token-auth --enable-model-api",
+            command="tensorflow_model_server --model_config_file=/models/models.config --enable_batching --batching_parameters_file=/models/batching.config --rest_api_port=8000 --rest_api_timeout_in_ms=10000 --enable_model_warmup",
         ),
     ),
     # Set the ports your server will listen on
     ports=[
         # Providing a host and path value depends on the base domain urls configured in the cluster settings.
         # You can learn how to find the base domain urls available to you # Please see https://docs.truefoundry.com/docs/define-ports-and-domains#specifying-host
-        Port(port=8080, host=args.host, path=args.path)
+        Port(port=8000, host=args.host, path=args.path)
     ],
     # Define the resource constraints.
     #
