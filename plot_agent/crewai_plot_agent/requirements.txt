@@ -877,7 +877,7 @@ tomli==2.2.1
     # via crewai
 tomli-w==1.2.0
     # via crewai
-tornado==6.4.2
+tornado==6.5.1
     # via streamlit
 tqdm==4.67.1
     # via
