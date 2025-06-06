@@ -1,6 +1,6 @@
-# Deploying a Hugging Face Model with MLflow and Transformers
+# Deploying Custom Python function with MLflow
 
-This example shows how to deploy a Hugging Face model - a small language model - with MLflow and Transformers.
+This example shows how to deploy a custom Python function with MLflow.
 
 ## Setup
 
