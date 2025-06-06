@@ -1,0 +1,84 @@
+artifact_path: file:///Users/chiragjn/tf/getting-started-examples/deploy-model-with-mlflow/mlflow-transformers/mlruns/0/models/m-4d691930606741c69cd7cec9bf9f8d7b/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.transformers
+    python_version: 3.11.2
+  transformers:
+    code: null
+    components:
+    - tokenizer
+    framework: pt
+    inference_task: llm/v1/chat
+    instance_type: TextGenerationPipeline
+    pipeline_model_type: Qwen2ForCausalLM
+    source_model_name: Qwen/Qwen2.5-0.5B-Instruct
+    source_model_revision: 7ae557604adf67be50417f59c2c2f167def9a775
+    task: text-generation
+    tokenizer_name: Qwen/Qwen2.5-0.5B-Instruct
+    tokenizer_revision: 7ae557604adf67be50417f59c2c2f167def9a775
+    tokenizer_type: Qwen2TokenizerFast
+    torch_dtype: torch.float16
+    transformers_version: 4.52.4
+is_signature_from_type_hint: false
+metadata:
+  task: llm/v1/chat
+mlflow_version: 3.1.0rc0
+model_id: m-4d691930606741c69cd7cec9bf9f8d7b
+model_size_bytes: 16252
+model_uuid: m-4d691930606741c69cd7cec9bf9f8d7b
+prompts: null
+run_id: 10e6988e43604ce391bb776663ee2094
+signature:
+  inputs: '[{"type": "array", "items": {"type": "object", "properties": {"content":
+    {"type": "string", "required": false}, "name": {"type": "string", "required":
+    false}, "refusal": {"type": "string", "required": false}, "role": {"type": "string",
+    "required": true}, "tool_call_id": {"type": "string", "required": false}, "tool_calls":
+    {"type": "array", "items": {"type": "object", "properties": {"function": {"type":
+    "object", "properties": {"arguments": {"type": "string", "required": true}, "name":
+    {"type": "string", "required": true}}, "required": true}, "id": {"type": "string",
+    "required": true}, "type": {"type": "string", "required": true}}}, "required":
+    false}}}, "name": "messages", "required": true}, {"type": "double", "name": "temperature",
+    "required": false}, {"type": "long", "name": "max_tokens", "required": false},
+    {"type": "array", "items": {"type": "string"}, "name": "stop", "required": false},
+    {"type": "long", "name": "n", "required": false}, {"type": "boolean", "name":
+    "stream", "required": false}, {"type": "double", "name": "top_p", "required":
+    false}, {"type": "long", "name": "top_k", "required": false}, {"type": "double",
+    "name": "frequency_penalty", "required": false}, {"type": "double", "name": "presence_penalty",
+    "required": false}, {"type": "array", "items": {"type": "object", "properties":
+    {"function": {"type": "object", "properties": {"description": {"type": "string",
+    "required": false}, "name": {"type": "string", "required": true}, "parameters":
+    {"type": "object", "properties": {"additionalProperties": {"type": "boolean",
+    "required": false}, "properties": {"type": "map", "values": {"type": "object",
+    "properties": {"description": {"type": "string", "required": false}, "enum": {"type":
+    "array", "items": {"type": "string"}, "required": false}, "items": {"type": "object",
+    "properties": {"type": {"type": "string", "required": true}}, "required": false},
+    "type": {"type": "string", "required": true}}}, "required": true}, "required":
+    {"type": "array", "items": {"type": "string"}, "required": false}, "type": {"type":
+    "string", "required": false}}, "required": true}, "strict": {"type": "boolean",
+    "required": false}}, "required": false}, "type": {"type": "string", "required":
+    true}}}, "name": "tools", "required": false}, {"type": "map", "values": {"type":
+    "any"}, "name": "custom_inputs", "required": false}]'
+  outputs: '[{"type": "string", "name": "id", "required": true}, {"type": "string",
+    "name": "object", "required": true}, {"type": "long", "name": "created", "required":
+    true}, {"type": "string", "name": "model", "required": true}, {"type": "array",
+    "items": {"type": "object", "properties": {"finish_reason": {"type": "string",
+    "required": true}, "index": {"type": "long", "required": true}, "message": {"type":
+    "object", "properties": {"content": {"type": "string", "required": false}, "name":
+    {"type": "string", "required": false}, "refusal": {"type": "string", "required":
+    false}, "role": {"type": "string", "required": true}, "tool_call_id": {"type":
+    "string", "required": false}, "tool_calls": {"type": "array", "items": {"type":
+    "object", "properties": {"function": {"type": "object", "properties": {"arguments":
+    {"type": "string", "required": true}, "name": {"type": "string", "required": true}},
+    "required": true}, "id": {"type": "string", "required": true}, "type": {"type":
+    "string", "required": true}}}, "required": false}}, "required": true}}}, "name":
+    "choices", "required": true}, {"type": "object", "properties": {"completion_tokens":
+    {"type": "long", "required": true}, "prompt_tokens": {"type": "long", "required":
+    true}, "total_tokens": {"type": "long", "required": true}}, "name": "usage", "required":
+    false}, {"type": "map", "values": {"type": "any"}, "name": "custom_outputs", "required":
+    false}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2025-06-06 16:38:56.719886'

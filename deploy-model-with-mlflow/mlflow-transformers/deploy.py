@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--name",
     required=False,
-    default="mlflow-random-forest-svc",
+    default="mlflow-qwen-0-5b-ins-svc",
     type=str,
     help="Name of the application.",
 )
@@ -56,22 +56,23 @@ service = Service(
     ports=[
         # Providing a host and path value depends on the base domain urls configured in the cluster settings.
         # You can learn how to find the base domain urls available to you # Please see https://docs.truefoundry.com/docs/define-ports-and-domains#specifying-host
-        Port(port=8080, host=args.host, path=args.path)
+        Port(port=8000, host=args.host, path=args.path)
     ],
     # Define the resource constraints.
     #
     # Requests are the minimum amount of resources that a container needs to run.
     # Limits are the maximum amount of resources that a container can use.
     resources=Resources(
-        cpu_request=0.5,
-        cpu_limit=0.5,
-        memory_request=1000,
-        memory_limit=1500,
+        cpu_request=1,
+        cpu_limit=1,
+        memory_request=2500,
+        memory_limit=4000,
     ),
     # Define environment variables that your Service will have access to
     env={
         "ENVIRONMENT": "dev",
-        "MLSERVER_INFER_WORKERS": "1",
+        "UVICORN_HOST": "0.0.0.0",
+        "MLFLOW_MODELS_WORKERS": "1",
     },
     labels={"tfy_openapi_path": "/v2/docs/dataplane.json"},
 )

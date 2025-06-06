@@ -64,9 +64,7 @@ class PyTorchImageClassifier:
         if image is None:
             image = data[0].get("body")
 
-        my_preprocess = transforms.Compose(
-            [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
-        )
+        my_preprocess = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
         image = Image.open(io.BytesIO(image))
         image = my_preprocess(image)
         return image

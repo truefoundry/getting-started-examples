@@ -27,21 +27,14 @@ ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 WORKDIR /opt/mlflow
 
 # Install MLflow
-RUN pip install mlflow==2.22.1
-
-# Install Java mlflow-scoring from Maven Central
-RUN mvn --batch-mode dependency:copy -Dartifact=org.mlflow:mlflow-scoring:2.22.1:pom -DoutputDirectory=/opt/java
-RUN mvn --batch-mode dependency:copy -Dartifact=org.mlflow:mlflow-scoring:2.22.1:jar -DoutputDirectory=/opt/java/jars
-RUN cp /opt/java/mlflow-scoring-2.22.1.pom /opt/java/pom.xml
-RUN cd /opt/java && mvn --batch-mode dependency:copy-dependencies -DoutputDirectory=/opt/java/jars
-
+RUN pip install mlflow==3.1.0rc0
 
 # Copy model to image and install dependencies
 COPY model_dir/ /opt/ml/model
-RUN python -c "from mlflow.models import container as C; C._install_pyfunc_deps('/opt/ml/model', install_mlflow=True, enable_mlserver=True, env_manager='virtualenv');"
+RUN python -c "from mlflow.models import container as C; C._install_pyfunc_deps('/opt/ml/model', install_mlflow=True, enable_mlserver=False, env_manager='virtualenv');"
 
 ENV MLFLOW_DISABLE_ENV_CREATION=True
-ENV ENABLE_MLSERVER=True
+ENV ENABLE_MLSERVER=False
 
 # granting read/write access and conditional execution authority to all child directories
 # and files to allow for deployment to AWS Sagemaker Serverless Endpoints

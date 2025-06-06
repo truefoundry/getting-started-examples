@@ -2,11 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 # Helper libraries
-import numpy as np
-import matplotlib.pyplot as plt
 import os
-import subprocess
-import tempfile
 
 
 mnist = keras.datasets.mnist
