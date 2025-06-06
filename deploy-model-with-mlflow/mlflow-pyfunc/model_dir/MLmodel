@@ -1,4 +1,4 @@
-artifact_path: file:///Users/chiragjn/tf/getting-started-examples/deploy-model-with-mlflow/mlflow-pyfunc/mlruns/0/models/m-33f8c74a1ff44d95a662c4d6b8f2ea0c/artifacts
+artifact_path: file:///Users/chiragjn/tf/getting-started-examples/deploy-model-with-mlflow/mlflow-pyfunc/mlruns/0/models/m-e2d56bfa2af44a1e86e93023af88e767/artifacts
 flavors:
   python_function:
     cloudpickle_version: 3.0.0
@@ -12,9 +12,9 @@ flavors:
     streamable: false
 is_signature_from_type_hint: true
 mlflow_version: 3.1.0rc0
-model_id: m-33f8c74a1ff44d95a662c4d6b8f2ea0c
-model_size_bytes: 211
-model_uuid: m-33f8c74a1ff44d95a662c4d6b8f2ea0c
+model_id: m-e2d56bfa2af44a1e86e93023af88e767
+model_size_bytes: 848363
+model_uuid: m-e2d56bfa2af44a1e86e93023af88e767
 prompts: null
 saved_input_example_info:
   artifact_path: input_example.json
@@ -26,4 +26,4 @@ signature:
   outputs: '[{"type": "map", "values": {"type": "double"}, "required": true}]'
   params: null
 type_hint_from_example: false
-utc_time_created: '2025-06-06 18:31:18.635056'
+utc_time_created: '2025-06-06 18:53:38.934058'
