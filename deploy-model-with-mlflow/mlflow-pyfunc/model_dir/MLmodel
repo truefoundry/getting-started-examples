@@ -1,0 +1,29 @@
+artifact_path: file:///Users/chiragjn/tf/getting-started-examples/deploy-model-with-mlflow/mlflow-pyfunc/mlruns/0/models/m-33f8c74a1ff44d95a662c4d6b8f2ea0c/artifacts
+flavors:
+  python_function:
+    cloudpickle_version: 3.0.0
+    code: null
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pyfunc.model
+    python_model: python_model.pkl
+    python_version: 3.11.2
+    streamable: false
+is_signature_from_type_hint: true
+mlflow_version: 3.1.0rc0
+model_id: m-33f8c74a1ff44d95a662c4d6b8f2ea0c
+model_size_bytes: 211
+model_uuid: m-33f8c74a1ff44d95a662c4d6b8f2ea0c
+prompts: null
+saved_input_example_info:
+  artifact_path: input_example.json
+  serving_input_path: serving_input_example.json
+  type: json_object
+signature:
+  inputs: '[{"type": "object", "properties": {"text": {"type": "string", "required":
+    true}}, "required": true}]'
+  outputs: '[{"type": "map", "values": {"type": "double"}, "required": true}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2025-06-06 18:31:18.635056'

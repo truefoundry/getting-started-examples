@@ -5,7 +5,7 @@ This example shows how to deploy a Hugging Face model - a small language model -
 ## Setup
 
 ```bash
-pip install -r requirements.txt
+pip install -r train/requirements.txt
 ```
 
 ## Log the model

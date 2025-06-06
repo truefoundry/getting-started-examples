@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--name",
     required=False,
-    default="mlflow-qwen-0-5b-ins-svc",
+    default="mlflow-pyfunc-sentiment",
     type=str,
     help="Name of the application.",
 )
@@ -63,10 +63,10 @@ service = Service(
     # Requests are the minimum amount of resources that a container needs to run.
     # Limits are the maximum amount of resources that a container can use.
     resources=Resources(
-        cpu_request=1,
-        cpu_limit=1,
-        memory_request=2500,
-        memory_limit=4000,
+        cpu_request=0.1,
+        cpu_limit=0.2,
+        memory_request=1000,
+        memory_limit=2000,
     ),
     # Define environment variables that your Service will have access to
     env={
