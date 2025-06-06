@@ -2,5 +2,5 @@
 multi-model-server==1.1.11
 numpy==2.2.6
 pillow==11.2.1
-torch==2.7.0+cpu
+torch==2.7.1
 torchvision==0.22.0+cpu
