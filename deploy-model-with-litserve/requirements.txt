@@ -1,0 +1,3 @@
+faster-whisper==1.1.1
+litserve==0.2.11
+python-multipart==0.0.20
