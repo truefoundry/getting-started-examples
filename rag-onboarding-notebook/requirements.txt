@@ -8,7 +8,7 @@ openai==1.16.2
 pandas==1.5.3
 PyMuPDF==1.22.2
 pypdf==3.17.0
-requests==2.32.2
+requests==2.32.4
 sentence-transformers==2.2.2
 sentencepiece==0.1.98
 tiktoken==0.6.0
