@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from truefoundry.deploy import Build, LocalSource, Port, PythonBuild, Resources, Service
+from truefoundry.deploy import Build, LocalSource, Port, DockerFileBuild, Resources, Service
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s")
 
@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--name",
     required=False,
-    default="iris-sklearn-fastapi",
+    default="mlflow-qwen-0-5b-ins-svc",
     type=str,
     help="Name of the application.",
 )
@@ -48,10 +48,8 @@ service = Service(
         build_source=LocalSource(local_build=False),
         # `PythonBuild` helps specify the details of your Python Code.
         # These details will be used to templatize a DockerFile to build your Docker Image
-        build_spec=PythonBuild(
-            python_version="3.11",
-            command="gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 server:app",
-            requirements_path="requirements.txt",
+        build_spec=DockerFileBuild(
+            dockerfile_path="Dockerfile",
         ),
     ),
     # Set the ports your server will listen on
@@ -65,13 +63,17 @@ service = Service(
     # Requests are the minimum amount of resources that a container needs to run.
     # Limits are the maximum amount of resources that a container can use.
     resources=Resources(
-        cpu_request=0.1,
-        cpu_limit=0.3,
-        memory_request=200,
-        memory_limit=500,
+        cpu_request=1,
+        cpu_limit=1,
+        memory_request=2500,
+        memory_limit=4000,
     ),
     # Define environment variables that your Service will have access to
-    env={"ENVIRONMENT": "dev"},
+    env={
+        "ENVIRONMENT": "dev",
+        "UVICORN_HOST": "0.0.0.0",
+        "MLFLOW_MODELS_WORKERS": "1",
+    },
     labels={"tfy_openapi_path": "openapi.json"},
 )
 service.deploy(workspace_fqn=args.workspace_fqn, wait=False)

@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--name",
     required=False,
-    default="iris-sklearn-fastapi",
+    default="litserve-whisper-server",
     type=str,
     help="Name of the application.",
 )
@@ -50,7 +50,7 @@ service = Service(
         # These details will be used to templatize a DockerFile to build your Docker Image
         build_spec=PythonBuild(
             python_version="3.11",
-            command="gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 server:app",
+            command="python whisper_server.py",
             requirements_path="requirements.txt",
         ),
     ),
@@ -65,10 +65,10 @@ service = Service(
     # Requests are the minimum amount of resources that a container needs to run.
     # Limits are the maximum amount of resources that a container can use.
     resources=Resources(
-        cpu_request=0.1,
-        cpu_limit=0.3,
-        memory_request=200,
-        memory_limit=500,
+        cpu_request=0.3,
+        cpu_limit=0.5,
+        memory_request=600,
+        memory_limit=800,
     ),
     # Define environment variables that your Service will have access to
     env={"ENVIRONMENT": "dev"},
