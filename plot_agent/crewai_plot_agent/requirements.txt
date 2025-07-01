@@ -647,7 +647,7 @@ pdfplumber==0.11.6
     # via crewai
 pexpect==4.9.0
     # via ipython
-pillow==11.2.1
+pillow==11.3.0
     # via
     #   matplotlib
     #   pdfplumber
