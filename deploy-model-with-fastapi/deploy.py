@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from truefoundry.deploy import Build, LocalSource, Port, PythonBuild, Resources, Service
+from truefoundry.deploy import Build, LocalSource, Port, PythonBuild, Resources, Service, ArtifactsDownload, TrueFoundryArtifactSource, ArtifactsCacheVolume
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s")
 
@@ -73,5 +73,18 @@ service = Service(
     # Define environment variables that your Service will have access to
     env={"ENVIRONMENT": "dev"},
     labels={"tfy_openapi_path": "openapi.json"},
+    # Optionally, you can log the model and use TrueFoundry Model downloader to download the model to the cache volume
+    # artifacts_download=ArtifactsDownload(
+    #     artifacts=[
+    #         TrueFoundryArtifactSource(
+    #             artifact_version_fqn="model:live-demo/demo-models/iris-classification:1",
+    #             download_path_env_variable="MODEL_DIR",
+    #         ),
+    #     ],
+    #     cache_volume=ArtifactsCacheVolume(
+    #         storage_class="efs-sc",
+    #         cache_size=1,
+    #     ),
+    # )
 )
 service.deploy(workspace_fqn=args.workspace_fqn, wait=False)

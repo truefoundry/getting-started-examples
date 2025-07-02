@@ -7,7 +7,9 @@ import pandas as pd
 from fastapi import FastAPI
 
 model = None
-MODEL_PATH = os.getenv("MODEL_PATH", "iris_classifier.joblib")
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.getenv("MODEL_DIR", THIS_DIR)
+MODEL_PATH = os.path.join(MODEL_DIR, "iris_classifier.joblib")
 
 
 def load_model():
