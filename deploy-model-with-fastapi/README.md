@@ -17,6 +17,7 @@ python -m pip install -r requirements.txt
 2. Start the iris app
 
 ```shell
+export MODEL_DIR="$(pwd)"
 gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 server:app
 ```
 
@@ -25,7 +26,7 @@ gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 server:app
 1. Install `truefoundry`
 
 ```shell
-python -m pip install -U "truefoundry>=0.9.2,<0.10.0"
+python -m pip install -U "truefoundry>=0.10.0,<0.11.0"
 ```
 
 2. Login
