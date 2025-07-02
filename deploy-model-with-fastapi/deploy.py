@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from truefoundry.deploy import Build, LocalSource, Port, PythonBuild, Resources, Service, ArtifactsDownload, TrueFoundryArtifactSource, ArtifactsCacheVolume
+from truefoundry.deploy import Build, LocalSource, Port, PythonBuild, Resources, Service
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s")
 
