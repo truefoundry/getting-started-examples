@@ -1,2 +1,3 @@
-# getting-started-examples
-Examples to get started with using TrueFoundry
+# TrueFoundry Examples
+
+Example applications showcasing how to deploy with TrueFoundry.
