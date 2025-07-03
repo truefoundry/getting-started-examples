@@ -1,7 +1,8 @@
 # Deploying MNIST model with TFServe
+
 ---
 
-## (Optional) Train the model
+### (Optional) Train the model
 
 ```bash
 pip install -r requirements.txt
@@ -30,15 +31,15 @@ The given SavedModel SignatureDef contains the following output(s):
 Method name is: tensorflow/serving/predict
 ```
 
-
-## Deploy the model
+### Start the server
 
 ```bash
-python deploy.py --workspace-fqn ... --host ... --path ...
+export MODEL_DIR="$(pwd)/models/mnist"
+tensorflow_model_server --model_name mnist --model_base_path $MODEL_DIR --enable_batching --batching_parameters_file ./batching.config --rest_api_port=8000 --rest_api_timeout_in_ms=10000 --enable_model_warmup
 ```
 
 ### Example Inference Call
 
 ```bash
-curl -X POST -H "Content-Type: application/json" --data @./example.json https://<endpoint>/v1/models/mnist/versions/1:predict
+curl -X POST -H "Content-Type: application/json" --data @./example.json http://0.0.0.0:8000/v1/models/mnist/versions/1:predict
 ```
