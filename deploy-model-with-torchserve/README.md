@@ -26,7 +26,7 @@ torch-model-archiver --model-name mnist --version 1.0 --model-file mnist.py --se
 
 ```shell
 export MODEL_DIR="$(pwd)/model_store"
-torchserve --foreground--model-store $MODEL_DIR --models all --ts-config config.properties --disable-token-auth --enable-model-api
+torchserve --foreground --model-store $MODEL_DIR --models all --ts-config config.properties --disable-token-auth --enable-model-api
 ```
 
 ### Example Inference Call
