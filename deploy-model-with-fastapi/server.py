@@ -6,10 +6,17 @@ import joblib
 import pandas as pd
 from fastapi import FastAPI
 
+
+def _get_model_dir():
+    if "MODEL_DIR" not in os.environ:
+        raise Exception(
+            "MODEL_DIR environment variable is not set. Please set it to the directory containing the model."
+        )
+    return os.environ["MODEL_DIR"]
+
+
 model = None
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_DIR = os.getenv("MODEL_DIR", THIS_DIR)
-MODEL_PATH = os.path.join(MODEL_DIR, "iris_classifier.joblib")
+MODEL_PATH = os.path.join(_get_model_dir(), "iris_classifier.joblib")
 
 
 def load_model():
@@ -33,7 +40,9 @@ async def health() -> Dict[str, bool]:
 
 
 @app.post("/predict")
-def predict(sepal_length: float, sepal_width: float, petal_length: float, petal_width: float):
+def predict(
+    sepal_length: float, sepal_width: float, petal_length: float, petal_width: float
+):
     global model
     class_names = ["setosa", "versicolor", "virginica"]
     data = dict(

@@ -1,21 +1,24 @@
 # Deploy Whisper Model with Litserve
 
-## Setup
+---
+
+###  Install requirements
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Deploy
+### Start the server
 
 ```bash
-python deploy.py --workspace-fqn ... --host ... --port ...
+export MODEL_DIR="Systran/faster-whisper-tiny"
+python whisper_server.py
 ```
 
-## Test
+### Example inference call
 
 ```bash
-curl -X POST http://<endpoint>/predict -F "request=@./audio.mp3"
+curl -X POST http://0.0.0.0:8000/predict -F "request=@./audio.mp3"
 ```
 
 You should get the following response:
