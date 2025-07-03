@@ -6,6 +6,12 @@ Deploy MNIST model with TorchServe
 
 This example was adapted from [TorchServe's Official MNIST Example](https://github.com/pytorch/serve/tree/62c4d6a1fdc1d071dbcf758ebd756029af20bd5e/examples/image_classifier/mnist).
 
+### Install requirements
+
+```shell
+python -m pip install -r requirements.txt
+```
+
 ### Package the model
 
 ```shell
@@ -14,14 +20,37 @@ mkdir -p model_store/
 mv mnist.mar model_store/
 ```
 
-### Deploy
+### Start the server
 
 ```shell
-python deploy.py --workspace-fqn ... --host ... --path ...
+export MODEL_DIR="$(pwd)/model_store"
+torchserve --foreground--model-store $MODEL_DIR --models all --ts-config config.properties --disable-token-auth --enable-model-api
 ```
 
 ### Example Inference Call
 
 ```bash
-curl -X POST -H "Content-Type: application/json" --data @./example.json https://<endpoint>/v2/models/mnist/infer
+curl -X POST -H "Content-Type: application/json" --data @./example.json http://0.0.0.0:8080/v2/models/mnist/infer
+```
+
+You should see the following output:
+
+```json
+{
+  "id": "d3b15cad-50a2-4eaf-80ce-8b0a428bd298",
+  "model_name": "mnist",
+  "model_version": "1.0",
+  "outputs": [
+    {
+      "name": "input-0",
+      "datatype": "INT64",
+      "data": [
+        1
+      ],
+      "shape": [
+        1
+      ]
+    }
+  ]
+}
 ```
