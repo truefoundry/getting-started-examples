@@ -38,7 +38,7 @@ Method name is: tensorflow/serving/predict
 
 ```bash
 export MODEL_DIR="$(pwd)/models/mnist"
-tensorflow_model_server --model_name=mnist --model_base_path=$MODEL_DIR --enable_batching --batching_parameters_file ./batching.config --rest_api_port=8000 --rest_api_timeout_in_ms=10000 --enable_model_warmup
+tensorflow_model_server --model_name=mnist --model_base_path=$MODEL_DIR --enable_batching --batching_parameters_file=./batching.config --rest_api_port=8000 --rest_api_timeout_in_ms=10000 --enable_model_warmup
 ```
 
 ### Example Inference Call
