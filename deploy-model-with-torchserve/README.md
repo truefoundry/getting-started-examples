@@ -19,9 +19,7 @@ python -m pip install -r requirements.txt
 ### Package the model
 
 ```shell
-torch-model-archiver --model-name mnist --version 1.0 --model-file mnist.py --serialized-file model/mnist_cnn.pt --handler mnist_handler.py
-mkdir -p model_store/
-mv mnist.mar model_store/
+torch-model-archiver --model-name mnist --version 1.0 --model-file mnist.py --serialized-file model/mnist_cnn.pt --handler mnist_handler.py --export-path ./model_store/
 ```
 
 ### Start the server
