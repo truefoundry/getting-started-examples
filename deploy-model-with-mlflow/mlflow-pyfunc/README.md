@@ -1,32 +1,37 @@
 # Deploying Custom Python function with MLflow
 
+---
+
 This example shows how to deploy a custom Python function with MLflow.
 
-## Setup
+> [!tip]
+> This example is deployed live [here](https://platform.live-demo.truefoundry.cloud/deployments/cmbltagrif78u01rj1r6td5g9?tab=pods)
+
+### Install requirements
 
 ```bash
 pip install -r train/requirements.txt
 ```
 
-## Log the model
+### Log the model
 
 ```bash
 python train/model.py
 ```
 
-## Generate a Dockerfile
+### Generate a Dockerfile
 
 ```bash
 mlflow models generate-dockerfile -m models:/sentiment-model/1 --env-manager virtualenv --install-mlflow --output-directory .
 ```
 
-## Deploy the model
+### Deploy the model
 
 ```bash
 python deploy.py --workspace-fqn ... --host ... --path ...
 ```
 
-## Test the model
+### Test the model
 
 ```bash
 curl -X POST -H "Content-Type:application/json"  https://<endpoint>/invocations -d '{"inputs": [{"text": "hello"}]}'

@@ -2,6 +2,9 @@
 
 ---
 
+> [!tip]
+> This example is deployed live [here](https://platform.live-demo.truefoundry.cloud/deployments/cmblzymv1ft4g01rj52b2cjkc?tab=pods)
+
 ###  Install requirements
 
 ```bash

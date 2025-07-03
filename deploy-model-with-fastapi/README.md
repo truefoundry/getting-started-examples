@@ -2,6 +2,9 @@
 
 ---
 
+> [!tip]
+> This example is deployed live [here](https://platform.live-demo.truefoundry.cloud/deployments/cm4qm5p0k8p8001rm24utckn0?tab=pods)
+
 ### Install requirements
 
 1. Install requirements

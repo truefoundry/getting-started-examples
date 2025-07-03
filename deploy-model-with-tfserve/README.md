@@ -2,6 +2,9 @@
 
 ---
 
+> [!tip]
+> This example is deployed live [here](https://platform.live-demo.truefoundry.cloud/deployments/cmbltl1g1f86m01rj09pf110i?tab=pods)
+
 ### (Optional) Train the model
 
 ```bash

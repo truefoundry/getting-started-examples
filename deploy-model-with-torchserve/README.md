@@ -1,5 +1,9 @@
 Deploy MNIST model with TorchServe
+
 ---
+
+> [!tip]
+> This example is deployed live [here](https://platform.live-demo.truefoundry.cloud/deployments/cmbltlrz6f87x01rj1z4k0o80?tab=pods)
 
 > [!important]
 > [TorchServe](https://github.com/pytorch/serve) is no longer being actively maintained. This example is just to demonstrate how to deploy any existing TorchServe apps.
