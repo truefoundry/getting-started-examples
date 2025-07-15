@@ -2,7 +2,7 @@
 #    uv pip compile pyproject.toml
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.11.18
+aiohttp==3.12.14
     # via
     #   auth0-python
     #   instructor
