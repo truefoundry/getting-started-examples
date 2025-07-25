@@ -3,4 +3,4 @@ from traceloop.sdk import Traceloop
 
 load_dotenv()
 
-Traceloop.init(app_name="sateesh-bangking-agent")
+Traceloop.init(app_name="banking-agent")
