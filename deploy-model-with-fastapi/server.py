@@ -8,11 +8,7 @@ from fastapi import FastAPI
 
 
 def _get_model_dir():
-    if "MODEL_DIR" not in os.environ:
-        raise Exception(
-            "MODEL_DIR environment variable is not set. Please set it to the directory containing the model."
-        )
-    return os.environ["MODEL_DIR"]
+    return os.getenv("MODEL_DIR", ".")
 
 
 model = None
