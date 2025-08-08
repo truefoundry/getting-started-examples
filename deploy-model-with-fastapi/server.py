@@ -5,6 +5,7 @@ from typing import Dict
 import joblib
 import pandas as pd
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 
 def _get_model_dir():
@@ -34,18 +35,23 @@ app = FastAPI(lifespan=lifespan, root_path=os.getenv("TFY_SERVICE_ROOT_PATH", ""
 async def health() -> Dict[str, bool]:
     return {"healthy": True}
 
+class RequestBody(BaseModel):
+    sepal_length: float
+    sepal_width: float
+    petal_length: float
+    petal_width: float
 
 @app.post("/predict")
 def predict(
-    sepal_length: float, sepal_width: float, petal_length: float, petal_width: float
+    request_body: RequestBody
 ):
     global model
     class_names = ["setosa", "versicolor", "virginica"]
     data = dict(
-        sepal_length=sepal_length,
-        sepal_width=sepal_width,
-        petal_length=petal_length,
-        petal_width=petal_width,
+        sepal_length=request_body.sepal_length,
+        sepal_width=request_body.sepal_width,
+        petal_length=request_body.petal_length,
+        petal_width=request_body.petal_width,
     )
     prediction = model.predict_proba(pd.DataFrame([data]))[0]
     predictions = []
