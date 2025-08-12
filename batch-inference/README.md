@@ -31,7 +31,7 @@ python batch_infer.py \
 1. Install `truefoundry`
 
 ```shell
-python -m pip install -U "truefoundry>=0.10.0,<0.11.0"
+python -m pip install -U "truefoundry>=0.11.0,<0.12.0"
 ```
 
 2. Login
