@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM public.ecr.aws/docker/library/python:3.11-slim
 WORKDIR /app
 COPY ./requirements.txt /tmp/
 RUN pip install -U pip setuptools wheel && pip install -r /tmp/requirements.txt
