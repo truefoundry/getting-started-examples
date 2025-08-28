@@ -19,7 +19,7 @@ from truefoundry.workflow import (
 task_config = PythonTaskConfig(
     image=TaskPythonBuild(
         python_version="3.10",
-        pip_packages=["truefoundry[workflow]>=0.9.2,<0.10.0"],
+        pip_packages=["truefoundry[workflow]>=0.11.9,<0.12.0"],
         requirements_path="requirements.txt",
     ),
     resources=Resources(

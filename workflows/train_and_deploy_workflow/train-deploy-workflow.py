@@ -18,7 +18,7 @@ task_config = PythonTaskConfig(
     image=TaskPythonBuild(
         python_version="3.9",
         pip_packages=[
-            "truefoundry[workflow]>=0.9.2,<0.10.0",
+            "truefoundry[workflow]>=0.11.9,<0.12.0",
             "tensorflow==2.15.0",
             "s3fs>=2024.10.0",
         ],
@@ -152,8 +152,8 @@ def deploy_model(run_fqn: str, workspace_fqn: str) -> str:
     models = run.list_model_versions()
     model = models.__next__()
     print(f"Deploying model {model.fqn}")
-    url = deploy_service(model_version_fqn=model.fqn, workspace_fqn=workspace_fqn)
-    return f"Model deployed at {url}"
+    deployment_fqn = deploy_service(model_version_fqn=model.fqn, workspace_fqn=workspace_fqn)
+    return f"Model deployed, fqn: {deployment_fqn}. Please check the deployments page for status"
 
 
 @task(task_config=task_config)

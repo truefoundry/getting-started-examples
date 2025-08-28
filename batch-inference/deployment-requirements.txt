@@ -1,1 +1,1 @@
-truefoundry>=0.11.0,<0.12.0
+truefoundry>=0.11.9,<0.12.0

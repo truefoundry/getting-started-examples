@@ -36,9 +36,7 @@ async def health() -> Dict[str, bool]:
 
 
 @app.post("/predict")
-def predict(
-    sepal_length: float, sepal_width: float, petal_length: float, petal_width: float
-):
+def predict(sepal_length: float, sepal_width: float, petal_length: float, petal_width: float):
     global model
     class_names = ["setosa", "versicolor", "virginica"]
     data = dict(

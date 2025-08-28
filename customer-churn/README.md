@@ -31,7 +31,7 @@ python main.py --n_neighbors {{n_neighbors}} --weights {{weights}} --ml_repo {{m
 1. Install `truefoundry`
 
 ```shell
-python -m pip install -U "truefoundry>=0.11.0,<0.12.0"
+python -m pip install -U "truefoundry>=0.11.9,<0.12.0"
 ```
 
 2. Login

@@ -3,6 +3,7 @@ import litserve as ls
 from fastapi import UploadFile
 from faster_whisper import WhisperModel
 
+
 def _get_model_dir():
     if "MODEL_DIR" not in os.environ:
         raise Exception(
@@ -10,7 +11,9 @@ def _get_model_dir():
         )
     return os.environ["MODEL_DIR"]
 
+
 MODEL_DIR = _get_model_dir()
+
 
 class WhisperLitAPI(ls.LitAPI):
     def setup(self, device):
@@ -37,11 +40,5 @@ class WhisperLitAPI(ls.LitAPI):
 
 if __name__ == "__main__":
     api = WhisperLitAPI()
-    server = ls.LitServer(
-        api, 
-        fast_queue=True, 
-        accelerator="cpu", 
-        timeout=1000, 
-        workers_per_device=1
-    )
+    server = ls.LitServer(api, fast_queue=True, accelerator="cpu", timeout=1000, workers_per_device=1)
     server.run(port=8000)
