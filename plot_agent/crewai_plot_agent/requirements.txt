@@ -267,7 +267,7 @@ langchain==0.3.25
     #   langchain-community
 langchain-cohere==0.3.5
     # via embedchain
-langchain-community==0.3.24
+langchain-community==0.3.27
     # via
     #   embedchain
     #   langchain-experimental
