@@ -22,7 +22,6 @@ def main():
 Examples:
   python main.py --model-id "microsoft/DialoGPT-medium" --ml-repo "my-ml-repo" --model-name "dialogpt-medium" --model-type "text-generation"
   python main.py --model-id "gpt2" --ml-repo "my-repo" --model-name "gpt2-model" --model-type "text-generation"
-  python main.py --model-id "LiquidAI/LFM2-350M" --ml-repo "wns-testing" --model-name "liquid-ai" --model-type "text-generation" 
         """
     )
     
@@ -77,7 +76,6 @@ Examples:
         if os.path.exists(os.path.join(model_download_path, '.cache')):
             shutil.rmtree(os.path.join(model_download_path, '.cache'))
 
-        print(f"Model downloaded to {model_download_path}")
         ML_REPO = args.ml_repo         # ML Repo to upload to
         MODEL_NAME = args.model_name  # Model Name to upload as
 

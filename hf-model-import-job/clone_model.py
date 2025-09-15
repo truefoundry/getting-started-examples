@@ -63,6 +63,8 @@ Examples:
 
         client = get_client()
 
+        print("List ML Repos:", client.list_ml_repos())
+
         source_model_version = client.get_model_version(
             ml_repo=args.source_ml_repo,
             name=args.source_model_name,
