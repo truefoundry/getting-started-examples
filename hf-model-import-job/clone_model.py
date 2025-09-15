@@ -39,8 +39,8 @@ def main():
         required=True,
         help="TrueFoundry target ML repository name"
     )
-    MAX_RETRIES = os.getenv("MAX_RETRIES", 5)
-    INITIAL_BACKOFF_SECONDS = os.getenv("INITIAL_BACKOFF_SECONDS", 2)
+    MAX_RETRIES = int(os.getenv("MAX_RETRIES", 5))
+    INITIAL_BACKOFF_SECONDS = int(os.getenv("INITIAL_BACKOFF_SECONDS", 2))
     
     args = parser.parse_args()
     
