@@ -58,14 +58,11 @@ Examples:
     args = parser.parse_args()
 
     base_dir = os.getenv("BASE_DIR",".")
-    
-    # Create temporary directory for download
-    temp_dir = tempfile.mkdtemp(dir=base_dir)
-    model_download_path = temp_dir
 
-    print(f"Downloading model to {model_download_path}")
-    
-    try:
+    with tempfile.TemporaryDirectory(dir=base_dir) as temp_dir:
+        model_download_path = temp_dir
+
+        print(f"Downloading model to {model_download_path}")
 
         snapshot_download(
             args.model_id,
@@ -96,18 +93,6 @@ Examples:
         )
         
         print(f"\n✅ Success! Model logged to TrueFoundry with FQN: {model_version.fqn}")
-        
-        # Clean up temporary files
-        print("Cleaning up temporary files...")
-        shutil.rmtree(temp_dir)
-                    
-    except Exception as e:
-        print(f"\n❌ Error: {str(e)}")
-        shutil.rmtree(temp_dir)
-        return 1
-
-    return 0
-
 
 if __name__ == "__main__":
-    exit(main())
+    main()
