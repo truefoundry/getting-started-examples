@@ -57,7 +57,7 @@ Examples:
     
     args = parser.parse_args()
 
-    base_dir = os.getenv("BASE_DIR",".")
+    base_dir = os.getenv("BASE_DIR", ".")    
 
     with tempfile.TemporaryDirectory(dir=base_dir) as temp_dir:
         model_download_path = temp_dir
@@ -70,7 +70,6 @@ Examples:
             cache_dir=None,
             local_dir=model_download_path,
             ignore_patterns=["*.h5", "*.ot"],
-            local_dir_use_symlinks=False,
             token=args.hf_token,
         )
 
