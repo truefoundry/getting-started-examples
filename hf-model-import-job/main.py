@@ -56,10 +56,14 @@ Examples:
     )
     
     args = parser.parse_args()
+
+    base_dir = os.getenv("BASE_DIR",".")
     
     # Create temporary directory for download
-    temp_dir = tempfile.mkdtemp()
+    temp_dir = tempfile.mkdtemp(dir=base_dir)
     model_download_path = temp_dir
+
+    print(f"Downloading model to {model_download_path}")
     
     try:
 
