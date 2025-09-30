@@ -1,4 +1,4 @@
-mlflow==3.1.0rc0
+mlflow==3.1.4
 accelerate==1.7.0
 astunparse==1.6.3
 av==14.4.0
