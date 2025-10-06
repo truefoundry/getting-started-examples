@@ -31,7 +31,7 @@ uvicorn fastapi_service:app --port 8000 --host 0.0.0.0
 1. Install `truefoundry`
 
 ```shell
-python -m pip install -U "truefoundry>=0.9.2,<0.10.0"
+python -m pip install -U "truefoundry>=0.11.9,<0.12.0"
 ```
 
 2. Login

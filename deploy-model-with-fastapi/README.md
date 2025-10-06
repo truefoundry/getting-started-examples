@@ -1,12 +1,11 @@
-# getting-started-examples
-Examples to get started with using TrueFoundry
+# Deploy Scikit-Learn Iris flower classification model with FastAPI
 
-Deployment
 ---
-This example runs a simple iris app for inferring using a iris classifier.
-Mainly this example shows how to deploy to TrueFoundry using a Pythonfile and TrueFoundry Python SDK.
 
-## Run Locally
+> [!tip]
+> This example is deployed live [here](https://platform.live-demo.truefoundry.cloud/deployments/cm4qm5p0k8p8001rm24utckn0?tab=pods)
+
+### Install requirements
 
 1. Install requirements
 
@@ -14,32 +13,17 @@ Mainly this example shows how to deploy to TrueFoundry using a Pythonfile and Tr
 python -m pip install -r requirements.txt
 ```
 
-2. Start the iris app
+### Start the server
 
 ```shell
+export MODEL_DIR="$(pwd)"
 gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 server:app
 ```
 
-## Deploy with TrueFoundry
-
-1. Install `truefoundry`
+### Example Inference Call
 
 ```shell
-python -m pip install -U "truefoundry>=0.9.2,<0.10.0"
-```
-
-2. Login
-
-```shell
-tfy login --host "<Host name of TrueFoundry UI. e.g. https://company.truefoundry.cloud>"
-```
-
-3. Deploy!
-
-> Please refer to following docs
-> - [Getting workspace FQN](https://docs.truefoundry.com/docs/key-concepts#get-workspace-fqn)
-> - [Get host and path for deploying applications](https://docs.truefoundry.com/docs/define-ports-and-domains#identifying-available-domains)
-
-```shell
-python deploy.py --name iris --workspace-fqn <Workspace FQN> --host <Ingress Host for the cluster> --path <optional path>
+curl -X 'POST' \
+  'http://0.0.0.0:8000/predict?sepal_length=1&sepal_width=1&petal_length=1&petal_width=1' \
+  -H 'accept: application/json'
 ```

@@ -10,7 +10,7 @@ from truefoundry.deploy import (
     Service,
     TruefoundryArtifactSource,
 )
-from truefoundry.deploy.v2.lib.deploy import ServiceFoundryServiceClient
+
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)-8s %(message)s")
 
@@ -53,7 +53,4 @@ def deploy_service(model_version_fqn: str, workspace_fqn: str):
         labels={"tfy_openapi_path": "openapi.json"},
     )
     deployment = service.deploy(workspace_fqn=workspace_fqn, wait=False)
-    client = ServiceFoundryServiceClient()
-
-    url = f"{client.base_url.strip('/')}/applications/{deployment.applicationId}?tab=deployments"
-    return url
+    return deployment.fqn
