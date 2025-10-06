@@ -66,12 +66,8 @@ To deploy this banking agent on TrueFoundry, follow the comprehensive deployment
 2. **Choose Service Type**: Select "Service" since this is a FastAPI application
 3. **Source Code**: Choose either GitHub repository or local machine deployment
 4. **Configuration**:
-   - **Command**: `uvicorn src.main:app --host 0.0.0.0 --port 8000`
+   - **Command**: `Please leave empty, will be automatically picked from Dockerfile`
    - **Port**: `8000`
-   - **Requirements**: `requirements.txt` (or use `pyproject.toml` with uv)
+   - **DockerFile**: Use the provided Dockerfile (Dockerfile.streamlit or Dockerfile.fastapi)
 5. **Environment Variables**: Set up all the required environment variables as documented above
 6. **Deploy**: Submit the deployment form
-
-For Streamlit deployment, use:
-- **Command**: `streamlit run streamlit_app.py --server.address 0.0.0.0 --server.port 8501`
-- **Port**: `8501`
