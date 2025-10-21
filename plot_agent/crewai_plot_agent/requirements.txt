@@ -938,7 +938,7 @@ urllib3==2.4.0
     #   qdrant-client
     #   requests
     #   types-requests
-uv==0.7.3
+uv==0.9.5
     # via crewai
 uvicorn==0.34.2
     # via chromadb
