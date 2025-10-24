@@ -34,9 +34,16 @@ cp .env.sample .env
 | `LLM_MODEL` | The LLM model to use | `openai-main/gpt-4o-mini` (default) |
 | `LLM_GATEWAY_BASE_URL` | LLM Gateway base URL | `{CONTROL_PLANE_URL}/api/llm` |
 | `TFY_SERVICE_ROOT_PATH` | Root path for the FastAPI service (optional) | `` (empty by default) |
+
+### Optional Environment Variables
+
+| Variable | Description | Example Value |
+|----------|-------------|---------------|
 | `TRACING_BASE_URL` | OpenTelemetry tracing endpoint | `{CONTROL_PLANE_URL}/api/otel` |
 | `TRACING_PROJECT_FQN` | Your tracing project fully qualified name | `your_workspace:your_project` |
 | `TRACING_APPLICATION_NAME` | Application name for tracing | `banking-agent` |
+
+**Note:** Tracing is optional. If all three tracing variables are provided, the application will enable OpenTelemetry tracing with Traceloop. If any tracing variable is missing, tracing will be disabled.
 
 **Note:** Replace `{CONTROL_PLANE_URL}` with your actual TrueFoundry control plane URL.
 
