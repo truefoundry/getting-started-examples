@@ -727,7 +727,7 @@ pyjwt==2.10.1
     # via auth0-python
 pyparsing==3.2.3
     # via matplotlib
-pypdf==5.5.0
+pypdf==6.4.0
     # via embedchain
 pypdfium2==4.30.1
     # via pdfplumber
