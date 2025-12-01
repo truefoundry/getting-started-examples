@@ -74,7 +74,7 @@ fastapi==0.115.12
     # via -r requirements.in
 filelock==3.18.0
     # via huggingface-hub
-fonttools==4.58.0
+fonttools==4.61.0
     # via matplotlib
 frozenlist==1.6.0
     # via
@@ -536,7 +536,6 @@ typer==0.15.3
 typing-extensions==4.13.2
     # via
     #   agno
-    #   altair
     #   anthropic
     #   fastapi
     #   huggingface-hub
@@ -561,6 +560,8 @@ urllib3==2.4.0
     #   requests
 uvicorn==0.34.2
     # via -r requirements.in
+watchdog==6.0.0
+    # via streamlit
 wrapt==1.17.2
     # via
     #   deprecated
