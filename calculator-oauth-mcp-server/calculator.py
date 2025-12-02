@@ -8,9 +8,6 @@ from datetime import datetime
 
 load_dotenv()
 
-print(os.getenv("OAUTH_JWKS_URI"))
-print(os.getenv("OAUTH_ISSUER"))
-print(os.getenv("OAUTH_AUDIENCE"))
 # Configure JWT verification using JWKS
 token_verifier = JWTVerifier(
     jwks_uri=os.getenv("OAUTH_JWKS_URI"),
