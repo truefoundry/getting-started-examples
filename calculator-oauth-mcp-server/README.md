@@ -38,7 +38,6 @@ The server requires the following environment variables:
 
 | Variable | Description | Example (Okta) |
 |----------|-------------|----------------|
-| `OAUTH_WELL_KNOWN_URL` | OAuth authorization server well-known endpoint for auto-discovery | `https://dev-12345678.okta.com/oauth2/aus123abc/.well-known/oauth-authorization-server` |
 | `OAUTH_JWKS_URI` | JSON Web Key Set URI for token verification | `https://dev-12345678.okta.com/oauth2/aus123abc/v1/keys` |
 | `OAUTH_ISSUER` | Authorization server issuer URI | `https://dev-12345678.okta.com/oauth2/aus123abc` |
 | `OAUTH_AUDIENCE` | Audience identifier for your API | `https://your-mcp-server.example.com` |
@@ -68,7 +67,7 @@ OAUTH_AUDIENCE=https://your-mcp-server.example.com
 ## Running the Server
 
 ```bash
-python server.py
+python calculator.py
 ```
 
 The server will start on `http://localhost:8000/mcp` (or the port you specified).
@@ -77,7 +76,7 @@ The server will start on `http://localhost:8000/mcp` (or the port you specified)
 
 To connect to the MCP server, you need a valid OAuth access token. The method for obtaining a token depends on your OAuth provider. Most providers support the Client Credentials grant type for machine-to-machine authentication.
 
-> **Example (Okta)**: see the [Getting an Access Token Guide](https://docs.truefoundry.com/ai-gateway/mcp-server-oauth-okta#getting-an-access-token).
+> **Example (Okta)**: Check the test.py script to get the token
 
 Consult your OAuth provider's documentation for the specific steps to obtain access tokens.
 
@@ -125,7 +124,7 @@ The server implements OAuth token validation to secure MCP endpoints:
    - **Expiration**: Checks that the token hasn't expired
 5. **Allow/Deny**: Based on validation results, the request is either allowed to proceed or rejected with an authentication error
 
-The server also exposes a `/.well-known/oauth-authorization-server` endpoint that redirects to your OAuth provider's well-known endpoint. This enables OAuth clients to auto-discover OAuth configuration details.
+The server also exposes a `/.well-known/oauth-authorization-server` endpoint that automatically redirects to your OAuth provider's well-known endpoint (constructed from the `OAUTH_ISSUER`). This enables OAuth clients to auto-discover OAuth configuration details.
 
 > **Note**: This server works with any OAuth 2.0/OIDC-compliant provider. The examples use Okta, but you can configure it to work with Google, Azure AD, AWS Cognito, or any other compatible provider.
 
@@ -138,4 +137,3 @@ If you encounter authentication errors, verify that:
 - The `OAUTH_ISSUER` matches the issuer claim in your token
 - Your token includes the required scopes
 - The `OAUTH_JWKS_URI` is correct and accessible
-- The `OAUTH_WELL_KNOWN_URL` points to the correct OAuth provider's well-known endpoint
