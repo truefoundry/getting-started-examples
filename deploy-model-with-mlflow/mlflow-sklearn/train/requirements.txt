@@ -1,2 +1,2 @@
-mlflow==2.22.1
+mlflow==3.5.0rc0
 scikit-learn==1.7.0
