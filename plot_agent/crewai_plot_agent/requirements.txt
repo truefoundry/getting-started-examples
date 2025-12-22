@@ -303,7 +303,7 @@ markupsafe==3.0.2
     # via
     #   jinja2
     #   mako
-marshmallow==3.26.1
+marshmallow==3.26.2
     # via dataclasses-json
 matplotlib==3.10.3
     # via
