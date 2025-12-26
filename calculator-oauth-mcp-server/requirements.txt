@@ -1,2 +1,2 @@
-fastmcp==2.13.1
+fastmcp==2.14.0
 python-dotenv==1.2.1
