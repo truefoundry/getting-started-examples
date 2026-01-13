@@ -1,4 +1,4 @@
-mlflow==3.1.0rc0
+mlflow==3.5.0
 cloudpickle==3.0.0
 pandas==2.2.3
 vadersentiment==3.3.2
