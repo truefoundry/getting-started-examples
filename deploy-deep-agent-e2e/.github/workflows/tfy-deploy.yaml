@@ -1,0 +1,33 @@
+name: Deploy to TrueFoundry
+
+on:
+  push:
+    branches:
+      - 'feature/deep-agent-fastapi'
+
+env:
+  TFY_HOST: https://platform-admin.live-demo.truefoundry.cloud
+  TFY_API_KEY: ${{ secrets.TFY_API_KEY }}
+  WORKSPACE_FQN: tfy-aws:demo-ws
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          pip install "truefoundry<1.0.0"
+
+      - name: Deploy to workspace
+        run: |
+          tfy patch -f truefoundry.yaml --filter '.image.build_source.ref = "${{ github.sha }}" | .image.build_source.branch_name = "${{ github.ref_name }}"' -o truefoundry-patched.yaml
+          tfy deploy -f truefoundry-patched.yaml -w "${{ env.WORKSPACE_FQN }}" --no-wait

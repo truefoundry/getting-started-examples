@@ -1,0 +1,55 @@
+name: aa-demo-agent-backend
+type: service
+image:
+  type: build
+  build_spec:
+    type: dockerfile
+    dockerfile_path: ./deploy-deep-agent-e2e/Dockerfile.fastapi
+    build_context_path: ./deploy-deep-agent-e2e/
+  # `build_source.branch_name` and `build_source.ref` will automatically be patched during deployment.
+  build_source:
+    ref: 21139a3e39fa46e17537f0d4f4b540248e8f0148
+    type: git
+    repo_url: https://github.com/truefoundry/getting-started-examples
+    branch_name: feature/deep-agent-fastapi
+env:
+  IMAGE_MODEL: gcp-vertex-default/gemini-2.5-flash-image
+  TFY_API_KEY: tfy-secret://live-demo:aa-brown-bag-demo:TFY_API_KEY
+  TFY_BASE_URL: https://platform-admin.live-demo.truefoundry.cloud/api/llm
+  MAIN_LLM_MODEL: openai-main/gpt-4o
+  TAVILY_API_KEY: tfy-secret://live-demo:aa-brown-bag-demo:TAVILY_API_KEY
+ports:
+  - host: aa-demo-agent-backend-demo-ws-8000.apps.live-demo.truefoundry.cloud
+    port: 8000
+    expose: true
+    protocol: TCP
+    app_protocol: http
+labels:
+  tfy_openapi_path: openapi.json
+mounts:
+  - type: volume
+    mount_path: /data
+    volume_fqn: tfy-volume://tfy-aws:demo-ws:aa-brown-bag-demo-files
+replicas: 1
+resources:
+  node:
+    type: node_selector
+    capacity_type: spot_fallback_on_demand
+  cpu_limit: 0.5
+  cpu_request: 0.2
+  memory_limit: 500
+  memory_request: 200
+  ephemeral_storage_limit: 2000
+  ephemeral_storage_request: 1000
+workspace_fqn: tfy-aws:demo-ws
+liveness_probe:
+  config:
+    path: /health-check
+    port: 8000
+    type: http
+  period_seconds: 10
+  timeout_seconds: 1
+  failure_threshold: 3
+  success_threshold: 1
+  initial_delay_seconds: 0
+allow_interception: false
