@@ -37,7 +37,15 @@ task(
 )
 ```
 
-3. After research completes, read the findings file before writing
+3. After research completes, write the research outputs as below.
+
+```
+research/
+└── <slug>/
+    ├── post.md        # The research post content
+```
+
+Then always read this findings file before writing further.
 
 ## Output Structure (Required)
 
