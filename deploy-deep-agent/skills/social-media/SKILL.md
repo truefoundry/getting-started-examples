@@ -45,8 +45,6 @@ research/
     ├── post.md        # The research post content
 ```
 
-Then always read this findings file before writing further.
-
 ## Output Structure (Required)
 
 **Every social media post MUST have both content AND an image:**

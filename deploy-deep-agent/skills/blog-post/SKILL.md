@@ -44,9 +44,6 @@ research/
 └── <slug>/
     ├── post.md        # The research post content
 ```
-
-Then always read this findings file before writing further.
-
 ## Output Structure (Required)
 
 **Every blog post MUST have both a post AND a cover image:**
