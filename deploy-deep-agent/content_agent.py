@@ -23,6 +23,7 @@ tfy_base_url = os.environ["TFY_BASE_URL"]
 tfy_api_key = os.environ["TFY_API_KEY"]
 image_model = os.environ["IMAGE_MODEL"]
 main_llm_model = os.environ["MAIN_LLM_MODEL"]
+sub_llm_model = os.environ["SUB_LLM_MODEL"]
 
 # Web search tool for the researcher subagent
 @tool
@@ -180,7 +181,7 @@ def load_subagents(config_path: Path) -> list:
             "name": name,
             "description": spec["description"],
             "system_prompt": spec["system_prompt"],
-            "model": _make_llm(spec["model"]),
+            "model": _make_llm(sub_llm_model),
         }
         if "tools" in spec:
             subagent["tools"] = [available_tools[t] for t in spec["tools"]]
