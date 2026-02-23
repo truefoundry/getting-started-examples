@@ -19,31 +19,24 @@ Use this skill when asked to:
 
 **Before writing any blog post, you MUST delegate research:**
 
-1. Use the `task` tool with `subagent_type: "researcher"`
-2. In the description, specify BOTH the topic AND where to save:
+1. Use the `task` tool with `name: "researcher"`
+2. In the task, specify the topic:
 
 ```
 task(
-    subagent_type="researcher",
-    description="Research [TOPIC]. Save findings to research/[slug].md"
+    name="researcher",
+    task="Research [TOPIC]"
 )
 ```
 
 Example:
 ```
 task(
-    subagent_type="researcher",
-    description="Research the current state of AI agents in 2025. Save findings to research/ai-agents-2025.md"
+    name="researcher",
+    task="Research the current state of AI agents in 2025"
 )
 ```
 
-3. After research completes, write the research outputs as below.
-
-```
-research/
-└── <slug>/
-    ├── post.md        # The research post content
-```
 ## Output Structure (Required)
 
 **Every blog post MUST have both a post AND a cover image:**
@@ -55,11 +48,11 @@ blogs/
     └── hero.png       # REQUIRED: Generated cover image
 ```
 
-Example: A post about "AI Agents in 2025" → `blogs/ai-agents-2025/`
+Example: A post about "AI Agents in 2025" → `/blogs/ai-agents-2025/post.md`
 
 **You MUST complete both steps:**
-1. Write the post to `blogs/<slug>/post.md`
-2. Generate a cover image using `generate_image` and save to `blogs/<slug>/hero.png`
+1. Write the post using save_markdown(platform= "blogs", slug= <slug>, content="...")
+2. Generate a cover image using generate_cover()
 
 **A blog post is NOT complete without its cover image.**
 

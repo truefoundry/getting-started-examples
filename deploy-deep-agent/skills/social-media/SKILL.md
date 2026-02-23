@@ -19,30 +19,22 @@ Use this skill when asked to:
 
 **Before writing any social media content, you MUST delegate research:**
 
-1. Use the `task` tool with `subagent_type: "researcher"`
-2. In the description, specify BOTH the topic AND where to save:
+1. Use the `task` tool with `name: "researcher"`
+2. In the task, specify the topic:
 
 ```
 task(
-    subagent_type="researcher",
-    description="Research [TOPIC]. Save findings to research/[slug].md"
+    name="researcher",
+    task="Research [TOPIC]"
 )
 ```
 
 Example:
 ```
 task(
-    subagent_type="researcher",
-    description="Research renewable energy trends in 2025. Save findings to research/renewable-energy.md"
+    name="researcher",
+    task="Research renewable energy trends in 2025"
 )
-```
-
-3. After research completes, write the research outputs as below.
-
-```
-research/
-└── <slug>/
-    ├── post.md        # The research post content
 ```
 
 ## Output Structure (Required)
@@ -65,11 +57,15 @@ tweets/
     └── image.png      # REQUIRED: Generated visual
 ```
 
-Example: A LinkedIn post about "prompt engineering" → `linkedin/prompt-engineering/`
+Example: A LinkedIn post about "prompt engineering" → `/linkedin/prompt-engineering/post.md`
 
 **You MUST complete both steps:**
-1. Write the content to the appropriate path
-2. Generate an image using `generate_image` and save alongside the post
+1. Always write using save_markdown with these exact formats:
+
+- LinkedIn: save_markdown(platform= "linkedin", slug= <slug>, content="...")
+- Twitter: save_markdown(platform= "twitter", slug= <slug>, content="...")
+
+2. Generate an image using generate_social_image(...)
 
 **A social media post is NOT complete without its image.**
 

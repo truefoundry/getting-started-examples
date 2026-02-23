@@ -56,12 +56,12 @@ def web_search(
 
 
 @tool
-def write_file(content: str, platform: str, slug: str) -> str:
+def save_markdown(content: str, platform: str, slug: str) -> str:
     """Write content to a file.
 
     Args:
         content: The content to write to the file.
-        platform: Either "blogs", "linkedin", "tweets" or "research"
+        platform: Either "blogs", "linkedin", "tweets"
         slug: Blog post slug. Content saves to <platform>/<slug>/post.md 
 
 
@@ -172,7 +172,7 @@ def _make_llm(model_id: str) -> ChatOpenAI:
         )
 
 def load_subagents(config_path: Path) -> list:
-    available_tools = {"web_search": web_search, "write_file": write_file}
+    available_tools = {"web_search": web_search}
     config = yaml.safe_load(config_path.read_text())
 
     subagents = []
@@ -198,7 +198,7 @@ def get_agent():
             model=_make_llm(main_llm_model),
             memory=[str(BASE_DIR / "AGENTS.md")],
             skills=[str(BASE_DIR / "skills")],
-            tools=[write_file, generate_cover, generate_social_image],
+            tools=[save_markdown, generate_cover, generate_social_image],
             subagents=load_subagents(BASE_DIR / "subagents.yaml"),
             backend=FilesystemBackend(root_dir=BASE_DIR),
         )
@@ -207,13 +207,12 @@ def get_agent():
 
 async def run_content_agent(thread_id: str, task: str) -> Dict[str, Any]:
     agent = get_agent()
-    # Important: use an invoke to completion for API
+
     result = await agent.ainvoke(
         {"messages": [("user", task)]},
         config={"configurable": {"thread_id": thread_id}},
     )
 
-    # Extract final assistant text if present
     final_text = ""
     platform = None
     slug = None
@@ -221,7 +220,7 @@ async def run_content_agent(thread_id: str, task: str) -> Dict[str, Any]:
     for msg in result["messages"]:
         if hasattr(msg, "tool_calls") and msg.tool_calls:
             for tc in msg.tool_calls:
-                if tc["name"] == "write_file":
+                if tc["name"] == "save_markdown":
                     platform = tc["args"].get("platform")
                     slug = tc["args"].get("slug")
 
