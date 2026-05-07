@@ -1,5 +1,6 @@
 from fastmcp import FastMCP, Context
 import os
+from mcp.server.auth.middleware.auth_context import get_access_token
 from fastmcp.server.auth.providers.jwt import JWTVerifier
 from dotenv import load_dotenv
 from starlette.responses import RedirectResponse
