@@ -509,7 +509,7 @@ python-dotenv==1.1.0
     # via
     #   -r requirements.in
     #   pydantic-settings
-python-multipart==0.0.20
+python-multipart==0.0.22
     # via -r requirements.in
 pytz==2025.2
     # via
@@ -591,7 +591,6 @@ traceloop-sdk==0.40.5
 typing-extensions==4.13.2
     # via
     #   -r requirements.in
-    #   altair
     #   anthropic
     #   fastapi
     #   huggingface-hub
@@ -620,6 +619,8 @@ urllib3==2.4.0
     #   requests
 uvicorn==0.34.2
     # via -r requirements.in
+watchdog==6.0.0
+    # via streamlit
 wrapt==1.17.2
     # via
     #   deprecated
