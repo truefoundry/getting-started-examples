@@ -1,0 +1,4 @@
+truefoundry==0.11.12
+huggingface_hub>=0.19.0
+transformers>=4.30.0
+torch>=2.0.0
