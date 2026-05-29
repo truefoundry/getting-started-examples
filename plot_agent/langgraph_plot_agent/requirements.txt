@@ -591,7 +591,6 @@ traceloop-sdk==0.40.5
 typing-extensions==4.13.2
     # via
     #   -r requirements.in
-    #   altair
     #   anthropic
     #   fastapi
     #   huggingface-hub
@@ -614,12 +613,14 @@ tzdata==2025.2
     # via pandas
 tzlocal==5.3.1
     # via clickhouse-driver
-urllib3==2.4.0
+urllib3==2.6.0
     # via
     #   clickhouse-connect
     #   requests
 uvicorn==0.34.2
     # via -r requirements.in
+watchdog==6.0.0
+    # via streamlit
 wrapt==1.17.2
     # via
     #   deprecated
