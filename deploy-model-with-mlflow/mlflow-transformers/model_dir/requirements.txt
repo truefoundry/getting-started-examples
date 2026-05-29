@@ -19,5 +19,5 @@ scikit-learn==1.7.0
 scipy==1.14.1
 torch==2.7.0
 torchvision==0.22.0
-transformers==4.52.4
+transformers==4.53.0
 typing==3.7.4.3
