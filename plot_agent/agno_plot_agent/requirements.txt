@@ -536,7 +536,6 @@ typer==0.15.3
 typing-extensions==4.13.2
     # via
     #   agno
-    #   altair
     #   anthropic
     #   fastapi
     #   huggingface-hub
@@ -555,12 +554,14 @@ tzdata==2025.2
     # via pandas
 tzlocal==5.3.1
     # via clickhouse-driver
-urllib3==2.4.0
+urllib3==2.6.3
     # via
     #   clickhouse-connect
     #   requests
 uvicorn==0.34.2
     # via -r requirements.in
+watchdog==6.0.0
+    # via streamlit
 wrapt==1.17.2
     # via
     #   deprecated
