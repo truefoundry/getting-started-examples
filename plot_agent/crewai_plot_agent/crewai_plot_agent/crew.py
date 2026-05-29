@@ -1,17 +1,74 @@
 from typing import Any, Dict, List, Optional
 
-from crewai import Agent, Crew, Process, Task
+from crewai import Agent, Crew, LLM, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai_plot_agent.tools.clickhouse_tool import ClickHouseTool
 from crewai_plot_agent.tools.plot_tool import PlotTools
 from pydantic import BaseModel, Field
+import os
+import litellm
 
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
+
+
+
 from traceloop.sdk import Traceloop
 
-Traceloop.init(app_name="crewai")
+# Traceloop Configuration
+TRACELOOP_APP_NAME = os.environ.get("TRACELOOP_APP_NAME")
+TRACELOOP_TRACING_PROJECT_FQN = os.environ.get("TRACELOOP_TRACING_PROJECT_FQN")
+
+# Get API Key for both LLM Gateway and Traceloop
+# TFY_API_KEY can be used for both, or use separate keys
+TFY_API_KEY = os.environ.get("TFY_API_KEY") or os.environ.get("LLM_GATEWAY_API_KEY")
+LLM_GATEWAY_BASE_URL = os.environ.get("LLM_GATEWAY_BASE_URL", "https://gateway.truefoundry.ai")
+MODEL_NAME =os.environ.get("MODEL_NAME")
+
+
+# Validate that required environment variables are set
+if not TFY_API_KEY:
+    raise ValueError(
+        "LLM_GATEWAY_API_KEY must be set. "
+        "Please set LLM_GATEWAY_API_KEY environment variable."
+    )
+
+# Configure LiteLLM default headers
+# litellm.drop_params = True  # Drop unsupported params
+# litellm.suppress_debug_info = False
+
+extra_headers = {
+    "Authorization": f"Bearer {TFY_API_KEY}",
+    "TFY-Tracing-Project": TRACELOOP_TRACING_PROJECT_FQN,
+}
+
+# Set default headers for all LiteLLM requests
+if not hasattr(litellm, 'default_headers') or litellm.default_headers is None:
+    litellm.default_headers = {}
+litellm.default_headers.update(extra_headers)
+
+# Initialize Traceloop SDK for tracing
+# Generate a Personal Access Token or Virtual Account from the Access Tab
+# If you are using Virtual Account, make sure to give it access to the tracing project
+print("\n" + "="*80)
+print("INITIALIZING TRACELOOP SDK FOR TRACING")
+print("="*80)
+if TFY_API_KEY:
+    Traceloop.init(
+        app_name=TRACELOOP_APP_NAME,
+        api_endpoint="https://tfy-eo.truefoundry.cloud/api/otel",
+        headers={
+            "Authorization": f"Bearer {TFY_API_KEY}",
+            "TFY-Tracing-Project": TRACELOOP_TRACING_PROJECT_FQN,
+        },
+    )
+    print("✅ Traceloop SDK initialized successfully in crew.py")
+    # print("="*80 + "\n")
+else:
+    print("⚠️  ERROR: Traceloop SDK not initialized - TFY_API_KEY or LLM_GATEWAY_API_KEY not set")
+    print("Please set TFY_API_KEY or LLM_GATEWAY_API_KEY environment variable")
+    print("="*80 + "\n")
 
 
 class SQLQueryResult(BaseModel):
@@ -53,17 +110,40 @@ class CrewaiPlotAgent:
     # 	print("Output", output ,"sdfsdfsdfsd")
     # 	return output
 
+    # Configure LLM for agents with TrueFoundry Gateway settings
+    def _get_llm(self) -> LLM:
+        """Get configured LLM for agents with TrueFoundry Gateway"""
+        # Use the actual model name directly: chatwithtraces/gpt5
+        return LLM(
+            model=MODEL_NAME,  # Use actual model: chatwithtraces/gpt5
+            api_key=TFY_API_KEY,
+            base_url=LLM_GATEWAY_BASE_URL,
+            custom_llm_provider="openai",  # <— LiteLLM uses this
+            extra_headers={
+            "Authorization": f"Bearer {TFY_API_KEY}",
+            "TFY-Tracing-Project": TRACELOOP_TRACING_PROJECT_FQN,
+            },
+            temperature=0.1,  
+            # Using chatwithtraces/gpt5 directly without wrapper
+            # Headers are set via litellm.default_headers
+        )
+
     # If you would like to add tools to your agents, you can learn more about it here:
     # https://docs.crewai.com/concepts/agents#agent-tools
+
     @agent
     def sql_writer(self) -> Agent:
-        return Agent(config=self.agents_config["sql_writer"], verbose=True, tools=[ClickHouseTool()])
+        return Agent(config=self.agents_config["sql_writer"], 
+        verbose=True, 
+        llm=self._get_llm(),
+        tools=[ClickHouseTool()])
 
     @agent
     def plot_writer(self) -> Agent:
         return Agent(
             config=self.agents_config["plot_writer"],
             verbose=True,
+            llm=self._get_llm(),
             tools=[PlotTools()],
             pydantic_output=PlotResult,
         )
@@ -101,3 +181,5 @@ class CrewaiPlotAgent:
             # output_pydantic=True,
             # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
         )
+
+    
