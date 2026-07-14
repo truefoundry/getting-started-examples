@@ -44,7 +44,7 @@ for i in range(10):
     plt.imshow(x_train[i], cmap="gray")
     plt.title(f"Label: {y_train[i]}")
     plt.axis("off")
-run.log_plots({"images": plt})
+#run.log_plots({"images": plt})
 plt.tight_layout()
 
 
