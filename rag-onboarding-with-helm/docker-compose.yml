@@ -1,0 +1,46 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.12.5
+    container_name: rag-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333'"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rag-app:
+    build:
+      context: ./app
+    image: rag-app:local
+    container_name: rag-app
+    ports:
+      - "8000:8000"
+    environment:
+      QDRANT_HOST: ${QDRANT_HOST:-qdrant}
+      QDRANT_PORT: ${QDRANT_PORT:-6333}
+      QDRANT_API_KEY: ${QDRANT_API_KEY:-}
+      QDRANT_API_PREFIX: ${QDRANT_API_PREFIX:-}
+      LOCAL_FAKE_LLM: ${LOCAL_FAKE_LLM:-true}
+      TFY_API_KEY: ${TFY_API_KEY:-}
+      TFY_LLM_GATEWAY_BASE_URL: ${TFY_LLM_GATEWAY_BASE_URL:-}
+      WORKSPACE_FQN: ${WORKSPACE_FQN}
+      TFY_SERVICE_ROOT_PATH: ${TFY_SERVICE_ROOT_PATH}
+      LLM_MODEL: ${LLM_MODEL:-openai-main/gpt-4o-mini}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-openai-main/text-embedding-3-small}
+      EMBEDDING_DIMENSIONS: ${EMBEDDING_DIMENSIONS:-1536}
+      COLLECTION_NAME: ${COLLECTION_NAME:-documents}
+      CHUNK_SIZE: ${CHUNK_SIZE:-1000}
+      CHUNK_OVERLAP: ${CHUNK_OVERLAP:-200}
+      SIMILARITY_TOP_K: ${SIMILARITY_TOP_K:-5}
+      FAKE_EMBEDDING_SIZE: ${FAKE_EMBEDDING_SIZE:-384}
+    depends_on:
+      qdrant:
+        condition: service_healthy
+
+volumes:
+  qdrant_data:

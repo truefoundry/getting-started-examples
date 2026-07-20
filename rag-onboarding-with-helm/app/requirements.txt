@@ -1,0 +1,12 @@
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+python-multipart==0.0.20
+pydantic==2.11.4
+python-dotenv==1.2.2
+langchain==0.3.25
+langchain-community==0.3.24
+langchain-openai==0.3.17
+langchain-qdrant==0.2.0
+langchain-text-splitters==0.3.8
+qdrant-client==1.12.2
+pypdf==5.5.0

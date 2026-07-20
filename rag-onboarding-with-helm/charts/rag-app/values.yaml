@@ -1,0 +1,69 @@
+replicaCount: 1
+
+image:
+  # Build app/Dockerfile and push it to a registry your cluster can pull from
+  repository: chintan-ml-repos/rag-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 8000
+
+# Configuration passed to the app as environment variables.
+# Override these at deploy time via deploy/rag-app.truefoundry.yaml or deploy.py
+# (Helm does NOT read .env or expand ${VAR}).
+config:
+  qdrant:
+    # In-cluster service name of the Qdrant Helm release (same namespace)
+    host: qdrant
+    port: 6333
+    # Optional API key; ignored if existingSecret is set
+    apiKey: ""
+    # Existing secret with key QDRANT_API_KEY
+    existingSecret: ""
+    apiPrefix: ""
+  truefoundry:
+    # e.g. https://<your-org>.truefoundry.cloud/api/llm/api/inference/openai
+    llmGatewayBaseUrl: "https://gateway.truefoundry.ai"
+    # TrueFoundry API key; ignored if existingSecret is set
+    apiKey: "tfy-secret://tfy-eo:chintan-secrets:TFY-API-KEY"
+    # Existing secret with key TFY_API_KEY
+    existingSecret: "tfy-secret://tfy-eo:chintan-secrets:TFY-API-KEY"
+  llmModel: openai-main/gpt-4o-mini
+  embeddingModel: openai-main/text-embedding-3-small
+  embeddingDimensions: 1536
+  collectionName: documents
+  chunkSize: 1000
+  chunkOverlap: 200
+  similarityTopK: 5
+  localFakeLlm: false
+  fakeEmbeddingSize: 384
+
+# Extra environment variables to inject into the container
+extraEnv: []
+# - name: SIMILARITY_TOP_K
+#   value: "10"
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  host: rag-app.example.com
+  path: /
+  pathType: Prefix
+  tls: []
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

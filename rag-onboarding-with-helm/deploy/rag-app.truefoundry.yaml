@@ -1,0 +1,39 @@
+# TrueFoundry Helm application: RAG API service (Qdrant-backed)
+# Deploy with:
+#   python deploy/apply_manifest.py deploy/rag-app.truefoundry.yaml
+# or: tfy apply -f deploy/rag-app.truefoundry.yaml
+#
+# Prerequisites:
+#   1. The qdrant Helm application is deployed in the same workspace
+#   2. The app image is built and pushed
+#
+# Important: `tfy apply` does NOT load .env — use concrete values here or
+# deploy/apply_manifest.py / deploy/deploy.py.
+type: helm
+name: rag-app
+source:
+  type: git-helm-repo
+  repo_url: https://github.com/truefoundry/getting-started-examples
+  revision: chintan-rag-onboarding-with-helm
+  path: rag-onboarding-with-helm/charts/rag-app
+values:
+  image:
+    repository: cdonda/rag-app
+    tag: 0.1.0
+  config:
+    qdrant:
+      # In-cluster service name of the qdrant Helm release (NOT localhost)
+      host: qdrant
+      port: 6333
+      apiKey: ""
+      apiPrefix: ""
+    truefoundry:
+      llmGatewayBaseUrl: https://gateway.truefoundry.ai
+      apiKey: tfy-secret://tfy-eo:chintan-secrets:TFY-API-KEY
+      host: https://tfy-eo.truefoundry.cloud
+    llmModel: openai-main/gpt-4o-mini
+    embeddingModel: openai-main/text-embedding-3-small
+    embeddingDimensions: 1536
+    collectionName: documents
+    localFakeLlm: false
+workspace_fqn: tfy-ea-dev-eo-az:chintan-onboarding-ws

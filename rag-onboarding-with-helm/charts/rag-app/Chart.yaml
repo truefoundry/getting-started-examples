@@ -1,0 +1,10 @@
+apiVersion: v2
+name: rag-app
+description: FastAPI RAG service using Qdrant vector store for retrieval, and the TrueFoundry LLM Gateway for generation.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - rag
+  - fastapi
+  - qdrant
