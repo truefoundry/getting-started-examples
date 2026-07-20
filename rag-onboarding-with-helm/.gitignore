@@ -1,4 +1,5 @@
 .env
+.env.github.app
 __pycache__/
 *.pyc
 .venv/

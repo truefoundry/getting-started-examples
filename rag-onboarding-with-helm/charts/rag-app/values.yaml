@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   # Build app/Dockerfile and push it to a registry your cluster can pull from
-  repository: chintan-ml-repos/rag-app
+  repository: cdonda/rag-app
   tag: latest
   pullPolicy: IfNotPresent
 
