@@ -70,8 +70,8 @@ This installs chart `qdrant` version `1.18.2` from `https://qdrant.github.io/qdr
 
 ```bash
 cd app
-docker build --platform linux/amd64 -t <registry>/rag-app:0.1.0 .
-docker push <registry>/rag-app:0.1.0
+docker build --platform linux/amd64 -t <registry>/rag-app:latest .
+docker push <registry>/rag-app:latest
 ```
 
 

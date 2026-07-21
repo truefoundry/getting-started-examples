@@ -19,20 +19,20 @@ source:
 values:
   image:
     repository: cdonda/rag-app
-    tag: 0.1.0
+    tag: latest
   config:
     qdrant:
       # In-cluster service name of the qdrant Helm release (NOT localhost)
       host: qdrant
       port: 6333
-      apiKey: ""
-      apiPrefix: ""
+      apiKey: ""    # Keep it empty here, it'll be patched at the deployment time
+      apiPrefix: "" # Keep it empty here, it'll be patched at the deployment time
     truefoundry:
       llmGatewayBaseUrl: https://gateway.truefoundry.ai
       # tfy-secret:// FQNs are NOT resolved inside Helm values — they are only
       # resolved in Kubernetes Secret manifests added via kustomize.additions
       # (see below). Point existingSecret at that Secret instead.
-      apiKey: ""
+      apiKey: ""  # Keep it empty here, it'll be patched at the deployment time
       existingSecret: rag-app-tfy-creds
       host: https://tfy-eo.truefoundry.cloud
     llmModel: openai-main/gpt-4o-mini

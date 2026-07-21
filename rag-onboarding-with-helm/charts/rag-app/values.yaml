@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   # Build app/Dockerfile and push it to a registry your cluster can pull from
   repository: cdonda/rag-app
-  tag: 0.1.0
+  tag: latest
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -21,15 +21,15 @@ config:
     host: qdrant
     port: 6333
     # Optional API key; ignored if existingSecret is set
-    apiKey: ""
+    apiKey: ""  # Keep it empty here, it'll be patched at the deployment time
     # Existing secret with key QDRANT_API_KEY
-    existingSecret: ""
-    apiPrefix: ""
+    existingSecret: ""  # Keep it empty here, it'll be patched at the deployment time
+    apiPrefix: ""       # Keep it empty here, it'll be patched at the deployment time
   truefoundry:
     # e.g. https://<your-org>.truefoundry.cloud/api/llm/api/inference/openai
     llmGatewayBaseUrl: "https://gateway.truefoundry.ai"
     # TrueFoundry API key; ignored if existingSecret is set
-    apiKey: ""
+    apiKey: ""  # Keep it empty here, it'll be patched at the deployment time
     # Name of an existing Kubernetes Secret with key TFY_API_KEY.
     # Must be a valid K8s Secret name (RFC 1123), NOT a tfy-secret:// FQN.
     # When deploying via TrueFoundry, create the Secret with kustomize
