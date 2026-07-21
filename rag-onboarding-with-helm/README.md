@@ -82,8 +82,17 @@ Edit `deploy/rag-app.truefoundry.yaml` and fill in:
 
 - `workspace_fqn` — same workspace as Step 1
 - `values.image.repository` / `tag` — the image from Step 2
-- `values.config.truefoundry.llmGatewayBaseUrl` / `apiKey`
+- `values.config.truefoundry.llmGatewayBaseUrl`
 - `values.config.llmModel` / `embeddingModel` / `embeddingDimensions`
+- the `kustomize.additions` Secret manifest — replace the `tfy-secret://...`
+  FQN with your own TrueFoundry secret FQN and set the Secret's `namespace`
+  to your workspace's namespace
+
+> **Note:** `tfy-secret://` FQNs are only resolved inside Kubernetes Secret
+> manifests added via `kustomize.additions` (using `stringData`). They are
+> **not** resolved inside Helm `values`, so never put an FQN in
+> `values.config.truefoundry.apiKey` or `existingSecret` — the latter must be
+> the name of a real Kubernetes Secret.
 
 ```bash
 tfy apply -f deploy/rag-app.truefoundry.yaml
