@@ -1,0 +1,34 @@
+# TrueFoundry Helm application: Qdrant vector database
+# Deploy with:
+#   python deploy/apply_manifest.py deploy/qdrant.truefoundry.yaml
+# or after filling values below:
+#   tfy apply -f deploy/qdrant.truefoundry.yaml
+#
+# Note: Bitnami does not publish a Qdrant chart. This uses the official Qdrant
+# Helm chart from a public Helm repository (same TrueFoundry "helm-repo"
+# pattern used for Bitnami charts like Redis/PostgreSQL).
+#
+# Important: `tfy apply` does NOT load .env — placeholders like ${VAR} are NOT
+# expanded unless you use deploy/apply_manifest.py.
+type: helm
+name: qdrant
+source:
+  type: helm-repo
+  repo_url: https://qdrant.github.io/qdrant-helm
+  chart: qdrant
+  version: 1.18.2
+values:
+  replicaCount: 1
+  persistence:
+    size: 10Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  service:
+    type: ClusterIP
+# Get your workspace FQN from the TrueFoundry UI (Workspaces -> Copy FQN)
+workspace_fqn: tfy-ea-dev-eo-az:chintan-onboarding-ws

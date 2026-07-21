@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rag-app.fullname" . }}
+  labels:
+    {{- include "rag-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "rag-app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "rag-app.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: rag-app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: QDRANT_HOST
+              value: {{ .Values.config.qdrant.host | quote }}
+            - name: QDRANT_PORT
+              value: {{ .Values.config.qdrant.port | quote }}
+            - name: QDRANT_API_PREFIX
+              value: {{ .Values.config.qdrant.apiPrefix | quote }}
+            {{- if or .Values.config.qdrant.existingSecret .Values.config.qdrant.apiKey }}
+            - name: QDRANT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.config.qdrant.existingSecret | default (include "rag-app.fullname" .) }}
+                  key: QDRANT_API_KEY
+            {{- else }}
+            - name: QDRANT_API_KEY
+              value: ""
+            {{- end }}
+            - name: TFY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.config.truefoundry.existingSecret | default (include "rag-app.fullname" .) }}
+                  key: TFY_API_KEY
+            - name: TFY_LLM_GATEWAY_BASE_URL
+              value: {{ .Values.config.truefoundry.llmGatewayBaseUrl | quote }}
+            - name: LLM_MODEL
+              value: {{ .Values.config.llmModel | quote }}
+            - name: EMBEDDING_MODEL
+              value: {{ .Values.config.embeddingModel | quote }}
+            - name: EMBEDDING_DIMENSIONS
+              value: {{ .Values.config.embeddingDimensions | quote }}
+            - name: COLLECTION_NAME
+              value: {{ .Values.config.collectionName | quote }}
+            - name: CHUNK_SIZE
+              value: {{ .Values.config.chunkSize | quote }}
+            - name: CHUNK_OVERLAP
+              value: {{ .Values.config.chunkOverlap | quote }}
+            - name: SIMILARITY_TOP_K
+              value: {{ .Values.config.similarityTopK | quote }}
+            - name: LOCAL_FAKE_LLM
+              value: {{ .Values.config.localFakeLlm | quote }}
+            - name: FAKE_EMBEDDING_SIZE
+              value: {{ .Values.config.fakeEmbeddingSize | quote }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

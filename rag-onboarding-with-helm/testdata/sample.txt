@@ -1,0 +1,3 @@
+TrueFoundry is a platform for deploying machine learning models and applications on Kubernetes.
+It supports services, jobs, workflows, and Helm charts.
+This RAG app stores document embeddings in Postgres using the pgvector extension.

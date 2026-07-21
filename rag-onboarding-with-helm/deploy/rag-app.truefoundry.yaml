@@ -1,0 +1,55 @@
+# TrueFoundry Helm application: RAG API service (Qdrant-backed)
+# Deploy with:
+#   python deploy/apply_manifest.py deploy/rag-app.truefoundry.yaml
+# or: tfy apply -f deploy/rag-app.truefoundry.yaml
+#
+# Prerequisites:
+#   1. The qdrant Helm application is deployed in the same workspace
+#   2. The app image is built and pushed
+#
+# Important: `tfy apply` does NOT load .env — use concrete values here or
+# deploy/apply_manifest.py / deploy/deploy.py.
+type: helm
+name: rag-app
+source:
+  type: git-helm-repo
+  repo_url: https://github.com/truefoundry/getting-started-examples
+  revision: chintan-rag-onboarding-with-helm
+  path: rag-onboarding-with-helm/charts/rag-app
+values:
+  image:
+    repository: cdonda/rag-app
+    tag: latest
+  config:
+    qdrant:
+      # In-cluster service name of the qdrant Helm release (NOT localhost)
+      host: qdrant
+      port: 6333
+      apiKey: ""    # Keep it empty here, it'll be patched at the deployment time
+      apiPrefix: "" # Keep it empty here, it'll be patched at the deployment time
+    truefoundry:
+      llmGatewayBaseUrl: https://gateway.truefoundry.ai
+      # tfy-secret:// FQNs are NOT resolved inside Helm values — they are only
+      # resolved in Kubernetes Secret manifests added via kustomize.additions
+      # (see below). Point existingSecret at that Secret instead.
+      apiKey: ""  # Keep it empty here, it'll be patched at the deployment time
+      existingSecret: rag-app-tfy-creds
+      host: https://tfy-eo.truefoundry.cloud
+    llmModel: openai-main/gpt-4o-mini
+    embeddingModel: openai-main/text-embedding-3-small
+    embeddingDimensions: 1536
+    collectionName: documents
+    localFakeLlm: false
+kustomize:
+  additions:
+    # TrueFoundry resolves the tfy-secret:// FQN when applying this manifest,
+    # so the real API key lands in the K8s Secret referenced above.
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: rag-app-tfy-creds
+        namespace: chintan-onboarding-ws
+      type: Opaque
+      stringData:
+        TFY_API_KEY: tfy-secret://tfy-eo:chintan-secrets:TFY-API-KEY
+workspace_fqn: tfy-ea-dev-eo-az:chintan-onboarding-ws
