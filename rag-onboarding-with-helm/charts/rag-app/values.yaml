@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   # Build app/Dockerfile and push it to a registry your cluster can pull from
   repository: cdonda/rag-app
-  tag: latest
+  tag: 0.1.0
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
