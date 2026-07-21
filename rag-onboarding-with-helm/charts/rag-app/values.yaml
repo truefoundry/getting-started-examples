@@ -29,9 +29,13 @@ config:
     # e.g. https://<your-org>.truefoundry.cloud/api/llm/api/inference/openai
     llmGatewayBaseUrl: "https://gateway.truefoundry.ai"
     # TrueFoundry API key; ignored if existingSecret is set
-    apiKey: "tfy-secret://tfy-eo:chintan-secrets:TFY-API-KEY"
-    # Existing secret with key TFY_API_KEY
-    existingSecret: "tfy-secret://tfy-eo:chintan-secrets:TFY-API-KEY"
+    apiKey: ""
+    # Name of an existing Kubernetes Secret with key TFY_API_KEY.
+    # Must be a valid K8s Secret name (RFC 1123), NOT a tfy-secret:// FQN.
+    # When deploying via TrueFoundry, create the Secret with kustomize
+    # additions (see deploy/rag-app.truefoundry.yaml) — tfy-secret:// FQNs
+    # are only resolved there, not inside Helm values.
+    existingSecret: ""
   llmModel: openai-main/gpt-4o-mini
   embeddingModel: openai-main/text-embedding-3-small
   embeddingDimensions: 1536

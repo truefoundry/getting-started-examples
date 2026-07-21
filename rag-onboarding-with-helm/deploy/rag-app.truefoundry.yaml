@@ -29,11 +29,27 @@ values:
       apiPrefix: ""
     truefoundry:
       llmGatewayBaseUrl: https://gateway.truefoundry.ai
-      apiKey: tfy-secret://tfy-eo:chintan-secrets:TFY-API-KEY
+      # tfy-secret:// FQNs are NOT resolved inside Helm values — they are only
+      # resolved in Kubernetes Secret manifests added via kustomize.additions
+      # (see below). Point existingSecret at that Secret instead.
+      apiKey: ""
+      existingSecret: rag-app-tfy-creds
       host: https://tfy-eo.truefoundry.cloud
     llmModel: openai-main/gpt-4o-mini
     embeddingModel: openai-main/text-embedding-3-small
     embeddingDimensions: 1536
     collectionName: documents
     localFakeLlm: false
+kustomize:
+  additions:
+    # TrueFoundry resolves the tfy-secret:// FQN when applying this manifest,
+    # so the real API key lands in the K8s Secret referenced above.
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: rag-app-tfy-creds
+        namespace: chintan-onboarding-ws
+      type: Opaque
+      stringData:
+        TFY_API_KEY: tfy-secret://tfy-eo:chintan-secrets:TFY-API-KEY
 workspace_fqn: tfy-ea-dev-eo-az:chintan-onboarding-ws
