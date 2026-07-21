@@ -166,7 +166,7 @@ You can also deploy from the TrueFoundry UI: **New Deployment → Show Advanced 
 - RAG app:
   - **Name**: Give app name of your preference
   - **Source helm repository**: GitHelmRepo
-  - Git repository URL: `[https://github.com/truefoundry/getting-started-examples.git](https://github.com/truefoundry/getting-started-examples.git)` in this example
+  - Git repository URL: `https://github.com/truefoundry/getting-started-examples.git` in this example
   - Revision: `chintan-rag-onboarding-with-helm` in this example
   - Path: `rag-onboarding-with-helm/charts/rag-app` in this example
   - Submit
