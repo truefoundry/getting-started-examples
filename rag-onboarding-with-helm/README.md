@@ -1,4 +1,4 @@
-# RAG on TrueFoundry with Helm (Qdrant)
+# RAG on TrueFoundry with Helm (Qdrant) from Git Private **Repository**
 
 A Retrieval-Augmented Generation (RAG) application deployed on the TrueFoundry platform as **Helm applications**:
 
